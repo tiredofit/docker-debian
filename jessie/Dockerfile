@@ -6,9 +6,9 @@ MAINTAINER Dave Conroy <dave at tiredofit dot ca>
    ARG APT_FLAGS_PERSISTANT="${APT_FLAGS_COMMON} --no-install-recommends"
    ARG APT_FLAGS_DEV="${APT_FLAGS_COMMON} --no-install-recommends"
    ENV DEBIAN_FRONTEND=noninteractive TERM=xterm
-   ENV ZABBIX_HOSTNAME=debian.jessie
    ARG MAJOR_VERSION=3.4
    ARG ZBX_VERSION=${MAJOR_VERSION}
+   ARG S6_OVERLAY_VERSION=v1.19.1.1 
 
    RUN echo "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d && \
        addgroup --system --quiet zabbix && \
@@ -86,18 +86,20 @@ MAINTAINER Dave Conroy <dave at tiredofit dot ca>
        rm -rf /var/lib/apt/lists/* && \
        mkdir -p /assets/cron && \
        echo "America/Vancouver" > /etc/timezone && \
-       dpkg-reconfigure -f noninteractive tzdata
+       dpkg-reconfigure -f noninteractive tzdata && \
 
-### Zabbix Configuration
-   ADD install/zabbix /etc/zabbix/
+### MSMTP
+       rm -f /usr/sbin/sendmail && \
+       ln -s /usr/bin/msmtp /usr/sbin/sendmail && \
 
-### S6 Overlay Install
-   ARG S6_OVERLAY_VERSION=v1.19.1.1 
-   RUN curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C /
-   ADD install/s6 /etc/s6/
+### S6 Installation
+       curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C /
+   
+### Add Folders
+   ADD /install /
 
 ### Networking Configuration
    EXPOSE 10050/TCP
-
-### Entrypoint Configuraiton
-   CMD ["/bin/bash"]
+   
+### Entrypoint Configuration
+   CMD ["bash"]
