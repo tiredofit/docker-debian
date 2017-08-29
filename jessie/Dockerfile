@@ -80,17 +80,19 @@ MAINTAINER Dave Conroy <dave at tiredofit dot ca>
                nano \
                tzdata \
                vim-tiny \
+               wget
                && \
+       wget -O /usr/local/bin/MailHog  https://github.com/mailhog/MailHog/releases/download/v1.0.0/MailHog_linux_amd64 && \
+       wget -O /usr/local/bin/mhsendmail https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 && \
+       chmod +x /usr/local/bin/MailHog && \
+       chmod +x /usr/local/bin/mhsendmail && \
+       apt-get purge -y wget
        apt-get ${APT_FLAGS_COMMON} autoremove && \
        apt-get ${APT_FLAGS_COMMON} clean && \
        rm -rf /var/lib/apt/lists/* && \
        mkdir -p /assets/cron && \
        echo "America/Vancouver" > /etc/timezone && \
        dpkg-reconfigure -f noninteractive tzdata && \
-
-### MSMTP
-       rm -f /usr/sbin/sendmail && \
-       ln -s /usr/bin/msmtp /usr/sbin/sendmail && \
 
 ### S6 Installation
        curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C /
@@ -103,3 +105,4 @@ MAINTAINER Dave Conroy <dave at tiredofit dot ca>
    
 ### Entrypoint Configuration
    CMD ["bash"]
+
