@@ -86,7 +86,7 @@ MAINTAINER Dave Conroy <dave at tiredofit dot ca>
        wget -O /usr/local/bin/mhsendmail https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 && \
        chmod +x /usr/local/bin/MailHog && \
        chmod +x /usr/local/bin/mhsendmail && \
-       apt-get purge -y wget
+       apt-get purge -y wget && \
        apt-get ${APT_FLAGS_COMMON} autoremove && \
        apt-get ${APT_FLAGS_COMMON} clean && \
        rm -rf /var/lib/apt/lists/* && \
