@@ -1,10 +1,10 @@
-FROM debian:jessie
+FROM debian:wheezy
 MAINTAINER Dave Conroy <dave at tiredofit dot ca>
 
 ### Install Zabbix
   ARG S6_OVERLAY_VERSION=v1.19.1.1 
   ENV DEBIAN_FRONTEND=noninteractive TERM=xterm \
-      ZABBIX_HOSTNAME=debian.jessie
+      ZABBIX_HOSTNAME=debian.wheezy
 
 ### Dependencies Addon
   RUN apt-get update && \
@@ -20,8 +20,8 @@ MAINTAINER Dave Conroy <dave at tiredofit dot ca>
                wget \
                && \
        curl https://repo.zabbix.com/zabbix-official-repo.key | apt-key add - && \
-       echo 'deb http://repo.zabbix.com/zabbix/3.4/debian jessie main' >>/etc/apt/sources.list && \
-       echo 'deb-src http://repo.zabbix.com/zabbix/3.4/debian jessie main' >>/etc/apt/sources.list && \
+       echo 'deb http://repo.zabbix.com/zabbix/3.4/debian wheezy main' >>/etc/apt/sources.list && \
+       echo 'deb-src http://repo.zabbix.com/zabbix/3.4/debian wheezy main' >>/etc/apt/sources.list && \
        apt-get update && \
        apt-get install -y --no-install-recommends \
                zabbix-agent && \

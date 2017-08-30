@@ -1,3 +1,8 @@
+## 2.4 2017-08-28 <dave at tiredofit dot ca>
+
+* Added Debian Stretch and Wheezy 
+* Added Official Zabbix Agent 3.4 instead of compiling from source
+
 ## 2.3 2017-08-28 <dave at tiredofit dot ca>
 
 * Added `DEBUG_SMTP` environment variable to trap SMTP messages accesible via port 8025
