@@ -30,8 +30,8 @@ MAINTAINER Dave Conroy <dave at tiredofit dot ca>
        chmod +x /usr/local/bin/MailHog && \
        chmod +x /usr/local/bin/mhsendmail && \
        apt-get purge -y wget && \
-       apt-get ${APT_FLAGS_COMMON} autoremove && \
-       apt-get ${APT_FLAGS_COMMON} clean && \
+       apt-get autoremove -y && \
+       apt-get clean -y && \
        rm -rf /var/lib/apt/lists/* && \
        mkdir -p /assets/cron && \
        echo "America/Vancouver" > /etc/timezone && \
@@ -47,5 +47,4 @@ MAINTAINER Dave Conroy <dave at tiredofit dot ca>
    EXPOSE 1025 8025 10050/TCP
    
 ### Entrypoint Configuration
-   CMD ["bash"]
-
+   ENTRYPOINT ["/init"]   
