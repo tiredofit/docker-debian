@@ -43,8 +43,10 @@ docker pull tiredofit/debian:(imagetag)
 
 The following image tags are available:
 
+* `latest` - Debian Stretch - 9
+* `stretch:latest` - Debian Stretch - 9
 * `jessie:latest` - Debian Jessie - 8
-* `latest` - Debian Jessie - 8
+* `wheezy:latest` - Debian Wheezy - 7
 
 
 # Quick Start
