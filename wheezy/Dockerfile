@@ -2,7 +2,7 @@ FROM debian:wheezy
 MAINTAINER Dave Conroy <dave at tiredofit dot ca>
 
 ### Install Zabbix
-  ARG S6_OVERLAY_VERSION=v1.19.1.1 
+  ARG S6_OVERLAY_VERSION=v1.20.0.0
   ENV DEBIAN_FRONTEND=noninteractive TERM=xterm \
       ZABBIX_HOSTNAME=debian.wheezy
 

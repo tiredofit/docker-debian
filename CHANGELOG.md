@@ -1,3 +1,7 @@
+## 2.5 2017-09-01 <dave at tiredofit dot ca>
+
+* Update S6 overlay to 1.20.0.0
+
 ## 2.4 2017-08-28 <dave at tiredofit dot ca>
 
 * Added Debian Stretch and Wheezy 
