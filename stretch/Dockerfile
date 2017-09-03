@@ -35,12 +35,20 @@ MAINTAINER Dave Conroy <dave at tiredofit dot ca>
        apt-get clean -y && \
        rm -rf /var/lib/apt/lists/* && \
        mkdir -p /assets/cron && \
-       echo "America/Vancouver" > /etc/timezone && \
+       export TZ='America/Vancouver' && \
+       echo $TZ > /etc/timezone && \
+       cat /etc/timezone && \
+       rm -rf /etc/localtime && \
+       cp /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
        dpkg-reconfigure -f noninteractive tzdata && \
 
 ### S6 Installation
-       curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C /
-   
+       cd /usr/src && \
+       curl -sSL -O https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz && \
+       tar xzf s6-overlay-amd64.tar.gz -C / --exclude="./bin" --exclude="./sbin" && \
+       tar xzf s6-overlay-amd64.tar.gz -C /usr ./bin && \
+       rm -rf s6-overlay-amd64.tar.gz
+
 ### Add Folders
    ADD /install /
 
