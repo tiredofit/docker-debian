@@ -11,6 +11,7 @@ MAINTAINER Dave Conroy <dave at tiredofit dot ca>
       apt-get install -y --no-install-recommends \
                ca-certificates \
                curl \
+               dirmngr \
                gnupg \
                less \
                logrotate \
