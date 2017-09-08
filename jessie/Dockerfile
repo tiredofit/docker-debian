@@ -1,5 +1,5 @@
 FROM debian:jessie
-MAINTAINER Dave Conroy <dave at tiredofit dot ca>
+LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Install Zabbix
   ARG S6_OVERLAY_VERSION=v1.20.0.0
