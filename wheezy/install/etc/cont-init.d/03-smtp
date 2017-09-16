@@ -16,7 +16,7 @@ SMTP_SMTP_TLSCERTCHECK=${SMTP_TLSCERTCHECK:-"off"}
 DEBUG_SMTP=${DEBUG_SMTP:-"FALSE"}
 
 ### Debug Mode - Enable MailHog
-if [ "$DEBUG_SMTP" = "TRUE" ] || [ "DEBUG_SMTP" = "true" ] || [ "DEBUG_MODE" = "true" ] || [ "DEBUG_MODE" = "TRUE" ];  then
+if [[ "$DEBUG_SMTP" = "TRUE" ]] && [[ "DEBUG_SMTP" = "true" ]] && [[ "DEBUG_MODE" = "true" ]] && [[ "DEBUG_MODE" = "TRUE" ]];  then
     ENABLE_SMTP=FALSE
 
     rm -f /usr/sbin/sendmail
@@ -26,24 +26,24 @@ if [ "$DEBUG_SMTP" = "TRUE" ] || [ "DEBUG_SMTP" = "true" ] || [ "DEBUG_MODE" = "
 fi
 
 ### Enable or Disable SMTP
-if [ "$ENABLE_SMTP" = "TRUE" ] || [ "ENABLE_SMTP" = "true" ];  then
+if [[ "$ENABLE_SMTP" = "TRUE" ]] && [[ "ENABLE_SMTP" = "true" ]];  then
 
     rm -f /usr/sbin/sendmail
     ln -s /usr/bin/msmtp /usr/sbin/sendmail
 
-	echo 'Automatically Generated on Container Start. See Documentation on how to set!' >/etc/msmtp
-	echo 'account default ' >>/etc/msmtp
-	echo 'host ' $SMTP_HOST >>/etc/msmtp
-	echo 'port ' $SMTP_PORT >>/etc/msmtp
-	echo 'domain ' $SMTP_DOMAIN >>/etc/msmtp
+    echo 'Automatically Generated on Container Start. See Documentation on how to set!' >/etc/msmtp
+    echo 'account default ' >>/etc/msmtp
+    echo 'host ' $SMTP_HOST >>/etc/msmtp
+    echo 'port ' $SMTP_PORT >>/etc/msmtp
+    echo 'domain ' $SMTP_DOMAIN >>/etc/msmtp
     echo 'auto_from on ' >>/etc/msmtp
     echo 'maildomain ' >>/etc/msmtp
-	echo 'auth '$SMTP_AUTHENTICATION >>/etc/msmtp
-	echo 'user '$SMTP_USER >>/etc/msmtp
-	echo 'password '$SMTP_PASS >>/etc/msmtp
-	echo 'tls '$SMTP_TLS >>/etc/msmtp
-	echo 'tls_starttls '$SMTP_STARTTLS >>/etc/msmtp
-	echo 'tls_certcheck '$SMTP_TLSCERTCHECK >>/etc/msmtp
+    echo 'auth '$SMTP_AUTHENTICATION >>/etc/msmtp
+    echo 'user '$SMTP_USER >>/etc/msmtp
+    echo 'password '$SMTP_PASS >>/etc/msmtp
+    echo 'tls '$SMTP_TLS >>/etc/msmtp
+    echo 'tls_starttls '$SMTP_STARTTLS >>/etc/msmtp
+    echo 'tls_certcheck '$SMTP_TLSCERTCHECK >>/etc/msmtp
     
     export ENABLE_SMTP=TRUE
     

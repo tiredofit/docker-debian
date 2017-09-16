@@ -39,12 +39,12 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### S6 Installation
        curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C /
-   
+
 ### Add Folders
    ADD /install /
 
 ### Networking Configuration
    EXPOSE 1025 8025 10050/TCP
-   
+
 ### Entrypoint Configuration
    ENTRYPOINT ["/init"]   
