@@ -1,3 +1,8 @@
+## 2.7 2017-09-26 <dave at tiredofit dot ca>
+
+* Made Service Enabling/Disabling more Verbose
+* Switched to -slim Variants
+
 ## 2.6 2017-09-17 <dave at tiredofit dot ca>
 
 * Fix some scripting errors

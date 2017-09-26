@@ -4,12 +4,12 @@
 if [ -n "$TIMEZONE" ]; then 
     set_timezone () {
       if [ -f /usr/share/zoneinfo/$TIMEZONE ];  then
-        echo "* Setting timezone to $1"
+        echo "**** [timezone] Setting timezone to $1"
         cp -R /usr/share/zoneinfo/$1 /etc/localtime
         echo $1 > /etc/timezone
         dpkg-reconfigure -f noninteractive tzdata
       else
-        echo "* ERROR: Timezone $1 does not exist - Skipping.."
+        echo "**** [timezone] ERROR: Timezone $1 does not exist - Skipping.."
       fi
     } 
 
