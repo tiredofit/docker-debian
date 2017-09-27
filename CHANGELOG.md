@@ -1,3 +1,7 @@
+## 2.71 2017-09-27 <dave at tiredofit dot ca>
+
+* Tamed verbosity
+
 ## 2.7 2017-09-26 <dave at tiredofit dot ca>
 
 * Made Service Enabling/Disabling more Verbose
