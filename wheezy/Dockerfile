@@ -16,6 +16,8 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 ### Dependencies Addon
   RUN apt-get update && \
       apt-get install -y --no-install-recommends \
+               apt-transport-https \
+               bash \
                ca-certificates \
                curl \
                less \
@@ -24,7 +26,6 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
                nano \
                tzdata \
                vim-tiny \
-               wget \
                && \
        curl https://repo.zabbix.com/zabbix-official-repo.key | apt-key add - && \
        echo 'deb http://repo.zabbix.com/zabbix/3.4/debian wheezy main' >>/etc/apt/sources.list && \
@@ -32,14 +33,13 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
        apt-get update && \
        apt-get install -y --no-install-recommends \
                zabbix-agent && \
-       wget -O /usr/local/bin/MailHog  https://github.com/mailhog/MailHog/releases/download/v1.0.0/MailHog_linux_amd64 && \
-       wget -O /usr/local/bin/mhsendmail https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 && \
+       curl -sSLo /usr/local/bin/MailHog https://github.com/mailhog/MailHog/releases/download/v1.0.0/MailHog_linux_amd64 && \
+       curl -sSLo /usr/local/bin/mhsendmail https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 && \
        chmod +x /usr/local/bin/MailHog && \
        chmod +x /usr/local/bin/mhsendmail && \
-       apt-get purge -y wget && \
        apt-get autoremove -y && \
        apt-get clean -y && \
-       rm -rf /var/lib/apt/lists/* && \
+       rm -rf /var/lib/apt/lists/* /root/.gnupg && \
        mkdir -p /assets/cron && \
        echo "America/Vancouver" > /etc/timezone && \
        dpkg-reconfigure -f noninteractive tzdata && \
@@ -48,7 +48,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
        curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C /
 
 ### Add Folders
-   ADD /install /
+   ADD install /
 
 ### Networking Configuration
    EXPOSE 1025 8025 10050/TCP

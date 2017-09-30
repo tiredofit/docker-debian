@@ -1,3 +1,8 @@
+## 2.72 2017-09-30 <dave at tiredofit dot ca>
+
+* Remove requirement to use wget 
+* Minor S6 Overlay tweak for Stretch
+
 ## 2.71 2017-09-27 <dave at tiredofit dot ca>
 
 * Tamed verbosity
