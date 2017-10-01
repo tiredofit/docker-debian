@@ -1,9 +1,13 @@
-## 2.72 2017-09-30 <dave at tiredofit dot ca>
+## 2.7.3 2017-09-30 <dave at tiredofit dot ca>
+
+* Revert from `slim` variants
+
+## 2.7.2 2017-09-30 <dave at tiredofit dot ca>
 
 * Remove requirement to use wget 
 * Minor S6 Overlay tweak for Stretch
 
-## 2.71 2017-09-27 <dave at tiredofit dot ca>
+## 2.7.1 2017-09-27 <dave at tiredofit dot ca>
 
 * Tamed verbosity
 

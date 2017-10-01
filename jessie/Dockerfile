@@ -1,4 +1,4 @@
-FROM debian:jessie-slim
+FROM debian:jessie
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 

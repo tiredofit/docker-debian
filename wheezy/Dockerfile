@@ -1,4 +1,4 @@
-FROM debian:wheezy-slim
+FROM debian:wheezy
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 
