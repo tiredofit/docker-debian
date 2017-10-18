@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:stretch-slim
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 
@@ -26,6 +26,8 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
                logrotate \
                msmtp \
                nano \
+               net-tools \
+               procps \
                tzdata \
                vim-tiny \
                && \
@@ -43,6 +45,8 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
        apt-get clean -y && \
        rm -rf /var/lib/apt/lists/* /root/.gnupg && \
        mkdir -p /assets/cron && \
+       rm -rf /etc/timezone && \
+       ln -snf /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
        echo "America/Vancouver" > /etc/timezone && \
        dpkg-reconfigure -f noninteractive tzdata && \
 
