@@ -9,7 +9,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
         ENABLE_ZABBIX=TRUE
 
 ### Install Zabbix
-  ARG S6_OVERLAY_VERSION=v1.20.0.0
+  ARG S6_OVERLAY_VERSION=v1.21.1.1
   ENV DEBIAN_FRONTEND=noninteractive TERM=xterm \
       ZABBIX_HOSTNAME=debian.jessie
 

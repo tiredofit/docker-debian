@@ -1,3 +1,7 @@
+## 2.8 2017-10-23 <dave at tiredofit dot ca>
+
+* Update S6 Overlay to 1.21.1.1
+
 ## 2.7.3 2017-09-30 <dave at tiredofit dot ca>
 
 * Revert from `slim` variants
