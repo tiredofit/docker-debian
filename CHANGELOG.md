@@ -1,3 +1,7 @@
+## 2.9 2017-12-24 <dave at tiredofit dot ca>
+
+* Add custom crontab importing from /assets/cron-custom/
+
 ## 2.8 2017-10-23 <dave at tiredofit dot ca>
 
 * Update S6 Overlay to 1.21.1.1
