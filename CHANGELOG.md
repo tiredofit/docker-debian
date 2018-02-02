@@ -1,3 +1,8 @@
+## 2.10 2018-01-30 <dave at tiredofit dot ca>
+
+* Add Zabbix Updated Package Check
+* Update S6 Overlay 1.21.1.2
+
 ## 2.9 2017-12-24 <dave at tiredofit dot ca>
 
 * Add custom crontab importing from /assets/cron-custom/

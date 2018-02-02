@@ -1,7 +1,6 @@
 FROM debian:jessie
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
-
 ### Set Defaults
     ENV DEBUG_MODE=FALSE \
         ENABLE_CRON=TRUE \
@@ -9,7 +8,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
         ENABLE_ZABBIX=TRUE
 
 ### Install Zabbix
-  ARG S6_OVERLAY_VERSION=v1.21.1.1
+  ARG S6_OVERLAY_VERSION=v1.21.2.2
   ENV DEBIAN_FRONTEND=noninteractive TERM=xterm \
       ZABBIX_HOSTNAME=debian.jessie
 
@@ -17,6 +16,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
   RUN apt-get update && \
       apt-get install -y --no-install-recommends \
                apt-transport-https \
+               aptitude \
                bash \
                ca-certificates \
                curl \
