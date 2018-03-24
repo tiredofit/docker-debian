@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bash
 
-s6-svc -d /var/run/s6/services/03-smtp
+s6-svc -d /var/run/s6/services/`basename $0`
 DEBUG_SMTP=${DEBUG_SMTP:-"FALSE"}
 ENABLE_SMTP=${ENABLE_SMTP:-"TRUE"}
 SMTP_HOST=${SMTP_HOST:-"postfix-relay"}
@@ -13,12 +13,12 @@ SMTP_SMTP_TLSCERTCHECK=${SMTP_TLSCERTCHECK:-"off"}
 DEBUG_SMTP=${DEBUG_SMTP:-"FALSE"}
 
 ### Debug Mode - Enable MailHog
-if [ "$DEBUG_SMTP" = "TRUE" ] || [ "DEBUG_SMTP" = "true" ] || [ "DEBUG_MODE" = "true" ] || [ "DEBUG_MODE" = "TRUE" ];  then
+if [ "$DEBUG_SMTP" = "TRUE" ] || [ "$DEBUG_SMTP" = "true" ] || [ "$DEBUG_MODE" = "true" ] || [ "$DEBUG_MODE" = "TRUE" ];  then
     ENABLE_SMTP=FALSE
 
     rm -f /usr/sbin/sendmail
     ln -s /usr/local/bin/mhsendmail /usr/sbin/sendmail
-    s6-svc -u /var/run/s6/services/03-smtp
+    s6-svc -u /var/run/s6/services/`basename $0`
     echo '**** [smtp] [debug] SMTP Mailcatcher Enabled at Port 1025, Visit http://127.0.0.1:8025 for Web Interface'
 fi
 
@@ -48,4 +48,4 @@ else
 fi
 
 mkdir -p /tmp/state
-touch /tmp/state/03-smtp-init
+touch /tmp/state/`basename $0`-init

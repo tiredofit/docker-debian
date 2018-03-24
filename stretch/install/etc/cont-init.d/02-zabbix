@@ -50,8 +50,8 @@
     chown -R $ZABBIX_USER /etc/zabbix/
   else
     echo "**** [zabbix] Disabling Zabbix"
-    s6-svc -d /var/run/s6/services/01-zabbix
+    s6-svc -d /var/run/s6/services/`basename $0`
   fi
 
   mkdir -p /tmp/state
-  touch /tmp/state/01-zabbix-init
+  touch /tmp/state/`basename $0`-init

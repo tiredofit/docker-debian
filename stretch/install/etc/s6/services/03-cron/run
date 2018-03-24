@@ -5,12 +5,12 @@ do
   sleep 1
 done
 
-if [ ! -f /tmp/state/02-cron ]; then
+if [ ! -f /tmp/state/`basename $0` ]; then
         echo ' '
         sleep 60
         echo '59 23 * * * logrotate -f /etc/logrotate.d/* >/dev/null 2>&1' >>/assets/cron/crontab.txt
 	mkdir -p /tmp/state/
-	echo 'Initialization Complete' >/tmp/state/02-cron
+	echo 'Initialization Complete' >/tmp/state/`basename $0`
 fi
 
 echo '** [cron] Starting cron'

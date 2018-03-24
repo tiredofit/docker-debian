@@ -1,3 +1,16 @@
+## 3.0 2018-03-14 <lesliesit at outlook dot com>
+
+* Add 01-permissions script to support change uid & gid and add user to group:
+* USER_<USERNAME>=<aNewNumber>
+* GROUP_<GROUPNAME>=<aNewNumber>
+* GROUP_ADD_<USERNAME>=<aGroupName>
+* UID & GID in /etc/passwd & /etc/group will be modified.
+* Old 01- 02- 03- scripts renamed after the new 01-permissions as 02- 03- 04-
+
+## 2.11 2018-02-17 <dave at tiredofit dot ca>
+
+* Update Permissions for Logrotate
+
 ## 2.10 2018-01-30 <dave at tiredofit dot ca>
 
 * Add Zabbix Updated Package Check
@@ -58,4 +71,3 @@
 * Built mechanisms to not start processes until container initialized
 * Zabbix Agent Configuration can be controlled and adjusted via Environment Variables
 * General Tidying Up
-
