@@ -8,7 +8,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
         ENABLE_ZABBIX=TRUE
 
 ### Install Zabbix
-  ARG S6_OVERLAY_VERSION=v1.21.2.2
+  ARG S6_OVERLAY_VERSION=v1.21.4.0
   ENV DEBIAN_FRONTEND=noninteractive TERM=xterm \
       ZABBIX_HOSTNAME=debian.stretch
 
@@ -41,6 +41,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
        curl -sSLo /usr/local/bin/mhsendmail https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 && \
        chmod +x /usr/local/bin/MailHog && \
        chmod +x /usr/local/bin/mhsendmail && \
+       useradd -r -s /bin/false -d /nonexistent mailhog && \
        apt-get autoremove -y && \
        apt-get clean -y && \
        rm -rf /var/lib/apt/lists/* /root/.gnupg && \
