@@ -14,6 +14,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Dependencies Addon
   RUN apt-get update && \
+      apt-get upgrade -y && \
       apt-get install -y --no-install-recommends \
                apt-transport-https \
                aptitude \
