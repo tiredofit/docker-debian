@@ -1,3 +1,8 @@
+## 3.2 2018-04-22 <dave at tiredofit dot ca>
+
+* Update 01-permissions to quiet down if no UIDs changed.
+* Refinements to MailHog, to always route through msmtp
+
 ## 3.1 2018-03-25 <dave at tiredofit dot ca>
 
 * Update MailHog Test Server Startup

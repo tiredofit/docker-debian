@@ -13,8 +13,9 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
       ZABBIX_HOSTNAME=debian.stretch
 
 ### Dependencies Addon
-  RUN apt-get update && \
-      apt-get upgrade -y && \
+  RUN set -x ; \
+      apt-get update ; \
+      apt-get upgrade -y ; \
       apt-get install -y --no-install-recommends \
                apt-transport-https \
                aptitude \
@@ -31,29 +32,29 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
                procps \
                tzdata \
                vim-tiny \
-               && \
-       curl https://repo.zabbix.com/zabbix-official-repo.key | apt-key add - && \
-       echo 'deb http://repo.zabbix.com/zabbix/3.4/debian stretch main' >>/etc/apt/sources.list && \
-       echo 'deb-src http://repo.zabbix.com/zabbix/3.4/debian stretch main' >>/etc/apt/sources.list && \
-       apt-get update && \
+               ; \
+       curl https://repo.zabbix.com/zabbix-official-repo.key | apt-key add - ; \
+       echo 'deb http://repo.zabbix.com/zabbix/3.4/debian stretch main' >>/etc/apt/sources.list ; \
+       echo 'deb-src http://repo.zabbix.com/zabbix/3.4/debian stretch main' >>/etc/apt/sources.list ; \
+       apt-get update ; \
        apt-get install -y --no-install-recommends \
-               zabbix-agent && \
-       curl -sSLo /usr/local/bin/MailHog https://github.com/mailhog/MailHog/releases/download/v1.0.0/MailHog_linux_amd64 && \
-       curl -sSLo /usr/local/bin/mhsendmail https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 && \
-       chmod +x /usr/local/bin/MailHog && \
-       chmod +x /usr/local/bin/mhsendmail && \
-       useradd -r -s /bin/false -d /nonexistent mailhog && \
-       apt-get autoremove -y && \
-       apt-get clean -y && \
-       rm -rf /var/lib/apt/lists/* /root/.gnupg && \
-       mkdir -p /assets/cron && \
-       rm -rf /etc/timezone && \
-       ln -snf /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
-       echo "America/Vancouver" > /etc/timezone && \
-       dpkg-reconfigure -f noninteractive tzdata && \
+               zabbix-agent ; \
+       curl -sSLo /usr/local/bin/MailHog https://github.com/mailhog/MailHog/releases/download/v1.0.0/MailHog_linux_amd64 ; \
+       curl -sSLo /usr/local/bin/mhsendmail https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 ; \
+       chmod +x /usr/local/bin/MailHog ; \
+       chmod +x /usr/local/bin/mhsendmail ; \
+       useradd -r -s /bin/false -d /nonexistent mailhog ; \
+       apt-get autoremove -y ; \
+       apt-get clean -y ; \
+       rm -rf /var/lib/apt/lists/* /root/.gnupg ; \
+       mkdir -p /assets/cron ; \
+       rm -rf /etc/timezone ; \
+       ln -snf /usr/share/zoneinfo/America/Vancouver /etc/localtime ; \
+       echo "America/Vancouver" > /etc/timezone ; \
+       dpkg-reconfigure -f noninteractive tzdata ; \
 
 ### S6 Installation
-       cd /usr/src && \
+       cd /usr/src ; \
        curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xzf - -C /
 
 ### Add Folders
