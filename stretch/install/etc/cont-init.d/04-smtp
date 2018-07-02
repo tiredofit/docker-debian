@@ -16,18 +16,9 @@ DEBUG_SMTP=${DEBUG_SMTP:-"FALSE"}
 if [ "$DEBUG_SMTP" = "TRUE" ] || [ "$DEBUG_SMTP" = "true" ] || [ "$DEBUG_MODE" = "true" ] || [ "$DEBUG_MODE" = "TRUE" ];  then
     ENABLE_SMTP=FALSE
 
-          case "SMTP_HOST" in
-              "postfix-relay")
-              SMTP_HOST=localhost
-              ;;
-              "mailcatcher")
-              echo ''
-              ;;
-          esac
-
     echo '### Automatically Generated on Container Start. See Documentation on how to set!' >/etc/msmtp
     echo 'account default ' >>/etc/msmtp
-    echo 'host '$SMTP_HOST >>/etc/msmtp
+    echo 'host localhost' >>/etc/msmtp
     echo 'port 1025' >>/etc/msmtp
     echo 'domain ' $SMTP_DOMAIN >>/etc/msmtp
     echo 'maildomain ' $SMTP_MAILDOMAIN >>/etc/msmtp
@@ -35,6 +26,11 @@ if [ "$DEBUG_SMTP" = "TRUE" ] || [ "$DEBUG_SMTP" = "true" ] || [ "$DEBUG_MODE" =
     echo 'tls_starttls '$SMTP_STARTTLS >>/etc/msmtp
     echo 'tls_certcheck '$SMTP_TLSCERTCHECK >>/etc/msmtp
 
+### Gmail Specific SMTP Config
+    if [ "$ENABLE_SMTP_GMAIL" = "TRUE" ] || [ "$ENABLE_SMTP_GMAIL" = "true" ]; then
+         echo "auto_from on" >> /etc/msmtp
+    fi
+    
     rm -f /usr/sbin/sendmail
     ln -s /usr/bin/msmtp /usr/sbin/sendmail
 
@@ -48,18 +44,18 @@ if [ "$ENABLE_SMTP" = "TRUE" ] || [ "$ENABLE_SMTP" = "true" ];  then
     rm -f /usr/sbin/sendmail
     ln -s /usr/bin/msmtp /usr/sbin/sendmail
 
-	echo '### Automatically Generated on Container Start. See Documentation on how to set!' >/etc/msmtp
-	echo 'account default ' >>/etc/msmtp
-	echo 'host ' $SMTP_HOST >>/etc/msmtp
-	echo 'port ' $SMTP_PORT >>/etc/msmtp
-	echo 'domain ' $SMTP_DOMAIN >>/etc/msmtp
+    echo '### Automatically Generated on Container Start. See Documentation on how to set!' >/etc/msmtp
+    echo 'account default ' >>/etc/msmtp
+    echo 'host ' $SMTP_HOST >>/etc/msmtp
+    echo 'port ' $SMTP_PORT >>/etc/msmtp
+    echo 'domain ' $SMTP_DOMAIN >>/etc/msmtp
         echo 'maildomain ' $SMTP_MAILDOMAIN >>/etc/msmtp
-	if [ -n "$SMTP_AUTHENTICATION" ]; then echo 'auth '$SMTP_AUTHENTICATION >>/etc/msmtp; fi
-	if [ -n "$SMTP_USER" ]; then echo 'user '$SMTP_USER >>/etc/msmtp; fi
+    if [ -n "$SMTP_AUTHENTICATION" ]; then echo 'auth '$SMTP_AUTHENTICATION >>/etc/msmtp; fi
+    if [ -n "$SMTP_USER" ]; then echo 'user '$SMTP_USER >>/etc/msmtp; fi
         if [ -n "$SMTP_PASS" ]; then echo 'password '$SMTP_PASS >>/etc/msmtp; fi
-	echo 'tls '$SMTP_TLS >>/etc/msmtp
-	echo 'tls_starttls '$SMTP_STARTTLS >>/etc/msmtp
-	echo 'tls_certcheck '$SMTP_TLSCERTCHECK >>/etc/msmtp
+    echo 'tls '$SMTP_TLS >>/etc/msmtp
+    echo 'tls_starttls '$SMTP_STARTTLS >>/etc/msmtp
+    echo 'tls_certcheck '$SMTP_TLSCERTCHECK >>/etc/msmtp
     
     export ENABLE_SMTP=TRUE
     echo '**** [smtp] Sendmail replaced and enabled to route mail to: '$SMTP_HOST

@@ -1,12 +1,18 @@
 # hub.docker.com/tiredofit/debian
 
+[![Build Status](https://img.shields.io/docker/build/tiredofit/debian.svg)](https://hub.docker.com/r/tiredofit/debian)
+[![Docker Pulls](https://img.shields.io/docker/pulls/tiredofit/debian.svg)](https://hub.docker.com/r/tiredofit/debian)
+[![Docker Stars](https://img.shields.io/docker/stars/tiredofit/debian.svg)](https://hub.docker.com/r/tiredofit/debian)
+[![Docker 
+Layers](https://images.microbadger.com/badges/image/tiredofit/debian.svg)](https://microbadger.com/images/tiredofit/debian)
+
 # Introduction
 
 Dockerfile to build an [debian](https://www.debian.org/) container image.
 
-* Currently tracking Jessie (8)
+* Currently tracking Jessie (8), Stretch (9)
 * [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 Init capabilities
-* [zabbix-agent](https://zabbix.org) based on TRUNK compiled for individual container monitoring.
+* [zabbix-agent](https://zabbix.org) for individual container monitoring.
 * Cron installed along with other tools (curl, less, logrotate, nano, vim) for easier management.
 * Ability to update User ID and Group ID Permissions for Development Purposes dyanmically.
 
@@ -47,7 +53,6 @@ The following image tags are available:
 * `latest` - Debian Stretch - 9
 * `stretch:latest` - Debian Stretch - 9
 * `jessie:latest` - Debian Jessie - 8
-* `wheezy:latest` - Debian Wheezy - 7
 
 
 # Quick Start
@@ -85,6 +90,7 @@ If you wish to have this send mail, set `ENABLE_SMTP=TRUE` and configure the fol
 
 | Parameter         | Description                                                    |
 |-------------------|----------------------------------------------------------------|
+| `ENABLE_SMTP_GMAIL` | Add setting to supoprt sending through Gmail SMTP - Default: `FALSE` |
 | `SMTP_HOST`      | Hostname of SMTP Server - Default: `postfix-relay`                            |
 | `SMTP_PORT`      | Port of SMTP Server - Default: `25`                            |
 | `SMTP_DOMAIN`     | HELO Domain - Default: `docker`                                   |
