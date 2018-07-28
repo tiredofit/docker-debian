@@ -1,5 +1,9 @@
 ## 3.3 2018-07-02 <dave at tiredofit dot ca>
 
+* Add Sudo
+
+## 3.3 2018-07-02 <dave at tiredofit dot ca>
+
 * Revert back to using && \ instead of ; \ in Dockerfile
 * Add ENABLE_GMAIL_SMTP environment variable thanks to @joeyberkovitz
 
