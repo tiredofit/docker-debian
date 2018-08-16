@@ -1,3 +1,7 @@
+## 3.4 2018-07-02 <dave at tiredofit dot ca>
+
+* Change Default Timezone to Etc/UTC for Dockerhub Releases
+
 ## 3.3 2018-07-02 <dave at tiredofit dot ca>
 
 * Add Sudo

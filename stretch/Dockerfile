@@ -52,8 +52,8 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
        rm -rf /var/lib/apt/lists/* /root/.gnupg && \
        mkdir -p /assets/cron && \
        rm -rf /etc/timezone && \
-       ln -snf /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
-       echo "America/Vancouver" > /etc/timezone && \
+       ln -snf /usr/share/zoneinfo/Etc/UTC /etc/localtime && \
+       echo "Etc/UTC" > /etc/timezone && \
        dpkg-reconfigure -f noninteractive tzdata && \
        echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
 
