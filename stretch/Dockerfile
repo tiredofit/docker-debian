@@ -8,7 +8,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
         ENABLE_ZABBIX=TRUE
 
 ### Install Zabbix
-  ARG S6_OVERLAY_VERSION=v1.21.4.0
+  ARG S6_OVERLAY_VERSION=v1.21.7.0
   ENV DEBIAN_FRONTEND=noninteractive \
       TERM=xterm \
       ZABBIX_HOSTNAME=debian.stretch
@@ -66,7 +66,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Networking Configuration
    EXPOSE 1025 8025 10050/TCP
-   
+
 ### Entrypoint Configuration
    ENTRYPOINT ["/init"]
 
