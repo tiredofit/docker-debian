@@ -1,6 +1,10 @@
-## 3.4 2018-07-02 <dave at tiredofit dot ca>
+## 3.5 2018-10-14 <dave at tiredofit dot ca>
 
-* Change Default Timezone to Etc/UTC for Dockerhub Releases
+* Bump Zabbix to 4.x Branch
+
+## 3.4 2018-08-15 <dave at tiredofit dot ca>
+
+* Update MSMTP
 
 ## 3.3 2018-07-02 <dave at tiredofit dot ca>
 
