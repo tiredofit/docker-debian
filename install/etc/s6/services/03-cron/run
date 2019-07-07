@@ -8,7 +8,7 @@ done
 if [ ! -f /tmp/state/`basename $0` ]; then
         echo ' '
         sleep 60
-        echo '59 23 * * * logrotate -f /etc/logrotate.d/* >/dev/null 2>&1' >>/assets/cron/crontab.txt
+        echo '59 23 * * * /usr/sbin/logrotate -f /etc/logrotate.d/* >/dev/null 2>&1' >>/assets/cron/crontab.txt
 	mkdir -p /tmp/state/
 	echo 'Initialization Complete' >/tmp/state/`basename $0`
 fi

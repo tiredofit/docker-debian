@@ -11,10 +11,12 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
       ZABBIX_HOSTNAME=debian.stretch
 
 ### Install Zabbix
-ARG S6_OVERLAY_VERSION=v1.21.7.0
+ARG S6_OVERLAY_VERSION=v1.22.1.0
 
 ### Dependencies Addon
 RUN set -x && \
+    echo 'deb http://security.debian.org/ stretch/updates main contrib non-free' >> /etc/apt/sources.list && \
+    echo 'deb-src http://security.debian.org/ stretch/updates main contrib non-free' >> /etc/apt/sources.list && \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
@@ -36,8 +38,8 @@ RUN set -x && \
              vim-tiny \
              && \
      curl https://repo.zabbix.com/zabbix-official-repo.key | apt-key add - && \
-     echo 'deb http://repo.zabbix.com/zabbix/4.0/debian stretch main' >>/etc/apt/sources.list && \
-     echo 'deb-src http://repo.zabbix.com/zabbix/4.0/debian stretch main' >>/etc/apt/sources.list && \
+     echo 'deb http://repo.zabbix.com/zabbix/4.2/debian stretch main' >>/etc/apt/sources.list && \
+     echo 'deb-src http://repo.zabbix.com/zabbix/4.2/debian stretch main' >>/etc/apt/sources.list && \
      apt-get update && \
      apt-get install -y --no-install-recommends \
              zabbix-agent && \

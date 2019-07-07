@@ -1,3 +1,15 @@
+## 3.8 2019-06-21 <dave at tiredofit dot ca>
+
+* Absolute Path to Crontab
+
+## 3.7 2019-04-26 <dave at tiredofit dot ca>
+
+* Update Zabbix to 4.2
+
+## 3.6.1 2019-04-06 <dave at tiredofit dot ca>
+
+* S6 Overlay 1.22.1.0
+
 ## 3.6 2018-10-17 <dave at tiredofit dot ca>
 
 * Force executible permissions on S6 Directories
