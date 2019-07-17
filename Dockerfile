@@ -1,22 +1,22 @@
-FROM debian:stretch
+FROM debian:buster
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set Defaults
-  ENV DEBUG_MODE=FALSE \
-      ENABLE_CRON=TRUE \
-      ENABLE_SMTP=TRUE \
-      ENABLE_ZABBIX=TRUE \
-      DEBIAN_FRONTEND=noninteractive \
-      TERM=xterm \
-      ZABBIX_HOSTNAME=debian.stretch
+ENV DEBUG_MODE=FALSE \
+    ENABLE_CRON=TRUE \
+    ENABLE_SMTP=TRUE \
+    ENABLE_ZABBIX=TRUE \
+    DEBIAN_FRONTEND=noninteractive \
+    TERM=xterm \
+    ZABBIX_HOSTNAME=debian.buster
 
 ### Install Zabbix
 ARG S6_OVERLAY_VERSION=v1.22.1.0
 
 ### Dependencies Addon
 RUN set -x && \
-    echo 'deb http://security.debian.org/ stretch/updates main contrib non-free' >> /etc/apt/sources.list && \
-    echo 'deb-src http://security.debian.org/ stretch/updates main contrib non-free' >> /etc/apt/sources.list && \
+    echo 'deb http://security.debian.org/ buster/updates main contrib non-free' >> /etc/apt/sources.list && \
+    echo 'deb-src http://security.debian.org/ buster/updates main contrib non-free' >> /etc/apt/sources.list && \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
@@ -38,8 +38,8 @@ RUN set -x && \
              vim-tiny \
              && \
      curl https://repo.zabbix.com/zabbix-official-repo.key | apt-key add - && \
-     echo 'deb http://repo.zabbix.com/zabbix/4.2/debian stretch main' >>/etc/apt/sources.list && \
-     echo 'deb-src http://repo.zabbix.com/zabbix/4.2/debian stretch main' >>/etc/apt/sources.list && \
+     echo 'deb http://repo.zabbix.com/zabbix/4.2/debian buster main' >>/etc/apt/sources.list && \
+     echo 'deb-src http://repo.zabbix.com/zabbix/4.2/debian buster main' >>/etc/apt/sources.list && \
      apt-get update && \
      apt-get install -y --no-install-recommends \
              zabbix-agent && \
@@ -64,11 +64,10 @@ RUN set -x && \
      curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xzf - -C /
 
 ### Networking Configuration
- EXPOSE 1025 8025 10050/TCP
+EXPOSE 1025 8025 10050/TCP
 
 ### Add Folders
- ADD install /
+ADD install /
 
 ### Entrypoint Configuration
- ENTRYPOINT ["/init"]
-
+ENTRYPOINT ["/init"]
