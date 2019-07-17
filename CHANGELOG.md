@@ -1,3 +1,8 @@
+## 3.7 2019-07-17 <dave at tiredofit dot ca>
+
+* S6 Overlay 1.22.1.0
+* Zabbix 4.2 
+
 ## 3.6 2018-10-17 <dave at tiredofit dot ca>
 
 * Force executible permissions on S6 Directories
