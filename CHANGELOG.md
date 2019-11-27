@@ -1,3 +1,13 @@
+## 3.10.0 2019-11-27 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add `SMTP_TLSTRUSTFILE` environment variable for SMTP
+
+
+## 3.9 2019-08-29 <edisonlee at selfdesign dot org>
+
+* Move S6 Overlay to default variables
+
 ## 3.8 2019-06-21 <dave at tiredofit dot ca>
 
 * Absolute Path to Crontab
