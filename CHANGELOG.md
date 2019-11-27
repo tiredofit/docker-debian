@@ -1,9 +1,22 @@
-## 3.8 2019-06-21 <dave at tiredofit dot ca>
+## 3.11.0 2019-11-27 <dave at tiredofit dot ca>
 
-* Absolute Path to Crontab
+   ### Added
+      - Add env var SMTP_TLSTRUSTFILE (optional)
+
+## 3.10 2019-08-29 <edisonlee at selfdesign dot org>
+
+* Move S6 Overlay to default variables.
+
+## 3.9 2019-07-23 <dave at tiredofit dot ca>
+
+* Fix for S6 Overlay bulldozing over /bin
+
+## 3.8 2019-04-26 <dave at tiredofit dot ca>
+
+* Buster stable version
 
 ## 3.7 2019-04-26 <dave at tiredofit dot ca>
-
+	
 * Update Zabbix to 4.2
 
 ## 3.6.1 2019-04-06 <dave at tiredofit dot ca>
