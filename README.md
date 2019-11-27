@@ -10,7 +10,7 @@ Layers](https://images.microbadger.com/badges/image/tiredofit/debian.svg)](https
 
 Dockerfile to build an [debian](https://www.debian.org/) container image.
 
-* Currently tracking Jessie (8), Stretch (9)
+* Currently tracking Jessie (8), Stretch (9), Buster (10)
 * [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 Init capabilities
 * [zabbix-agent](https://zabbix.org) for individual container monitoring.
 * Cron installed along with other tools (curl, less, logrotate, nano, vim) for easier management.
@@ -51,6 +51,7 @@ docker pull tiredofit/debian:(imagetag)
 The following image tags are available:
 
 * `latest` - Debian Stretch - 9
+* `buster:latest` - Debian Buster - 10
 * `stretch:latest` - Debian Stretch - 9
 * `jessie:latest` - Debian Jessie - 8
 
@@ -101,8 +102,9 @@ If you wish to have this send mail, set `ENABLE_SMTP=TRUE` and configure the fol
 | `SMTP_TLS`        | Use TLS - Default: `off`                     |
 | `SMTP_STARTTLS`   | Start TLS from within Dession - Default: `off` |
 | `SMTP_TLSCERTCHECK` | Check remote certificate - Default: `off` |
+| `SMTP_TLSTRUSTFILE` | If you wish to use a TLS trust file, enter the pathname of the file here - Default unused |
 
-See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/2.2/manual/appendix/config/zabbix_agentd) for information about the following Zabbix values
+See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/4.2/manual/appendix/config/zabbix_agentd) for information about the following Zabbix values
 
 | Zabbix Parameters | Description                                                    |
 |-------------------|----------------------------------------------------------------|
