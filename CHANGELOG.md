@@ -1,3 +1,9 @@
+## 3.10.1 2019-12-03 <dave at tiredofit dot ca>
+
+   ### Changed
+      - TLSTRUSTFILE fix
+
+
 ## 3.10.0 2019-11-27 <dave at tiredofit dot ca>
 
    ### Added

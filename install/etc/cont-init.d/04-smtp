@@ -53,7 +53,7 @@ if [ "$ENABLE_SMTP" = "TRUE" ] || [ "$ENABLE_SMTP" = "true" ];  then
     echo 'tls '$SMTP_TLS >>/etc/msmtprc
     echo 'tls_starttls '$SMTP_STARTTLS >>/etc/msmtprc
     echo 'tls_certcheck '$SMTP_TLSCERTCHECK >>/etc/msmtprc
-    if [ -n "$SMTP_TLSTRUSTFILE" ]; then echo 'tls_trust_file '$SMTP_TLS_TRUST_FILE >> /etc/msmtprc; fi
+    if [ -n "$SMTP_TLSTRUSTFILE" ]; then echo 'tls_trust_file '$SMTP_TLSTRUSTFILE >> /etc/msmtprc; fi
 
 ### Gmail Specific SMTP Config
     if [ "$ENABLE_SMTP_GMAIL" = "TRUE" ] || [ "$ENABLE_SMTP_GMAIL" = "true" ]; then
