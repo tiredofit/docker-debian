@@ -2,16 +2,14 @@ FROM debian:stretch
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set Defaults
-  ENV DEBUG_MODE=FALSE \
-      ENABLE_CRON=TRUE \
-      ENABLE_SMTP=TRUE \
-      ENABLE_ZABBIX=TRUE \
-      DEBIAN_FRONTEND=noninteractive \
-      TERM=xterm \
-      ZABBIX_HOSTNAME=debian.stretch
-
-### Install Zabbix
-ARG S6_OVERLAY_VERSION=v1.22.1.0
+ENV S6_OVERLAY_VERSION=v1.22.1.0 \
+    DEBUG_MODE=FALSE \
+    ENABLE_CRON=TRUE \
+    ENABLE_SMTP=TRUE \
+    ENABLE_ZABBIX=TRUE \
+    DEBIAN_FRONTEND=noninteractive \
+    TERM=xterm \
+    ZABBIX_HOSTNAME=debian.stretch
 
 ### Dependencies Addon
 RUN set -x && \

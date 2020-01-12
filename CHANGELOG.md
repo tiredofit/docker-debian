@@ -1,25 +1,98 @@
-## 3.10.1 2019-12-03 <dave at tiredofit dot ca>
+## 4.1.5 2020-01-11 <dave at tiredofit dot ca>
 
    ### Changed
-      - TLSTRUSTFILE fix
+      - Additional fix for check_service_initialized function to properly look for finished /etc/s6/services processes
 
+## 4.1.4 2020-01-11 <dave at tiredofit dot ca>
 
-## 3.10.0 2019-11-27 <dave at tiredofit dot ca>
+   ### Changed
+      - Fix for check_service_initialized function to properly look for finished /etc/s6/services processes
+
+## 4.1.3 2020-01-10 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Remove code showing $dirname erronously on process startup
+
+## 4.1.2 2020-01-10 <dave at tiredofit dot ca>
 
    ### Added
-      - Add `SMTP_TLSTRUSTFILE` environment variable for SMTP
+      - Quiet down sudo error
+      - Zabbix 4.4.4 Agent
 
 
-## 3.9 2019-08-29 <edisonlee at selfdesign dot org>
+## 4.1.1 2020-01-02 <dave at tiredofit dot ca>
 
-* Move S6 Overlay to default variables
+   ### Changed
+      - check_service_initialized was throwing false information
 
-## 3.8 2019-06-21 <dave at tiredofit dot ca>
 
-* Absolute Path to Crontab
+## 4.1.0 2020-01-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Start splitting out Defaults into seperate /assets/functions/* files
+
+   ### Changed
+      - Cleanup of Permissions Changing routines
+
+## 4.0.1 2020-01-01 <dave at tiredofit dot ca>
+
+   ### Added   
+      - New text output for Notices
+
+   ### Changed
+      - Additional checks to ensure cont-init.d scripts have finished executing
+
+## 4.0.0 2020-01-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Now relying on Container Level functions file
+      - Easier methods for displaying console output 
+      - Colorized Prompts 
+      - Cleaner Startup Routines
+      - Sanity Check to not start any processes until all startup scripts completed
+    
+    ### Changed
+      - When DEBUG_MODE set stop taking over SMTP functionality. Require DEBUG_SMTP=TRUE instead
+
+## 3.14.0 2019-12-15 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change the way S6 Overlay is installed
+
+
+## 3.13.0 2019-11-27 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change Zabbix Agent from 4.2.x to 4.4.x release
+
+
+## 3.12.0 2019-11-27 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change Zabbix Agent Version from 4.2.x to 4.4.x
+
+   ### Reverted
+
+
+## 3.11.0 2019-11-27 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add env var SMTP_TLSTRUSTFILE (optional)
+
+## 3.10 2019-08-29 <edisonlee at selfdesign dot org>
+
+* Move S6 Overlay to default variables.
+
+## 3.9 2019-07-23 <dave at tiredofit dot ca>
+
+* Fix for S6 Overlay bulldozing over /bin
+
+## 3.8 2019-04-26 <dave at tiredofit dot ca>
+
+* Buster stable version
 
 ## 3.7 2019-04-26 <dave at tiredofit dot ca>
-
+	
 * Update Zabbix to 4.2
 
 ## 3.6.1 2019-04-06 <dave at tiredofit dot ca>
