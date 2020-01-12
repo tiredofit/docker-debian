@@ -27,6 +27,7 @@ if [ "$DEBUG_SMTP" = "TRUE" ] || [ "$DEBUG_SMTP" = "true" ];  then
     echo "tls ${SMTP_TLS}" >>/etc/msmtp
     echo "tls_starttls ${SMTP_STARTTLS}" >>/etc/msmtp
     echo "tls_certcheck ${SMTP_TLSCERTCHECK}" >>/etc/msmtp
+    if [ -n "$SMTP_TLSTRUSTFILE" ]; then echo 'tls_trust_file '$SMTP_TLSTRUSTFILE >> /etc/msmtprc; fi 
 
 ### Gmail Specific SMTP Config
     if [ "$ENABLE_SMTP_GMAIL" = "TRUE" ] || [ "$ENABLE_SMTP_GMAIL" = "true" ]; then
