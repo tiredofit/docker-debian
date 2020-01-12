@@ -62,7 +62,6 @@ Utilize this image as a base for further builds. By default it does not start th
 Bash. Please visit the [s6 overlay repository](https://github.com/just-containers/s6-overlay) for 
 instructions on how to enable the S6 Init system when using this base or look at some of my other images 
 which use this as a base.
-
 # Configuration
 
 ### Data-Volumes
@@ -70,7 +69,7 @@ The following directories are used for configuration and can be mapped for persi
 
 | Directory                           | Description                 |
 |-------------------------------------|-----------------------------|
-| `/etc/zabbix/zabbix_agentd.conf.d/` | Root tinc Directory         |
+| `/etc/zabbix/zabbix_agentd.conf.d/` | Zabbix Agent Configuration Directory |
 | `/assets/cron-custom`               | Drop Custom Crontabs here |
 
 
@@ -80,11 +79,14 @@ Below is the complete list of available options that can be used to customize yo
 
 | Parameter         | Description                                                    |
 |-------------------|----------------------------------------------------------------|
+| `COLORIZE_OUTPUT` | Enable/Disable Colorized Console Output - Default: `TRUE` |
+| `CONTAINER_LOG_LEVEL` | Control Level of output of container `INFO`, `WARN`, `NOTICE`, `DEBUG` - Default `NOTICE` |
 | `DEBUG_MODE`      | Enable Debug Mode - Default: `FALSE`                            |
-| `DEBUG_SMTP`      | Setup Mail Catch all on port 1025 (SMTP) and 8025 (HTTP) - Default: `FALSE`	 |
+| `DEBUG_SMTP`      | Setup Mail Catch all on port 1025 (SMTP) and 8025 (HTTP) - Default: `FALSE` |
 | `ENABLE_CRON`     | Enable Cron - Default: `TRUE`                                   |
-| `ENABLE_SMTP`     | Enable SMTP services - Default: `TRUE`						|
+| `ENABLE_SMTP`     | Enable SMTP services - Default: `TRUE`                        |
 | `ENABLE_ZABBIX`   | Enable Zabbix Agent - Default: `TRUE`                           |
+| `SKIP_SANITY_CHECK` | Disable Container Startup Routine Check - Default: `FALSE` |
 | `TIMEZONE`        | Set Timezone - Default: `America/Vancouver`                     |
 
 If you wish to have this send mail, set `ENABLE_SMTP=TRUE` and configure the following environment variables. See the [MSMTP Configuration Options](http://msmtp.sourceforge.net/doc/msmtp.html) for further information on options to configure MSMTP
@@ -95,16 +97,15 @@ If you wish to have this send mail, set `ENABLE_SMTP=TRUE` and configure the fol
 | `SMTP_HOST`      | Hostname of SMTP Server - Default: `postfix-relay`                            |
 | `SMTP_PORT`      | Port of SMTP Server - Default: `25`                            |
 | `SMTP_DOMAIN`     | HELO Domain - Default: `docker`                                   |
-| `SMTP_MAILDOMAIN`     | Mail Domain From - Default: `example.org`						|
+| `SMTP_MAILDOMAIN`     | Mail Domain From - Default: `example.org`                     |
 | `SMTP_AUTHENTICATION`     | SMTP Authentication - Default: `none`                                   |
-| `SMTP_USER`     | Enable SMTP services - Default: `user`						|
+| `SMTP_USER`     | Enable SMTP services - Default: `user`                      |
 | `SMTP_PASS`   | Enable Zabbix Agent - Default: `password`                           |
 | `SMTP_TLS`        | Use TLS - Default: `off`                     |
 | `SMTP_STARTTLS`   | Start TLS from within Dession - Default: `off` |
 | `SMTP_TLSCERTCHECK` | Check remote certificate - Default: `off` |
-| `SMTP_TLSTRUSTFILE` | If you wish to use a TLS trust file, enter the pathname of the file here - Default unused |
 
-See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/4.2/manual/appendix/config/zabbix_agentd) for information about the following Zabbix values
+See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/2.2/manual/appendix/config/zabbix_agentd) for information about the following Zabbix values
 
 | Zabbix Parameters | Description                                                    |
 |-------------------|----------------------------------------------------------------|
@@ -112,7 +113,7 @@ See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentati
 | `ZABBIX_LOGFILESIZE` | Logfile Size - Default: `1` |
 | `ZABBIX_DEBUGLEVEL` | Debug Level - Default: `1` |
 | `ZABBIX_REMOTECOMMANDS` | Enable Remote Commands (0/1) - Default: `1` |
-| `ZABBIX_REMOTECOMMANDS_LOG` | Enable Remote Commands Log (0/1)| - Default: `1` |
+| `ZABBIX_REMOTECOMMANDS_LOG` | Enable Remote Commands Log (0/1) - Default: `1` |
 | `ZABBIX_SERVER` | Allow connections from Zabbix Server IP - Default: `0.0.0.0/0` |
 | `ZABBIX_LISTEN_PORT` | Zabbix Agent Listening Port - Default: `10050` |
 | `ZABBIX_LISTEN_IP` | Zabbix Agent Listening IP - Default: `0.0.0.0` |
@@ -147,6 +148,7 @@ The following ports are exposed.
 | `1025`    | `DEBUG_MODE` & `DEBUG_SMTP` SMTP Catcher |
 | `8025`    | `DEBUG_MODE` & `DEBUG_SMTP` SMTP HTTP Viewer |
 | `10050`   | Zabbix Agent |
+
 
 
 # Debug Mode

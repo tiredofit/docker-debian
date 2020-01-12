@@ -1,3 +1,79 @@
+## 4.1.5 2020-01-11 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Additional fix for check_service_initialized function to properly look for finished /etc/s6/services processes
+
+## 4.1.4 2020-01-11 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for check_service_initialized function to properly look for finished /etc/s6/services processes
+
+## 4.1.3 2020-01-10 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Remove code showing $dirname erronously on process startup
+
+## 4.1.2 2020-01-10 <dave at tiredofit dot ca>
+
+   ### Added
+      - Quiet down sudo error
+      - Zabbix 4.4.4 Agent
+
+
+## 4.1.1 2020-01-02 <dave at tiredofit dot ca>
+
+   ### Changed
+      - check_service_initialized was throwing false information
+
+
+## 4.1.0 2020-01-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Start splitting out Defaults into seperate /assets/functions/* files
+
+   ### Changed
+      - Cleanup of Permissions Changing routines
+
+## 4.0.1 2020-01-01 <dave at tiredofit dot ca>
+
+   ### Added   
+      - New text output for Notices
+
+   ### Changed
+      - Additional checks to ensure cont-init.d scripts have finished executing
+
+## 4.0.0 2020-01-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Now relying on Container Level functions file
+      - Easier methods for displaying console output 
+      - Colorized Prompts 
+      - Cleaner Startup Routines
+      - Sanity Check to not start any processes until all startup scripts completed
+    
+    ### Changed
+      - When DEBUG_MODE set stop taking over SMTP functionality. Require DEBUG_SMTP=TRUE instead
+
+## 3.14.0 2019-12-15 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change the way S6 Overlay is installed
+
+
+## 3.13.0 2019-11-27 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change Zabbix Agent from 4.2.x to 4.4.x release
+
+
+## 3.12.0 2019-11-27 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change Zabbix Agent Version from 4.2.x to 4.4.x
+
+   ### Reverted
+
+
 ## 3.11.0 2019-11-27 <dave at tiredofit dot ca>
 
    ### Added

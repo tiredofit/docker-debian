@@ -34,8 +34,8 @@ RUN set -x && \
             vim-tiny \
             && \
     curl https://repo.zabbix.com/zabbix-official-repo.key | apt-key add - && \
-    echo 'deb http://repo.zabbix.com/zabbix/4.2/debian buster main' >>/etc/apt/sources.list && \
-    echo 'deb-src http://repo.zabbix.com/zabbix/4.2/debian buster main' >>/etc/apt/sources.list && \
+    echo 'deb http://repo.zabbix.com/zabbix/4.4/debian buster main' >>/etc/apt/sources.list && \
+    echo 'deb-src http://repo.zabbix.com/zabbix/4.4/debian buster main' >>/etc/apt/sources.list && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
             zabbix-agent && \
@@ -56,11 +56,7 @@ RUN set -x && \
     echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
     \
 ### S6 Installation
-    cd /usr/src && \
-    curl -o /usr/src/s6-overlay-amd64.tar.gz -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz && \
-    tar xzf /usr/src/s6-overlay-amd64.tar.gz -C / --exclude="./bin" && \
-    tar xzf /usr/src/s6-overlay-amd64.tar.gz -C /usr ./bin && \
-    rm -rf /usr/src/*
+    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - --strip 0 -C /
 
 ### Networking Configuration
 EXPOSE 1025 8025 10050/TCP
