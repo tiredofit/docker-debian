@@ -36,8 +36,8 @@ RUN set -x && \
              vim-tiny \
              && \
      curl https://repo.zabbix.com/zabbix-official-repo.key | apt-key add - && \
-     echo 'deb http://repo.zabbix.com/zabbix/4.2/debian stretch main' >>/etc/apt/sources.list && \
-     echo 'deb-src http://repo.zabbix.com/zabbix/4.2/debian stretch main' >>/etc/apt/sources.list && \
+     echo 'deb http://repo.zabbix.com/zabbix/4.4/debian stretch main' >>/etc/apt/sources.list && \
+     echo 'deb-src http://repo.zabbix.com/zabbix/4.4/debian stretch main' >>/etc/apt/sources.list && \
      apt-get update && \
      apt-get install -y --no-install-recommends \
              zabbix-agent && \
