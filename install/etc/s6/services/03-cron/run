@@ -2,13 +2,14 @@
 
 for s in /assets/functions/*; do source $s; done
 PROCESS_NAME="cron"
+output_off
 check_container_initialized
 check_service_initialized init
 
 if [ ! -f /tmp/state/`basename $0` ]; then
     sleep 60
     echo '59 23 * * * logrotate -f /etc/logrotate.d/* >/dev/null 2>&1' >>/assets/cron/crontab.txt
-	liftoff
+    liftoff
 fi
 
 if [ -d /assets/cron-custom ]; then
@@ -18,4 +19,5 @@ fi
 
 print_info "Starting cron"
 /usr/bin/crontab /assets/cron/crontab.txt
+output_on
 silent exec /usr/sbin/cron -f -l 8
