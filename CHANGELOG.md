@@ -1,3 +1,9 @@
+## 4.4.1 2020-03-14 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix when trying to disable Zabbix Monitoring throwing errors
+
+
 ## 4.4.0 2020-03-04 <dave at tiredofit dot ca>
 
    ### Added
@@ -75,76 +81,61 @@
     ### Changed
       - When DEBUG_MODE set stop taking over SMTP functionality. Require DEBUG_SMTP=TRUE instead
 
-## 3.14.0 2019-12-15 <dave at tiredofit dot ca>
-
-   ### Changed
-      - Change the way S6 Overlay is installed
-
-
-## 3.13.0 2019-11-27 <dave at tiredofit dot ca>
-
-   ### Changed
-      - Change Zabbix Agent from 4.2.x to 4.4.x release
-
-
-## 3.12.0 2019-11-27 <dave at tiredofit dot ca>
-
-   ### Changed
-      - Change Zabbix Agent Version from 4.2.x to 4.4.x
-
-   ### Reverted
-
-
-## 3.11.0 2019-11-27 <dave at tiredofit dot ca>
+## 3.9.3 2019-12-20 <dave at tiredofit dot ca>
 
    ### Added
-      - Add env var SMTP_TLSTRUSTFILE (optional)
+      - Alpine 3.11 Base
 
-## 3.10 2019-08-29 <edisonlee at selfdesign dot org>
 
-* Move S6 Overlay to default variables.
+## 3.9.2 2019-08-23 <edisonlee at selfdesign dot org>
 
-## 3.9 2019-07-23 <dave at tiredofit dot ca>
+* Cleanup lines subversion. 
 
-* Fix for S6 Overlay bulldozing over /bin
+## 3.9.1 2019-08-23 <edisonlee at selfdesign dot org>
 
-## 3.8 2019-04-26 <dave at tiredofit dot ca>
+* Cleanup variable. 
 
-* Buster stable version
+## 3.9 2019-07-15 <dave at tiredofit dot ca>
 
-## 3.7 2019-04-26 <dave at tiredofit dot ca>
-	
-* Update Zabbix to 4.2
+* Add Busybox Extras 
 
-## 3.6.1 2019-04-06 <dave at tiredofit dot ca>
+## 3.8.2 2019-04-06 <dave at tiredofit dot ca>
 
 * S6 Overlay 1.22.1.0
 
-## 3.6 2018-10-17 <dave at tiredofit dot ca>
+## 3.8.1 2019-01-13 <dave at tiredofit dot ca>
+
+* Cleanup Cache
+
+## 3.8 2018-10-17 <dave at tiredofit dot ca>
 
 * Force executible permissions on S6 Directories
 
-## 3.5 2018-10-14 <dave at tiredofit dot ca>
+## 3.7 2018-10-14 <dave at tiredofit dot ca>
 
-* Update Zabbix to 4.0 Branch
+* Bump Zabbix to 4.0
 
-## 3.4 2018-08-15 <dave at tiredofit dot ca>
+## 3.6 2018-09-19 <dave at tiredofit dot ca>
 
-* Update MSMTP
+* Set +x on all descendents of /etc/s6/services
 
-## 3.3 2018-07-02 <dave at tiredofit dot ca>
+## 3.5 2018-07-27 <dave at tiredofit dot ca>
 
-* Add Sudo
+* Add TERM=xterm
 
-## 3.3 2018-07-02 <dave at tiredofit dot ca>
+## 3.4 2018-07-02 <dave at tiredofit dot ca>
 
 * Revert back to using && \ instead of ; \ in Dockerfile
 * Add ENABLE_GMAIL_SMTP environment variable thanks to @joeyberkovitz
 
-## 3.2 2018-04-22 <dave at tiredofit dot ca>
+## 3.3 2018-04-22 <dave at tiredofit dot ca>
 
 * Update 01-permissions to quiet down if no UIDs changed.
 * Refinements to MailHog, to always route through msmtp
+
+## 3.2 2018-04-15 <dave at tiredofit dot ca>
+
+* Update Zabbix UID/GID
 
 ## 3.1 2018-03-25 <dave at tiredofit dot ca>
 
@@ -159,53 +150,72 @@
 * UID & GID in /etc/passwd & /etc/group will be modified.
 * Old 01- 02- 03- scripts renamed after the new 01-permissions as 02- 03- 04-
 
-## 2.11 2018-02-17 <dave at tiredofit dot ca>
+## 2.18 2017-02-15 <dave at tiredofit dot ca>
 
-* Update Permissions for Logrotate
+* Update File Permissions for logrotate.d
 
-## 2.10 2018-01-30 <dave at tiredofit dot ca>
+## 2.17 2017-02-01 <dave at tiredofit dot ca>
 
-* Add Zabbix Updated Package Check
-* Update S6 Overlay 1.21.1.2
+* Init Scripts Update
+* msmtp Update
 
-## 2.9 2017-12-24 <dave at tiredofit dot ca>
+## 2.16 2017-01-29 <dave at tiredofit dot ca>
 
-* Add custom crontab importing from /assets/cron-custom/
+* More Permissions Fixes
 
-## 2.8 2017-10-23 <dave at tiredofit dot ca>
+## 2.15 2017-01-29 <dave at tiredofit dot ca>
 
-* Update S6 Overlay to 1.21.1.1
+* Add Grep, sudo
+* Fix Permissions
 
-## 2.7.3 2017-09-30 <dave at tiredofit dot ca>
+## 2.14 2017-01-29 <dave at tiredofit dot ca>
 
-* Revert from `slim` variants
+* Add Container Package Check
 
-## 2.7.2 2017-09-30 <dave at tiredofit dot ca>
+## 2.13 2017-01-28 <dave at tiredofit dot ca>
 
-* Remove requirement to use wget 
-* Minor S6 Overlay tweak for Stretch
+* Add zabbix-utils to edge
+* Update S6 Overlay to 1.21.2.2
 
-## 2.7.1 2017-09-27 <dave at tiredofit dot ca>
+## 2.12 2017-01-28 <dave at tiredofit dot ca>
 
-* Tamed verbosity
+* Add Zabbix Check for Updated Packages
 
-## 2.7 2017-09-26 <dave at tiredofit dot ca>
+## 2.11 2017-12-24 <dave at tiredofit dot ca>
 
-* Made Service Enabling/Disabling more Verbose
-* Switched to -slim Variants
+* Check for custom cron files in /assets/cron-custom/ on startup
 
-## 2.6 2017-09-17 <dave at tiredofit dot ca>
+## 2.10 2017-12-01 <dave at tiredofit dot ca>
 
-* Fix some scripting errors
+* Update S6 overlay to 1.21.2.1
+* Add Alpine 3.7
+* Remove Alpine 3.2
 
-## 2.5 2017-09-01 <dave at tiredofit dot ca>
+## 2.9 2017-10-23 <dave at tiredofit dot ca>
 
-* Update S6 overlay to 1.20.0.0
+* Update S6 overlay to 1.21.1.1
 
-## 2.4 2017-08-28 <dave at tiredofit dot ca>
+## 2.8 2017-09-27 <dave at tiredofit dot ca>
 
-* Added Debian Stretch and Wheezy 
-* Added Official Zabbix Agent 3.4 instead of compiling from source
+* Updated Alpine Edge to Zabbix-Agent Package as opposed to Compiling
+* Quieted down service startup to avoid duplication
+
+## 2.7 2017-09-26 <dave at tiredofitdot ca>
+
+* Added more verbosity to services being enabled/disabled
+
+## 2.6 2017-09-18 <dave at tiredofit dot ca>
+
+* Add Alpine 3.2, 3.3 for legacy purposes
+* Fix Scripts for checking enabling services
+
+## 2.5 2017-09-02 <dave at tiredofit dot ca>
+
+* Move to Zabbix 3.4.1 instead of compiling from TRUNK
+
+## 2.4 2017-09-01 <dave at tiredofit dot ca>
+
+* Update S6 Overlay to 1.2.0.0
 
 ## 2.3 2017-08-28 <dave at tiredofit dot ca>
 
