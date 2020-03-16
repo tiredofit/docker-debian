@@ -1,3 +1,15 @@
+## 4.4.4 2020-03-16 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Spelling mistake in 4.4.3
+
+
+## 4.4.3 2020-03-16 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Patchup for Services that do not have initialization scripts
+
+
 ## 4.4.2 2020-03-16 <dave at tiredofit dot ca>
 
    ### Changed
