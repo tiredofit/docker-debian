@@ -1,3 +1,9 @@
+## 4.5.0 2020-05-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Update to latest functions
+
+
 ## 4.4.4 2020-03-16 <dave at tiredofit dot ca>
 
    ### Changed

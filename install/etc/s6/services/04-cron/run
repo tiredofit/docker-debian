@@ -9,7 +9,7 @@ check_service_initialized init
 if [ ! -f /tmp/state/`basename $0` ]; then
     sleep 60
     echo '59 23 * * * logrotate -f /etc/logrotate.d/* >/dev/null 2>&1' >>/assets/cron/crontab.txt
-    liftoff
+	liftoff
 fi
 
 if [ -d /assets/cron-custom ]; then
