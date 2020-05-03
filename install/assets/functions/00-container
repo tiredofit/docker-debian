@@ -1,8 +1,10 @@
 #!/usr/bin/with-contenv bash
-### Set Defaults
 
+### Set Defaults
 CONTAINER_LOG_LEVEL=${CONTAINER_LOG_LEVEL:-"NOTICE"}
+PROCESS_NAME=${PROCESS_NAME:-"container"}
 SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+SKIP_SANITY_CHECK=${SKIP_SANITY_CHECK:-"FALSE"}
 
 ### Colours
 # Foreground (Text) Colors
@@ -65,7 +67,6 @@ shif="\e[28m"      # Style Hidden Off
 
 ### Check to see Initialization Script ran
 check_container_initialized() {
-
     print_debug "Checking to see if container initialization scripts have completed"
     output_off
     while [ ! -f /tmp/state/99-container-init ]
@@ -197,6 +198,28 @@ db_ready() {
     output_on
 }
 
+## Docker Secrets Support
+## usage: file_env VAR [DEFAULT]
+##    ie: file_env 'XYZ_DB_PASSWORD' 'example'
+##        (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
+function file_env () {
+  local var="$1"
+  local fileVar="${var}_FILE"
+  local def="${2:-}"
+  local val="$def"
+  if [ "${!fileVar:-}" ]; then
+    val="$(cat "${!fileVar}")"
+  elif [ "${!var:-}" ]; then
+    val="${!var}"
+  fi
+  if [ -z ${val} ]; then
+    print_error "error: neither $var nor $fileVar are set but are required"
+    exit 1
+  fi
+  export "$var"="$val"
+  unset "$fileVar"
+}
+
 ## For writing script initalization state to ensure proper application execution
 liftoff() {
     output_off
@@ -206,11 +229,11 @@ liftoff() {
     fi
     case "`dirname "$0"`" in
         "/var/run/s6/etc/cont-init.d")
-        echo "${liftoff_prefix} `basename "$0"`-init initialized on `date`" > /tmp/state/`basename "$0"`-init
+        echo "${liftoff_prefix} `basename "$0"`-init initialized on `date`" >> /tmp/state/`basename "$0"`-init
         ;;
         *)
         if [ ! -f /tmp/state/`basename "$PWD"` ]; then
-            echo "`basename "$PWD"` initialized on `date`" > /tmp/state/`basename "$PWD"`
+            echo "`basename "$PWD"` initialized on `date`" >> /tmp/state/`basename "$PWD"`
         else
             echo "`basename "$PWD"` reinitialized on `date`" >> /tmp/state/`basename "$PWD"`
         fi
@@ -391,12 +414,58 @@ service_start() {
 }
 
 service_stop() {
+    if [ "${1}" != `basename "$0"` ] ; then
+        echo "DONOTSTART added by `basename \"$0\"`" >> /tmp/state/${1}-init
+    fi            
     s6-svc -d /var/run/s6/services/${1}
     DONOTSTART=TRUE
 }
 
+## Timesaver for if statements
+## Usage: if var_false $VARNAME ; then ... fi
+var_false(){ 
+    [ "${1}" = "FALSE" ] || [ "${1}" = "false" ] 
+}
+
+var_notfalse(){ 
+    [ "${1}" != "FALSE" ] || [ "${1}" != "false" ] 
+}
+
+var_nottrue(){ 
+    [ "${1}" != "TRUE" ] || [ "${1}" != "true" ] 
+}
+
+var_true(){ 
+    [ "${1}" = "TRUE" ] || [ "${1}" = "true" ] 
+}
+
+
 ## Keep this last
-if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
-    CONTAINER_LOG_LEVEL="DEBUG"
-    set -x
-fi
+case "$DEBUG_MODE" in
+            "TRUE" | "true" )
+                CONTAINER_LOG_LEVEL="DEBUG"
+                set -x
+            ;;
+            "FALSE" | "false" )
+                :
+            ;;
+            * )
+                if [ "`dirname "$0"`" = "/var/run/s6/etc/cont-init.d" ] ; then
+                        if [ "$DEBUG_MODE" = "`basename \"$0\"`" ] ; then
+                            print_notice "Enabling Debug mode for `basename \"$0\"` scripts"
+                            set -x
+                        fi
+                fi
+                if [ "$DEBUG_MODE" = "`basename $PWD`" ] ; then
+                    print_notice "Enabling Debug mode for `basename $PWD` scripts"
+                    set -x
+                fi
+                
+            ;;
+esac
+
+
+#if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
+#    CONTAINER_LOG_LEVEL="DEBUG"
+#    set -x
+#fi
