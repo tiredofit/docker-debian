@@ -1,9 +1,10 @@
 FROM debian:buster
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
-### Set Defaults
-ENV S6_OVERLAY_VERSION=v1.22.1.0 \
+### Set defaults
+ENV S6_OVERLAY_VERSION=v2.0.0.1 \
     DEBUG_MODE=FALSE \
+    TIMEZONE=Etc/GMT \
     ENABLE_CRON=TRUE \
     ENABLE_SMTP=TRUE \
     ENABLE_ZABBIX=TRUE \
@@ -11,7 +12,7 @@ ENV S6_OVERLAY_VERSION=v1.22.1.0 \
     TERM=xterm \
     ZABBIX_HOSTNAME=debian.buster
 
-### Dependencies Addon
+### Dependencies addon
 RUN set -x && \
     apt-get update && \
     apt-get upgrade -y && \
@@ -50,20 +51,19 @@ RUN set -x && \
     rm -rf /var/lib/apt/lists/* /root/.gnupg /var/log/* && \
     mkdir -p /assets/cron && \
     rm -rf /etc/timezone && \
-    ln -snf /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
-    echo "America/Vancouver" > /etc/timezone && \
+    ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
+    echo "${TIMEZONE}" > /etc/timezone && \
     dpkg-reconfigure -f noninteractive tzdata && \
     echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
     \
-### S6 Installation
+### S6 installation
     curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - --strip 0 -C /
 
-### Networking Configuration
+### Networking configuration
 EXPOSE 1025 8025 10050/TCP
 
-### Add Folders
+### Add folders
 ADD install /
 
-### Entrypoint Configuration
+### Entrypoint configuration
 ENTRYPOINT ["/init"]
-
