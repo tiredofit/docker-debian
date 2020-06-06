@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bash
 
-### Set Defaults
+### Set defaults
 DEBUG_SMTP=${DEBUG_SMTP:-"FALSE"}
 ENABLE_SMTP=${ENABLE_SMTP:-"TRUE"}
 SMTP_HOST=${SMTP_HOST:-"postfix-relay"}
@@ -10,4 +10,3 @@ SMTP_MAILDOMAIN=${SMTP_MAILDOMAIN:-"example.org"}
 SMTP_TLS=${SMTP_TLS:-"off"}
 SMTP_STARTTLS=${SMTP_STARTTLS:-"off"}
 SMTP_TLSCERTCHECK=${SMTP_TLSCERTCHECK:-"off"}
-DEBUG_SMTP=${DEBUG_SMTP:-"FALSE"}
