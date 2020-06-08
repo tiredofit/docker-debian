@@ -1,7 +1,22 @@
+## 4.6.1 2020-06-08 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 5.0.x
+
+
+## 4.6.0 2020-06-06 <rusxakep@github>
+
+   ### Added
+      - S6 Overlay 2.0.0.1
+
+   ### Changed
+      - Timezone changed to `Etc/GMT`
+      - Default mail domain changed to non internet-domain 'local'
+
 ## 4.5.0 2020-05-01 <dave at tiredofit dot ca>
 
    ### Added
-      - Update to New Functions
+      - Update to latest functions
 
 
 ## 4.4.4 2020-03-16 <dave at tiredofit dot ca>
