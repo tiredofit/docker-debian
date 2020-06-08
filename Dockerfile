@@ -2,7 +2,8 @@ FROM debian:buster
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set defaults
-ENV S6_OVERLAY_VERSION=v2.0.0.1 \
+ENV S6_OVERLAY_VERSION=2.0.0.1 \
+    ZABBIX_VERSION=5.0 \
     TIMEZONE=Etc/GMT \
     DEBIAN_FRONTEND=noninteractive \
     ZABBIX_HOSTNAME=debian.buster
@@ -30,8 +31,8 @@ RUN set -x && \
             vim-tiny \
             && \
     curl https://repo.zabbix.com/zabbix-official-repo.key | apt-key add - && \
-    echo 'deb http://repo.zabbix.com/zabbix/5.0/debian buster main' >>/etc/apt/sources.list && \
-    echo 'deb-src http://repo.zabbix.com/zabbix/5.0/debian buster main' >>/etc/apt/sources.list && \
+    echo 'deb http://repo.zabbix.com/zabbix/'${ZABBIX_VERSION}'/debian buster main' >>/etc/apt/sources.list && \
+    echo 'deb-src http://repo.zabbix.com/zabbix/'${ZABBIX_VERSION}'/debian buster main' >>/etc/apt/sources.list && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
             zabbix-agent && \
@@ -52,7 +53,7 @@ RUN set -x && \
     echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
     \
 ### S6 installation
-    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - --strip 0 -C /
+    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - --strip 0 -C /
 
 ### Networking configuration
 EXPOSE 1025 8025 10050/TCP
