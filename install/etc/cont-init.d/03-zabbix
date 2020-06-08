@@ -4,7 +4,7 @@ for s in /assets/functions/*; do source $s; done
 PROCESS_NAME="zabbix"
 
 output_off
-### Debug Mode
+### Debug mode
 if var_true $DEBUG_MODE ; then
   ZABBIX_DEBUGLEVEL=4
 fi
