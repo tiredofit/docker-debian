@@ -1,11 +1,12 @@
 #!/usr/bin/with-contenv bash
 
-for s in /assets/functions/*; do source $s; done
+source /assets/functions/00-container
+prepare_service single
 PROCESS_NAME="smtp"
 
 output_off
 ### Debug Mode - Enable MailHog
-if [ "$DEBUG_SMTP" = "TRUE" ] || [ "$DEBUG_SMTP" = "true" ];  then
+if var_true $DEBUG_SMTP ; then
     print_notice "SMTP Debugging Mode activated"
     SMTP_HOST="localhost"
     SMTP_PORT=1025
@@ -16,7 +17,7 @@ fi
 rm -f /usr/sbin/sendmail
 ln -s /usr/bin/msmtp /usr/sbin/sendmail
 
-if [ "$ENABLE_SMTP" = "TRUE" ] || [ "$ENABLE_SMTP" = "true" ];  then
+if var_true $ENABLE_SMTP ; then
   rm -f /usr/sbin/sendmail
   ln -s /usr/bin/msmtp /usr/sbin/sendmail
 
@@ -34,13 +35,13 @@ if [ "$ENABLE_SMTP" = "TRUE" ] || [ "$ENABLE_SMTP" = "true" ];  then
   echo "tls_certcheck ${SMTP_TLSCERTCHECK}" >> /etc/msmtprc
 
 ### Gmail Specific SMTP Config
-    if [ "$ENABLE_SMTP_GMAIL" = "TRUE" ] || [ "$ENABLE_SMTP_GMAIL" = "true" ]; then
+    if var_true $ENABLE_SMTP_GMAIL ; then
          echo "auto_from on" >> /etc/msmtprc
     fi
 
-  print_notice "Sendmail replaced and enabled to route mail to: '${SMTP_HOST}'"
+    print_notice "Sendmail replaced and enabled to route mail to: '${SMTP_HOST}'"
 else
-  print_notice "Disabling SMTP Features"
+    print_notice "Disabling SMTP Features"
 fi
 
 output_on
