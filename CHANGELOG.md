@@ -1,3 +1,9 @@
+## 5.0.3 2020-06-11 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change logrotate to be called from absolute path in cron
+
+
 ## 5.0.2 2020-06-11 <dave at tiredofit dot ca>
 
    ### Changed
