@@ -1,3 +1,9 @@
+## 5.0.1 2020-06-11 <dave at tiredofit dot ca>
+
+   ### Added
+      - Added netcat-openbsd package
+
+
 ## 5.0.0 2020-06-10 <dave at tiredofit dot ca>
 
    ### Added

@@ -24,6 +24,7 @@ RUN set -x && \
             msmtp \
             nano \
             net-tools \
+            netcat-openbsd \
             procps \
             sudo \
             tzdata \
