@@ -46,7 +46,7 @@ RUN set -x && \
      useradd -r -s /bin/false -d /nonexistent mailhog && \
      apt-get autoremove -y && \
      apt-get clean -y && \
-     rm -rf /var/lib/apt/lists/* /root/.gnupg /var/log/* && \
+     rm -rf /var/lib/apt/lists/* /root/.gnupg /var/log/* /etc/logrotate.d/* && \
      mkdir -p /assets/cron && \
      rm -rf /etc/timezone && \
      ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
