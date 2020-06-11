@@ -1,3 +1,9 @@
+## 5.0.2 2020-06-11 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Delete /etc/logrotate.d files
+
+
 ## 5.0.1 2020-06-11 <dave at tiredofit dot ca>
 
    ### Added
