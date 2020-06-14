@@ -5,13 +5,13 @@ PROCESS_NAME="permissions"
 
 
 output_off
-if [ "$DEBUG_PERMISSIONS" = "TRUE" ] || [ "$DEBUG_PERMISSIONS" = "true" ] ; then
+if var_true "$DEBUG_PERMISSIONS" = "TRUE" ; then
   set -x
   CONTAINER_LOG_LEVEL="DEBUG"
 fi
 
 ### Enable or Disable permissions
-if [ "$ENABLE_PERMISSIONS" = "TRUE" ] || [ "$ENABLE_PERMISSIONS" = "true" ]; then
+if var_true "$ENABLE_PERMISSIONS" = "TRUE" ; then
   print_notice "Enabling permissions features"
   # handle the following:
   # 1. change uid in /etc/passwd with the ones defined in Docker's environment settings
