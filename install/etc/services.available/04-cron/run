@@ -1,6 +1,7 @@
 #!/usr/bin/with-contenv bash
 
 source /assets/functions/00-container
+prepare_service defaults single
 PROCESS_NAME="cron"
 
 output_off
@@ -23,6 +24,7 @@ fi
 liftoff
 
 print_info "Starting cron"
+touch /assets/cron/crontab.txt
 /usr/bin/crontab /assets/cron/crontab.txt
 output_on
 silent exec /usr/sbin/cron -f -l 8
