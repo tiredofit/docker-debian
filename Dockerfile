@@ -2,9 +2,14 @@ FROM debian:stretch
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set defaults
-ENV S6_OVERLAY_VERSION=v2.0.0.1 \
+ENV ZABBIX_VERSION=5.0 \
+    S6_OVERLAY_VERSION=v2.0.0.1 \
+    DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
     DEBIAN_FRONTEND=noninteractive \
+    ENABLE_CRON=TRUE \
+    ENABLE_SMTP=TRUE \
+    ENABLE_ZABBIX=TRUE \
     ZABBIX_HOSTNAME=debian.stretch
 
 ### Dependencies addon
@@ -33,8 +38,8 @@ RUN set -x && \
              vim-tiny \
              && \
      curl https://repo.zabbix.com/zabbix-official-repo.key | apt-key add - && \
-     echo 'deb http://repo.zabbix.com/zabbix/5.0/debian stretch main' >>/etc/apt/sources.list && \
-     echo 'deb-src http://repo.zabbix.com/zabbix/5.0/debian stretch main' >>/etc/apt/sources.list && \
+     echo "deb http://repo.zabbix.com/zabbix/${ZABBIX_VERSION}/debian stretch main" >>/etc/apt/sources.list && \
+     echo "deb-src http://repo.zabbix.com/zabbix/${ZABBIX_VERSION}/debian stretch main" >>/etc/apt/sources.list && \
      apt-get update && \
      apt-get install -y --no-install-recommends \
              zabbix-agent && \
