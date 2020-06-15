@@ -1,3 +1,9 @@
+## 5.0.5 2020-06-15 <rusxakep@github>
+
+   ### Changed
+      - Bugfixes and code cleanup
+
+
 ## 5.0.4 2020-06-13 <dave at tiredofit dot ca>
 
    ### Added
