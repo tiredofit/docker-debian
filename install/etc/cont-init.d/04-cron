@@ -9,8 +9,6 @@ output_off
 if var_false "$ENABLE_CRON" ; then
 	print_notice "Disabling Cron"
 	service_stop "$(basename "$0")"
-else
-  touch /assets/cron/crontab.txt
 fi
 
 output_on
