@@ -8,6 +8,8 @@ output_off
 check_container_initialized
 check_service_initialized init
 
+touch /assets/cron/crontab.txt
+
 if [ ! -f /tmp/state/"$(basename "$0")" ]; then
     if var_true "$ENABLE_LOGROTATE" ; then
 	    sleep 60
@@ -24,7 +26,6 @@ fi
 liftoff
 
 print_info "Starting cron"
-touch /assets/cron/crontab.txt
 /usr/bin/crontab /assets/cron/crontab.txt
 output_on
 silent exec /usr/sbin/cron -f -l 8
