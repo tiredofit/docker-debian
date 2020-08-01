@@ -1,3 +1,10 @@
+## 5.0.7 2020-08-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add dos2unix tool
+      - Add SMTP_FROM environment variable to solve missing from address mail errors with msmtp
+
+
 ## 5.0.6 2020-06-15 <dave at tiredofit dot ca>
 
    ### Changed
