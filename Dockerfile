@@ -25,6 +25,7 @@ RUN set -x && \
              ca-certificates \
              curl \
              dirmngr \
+             dos2unix \
              gnupg \
              less \
              logrotate \
