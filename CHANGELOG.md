@@ -1,3 +1,10 @@
+## 5.0.7 2020-08-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add dos2unix tool
+      - Add SMTP_FROM environment variable to solve missing from address mail errors with msmtp
+
+
 ## 5.0.6 2020-06-15 <dave at tiredofit dot ca>
 
    ### Changed
@@ -25,7 +32,7 @@
 ## 5.0.2 2020-06-11 <dave at tiredofit dot ca>
 
    ### Changed
-      - Delete /etc/logrotate.d files
+      - Delete /etc/logrotate.d/ contents
 
 
 ## 5.0.1 2020-06-11 <dave at tiredofit dot ca>
