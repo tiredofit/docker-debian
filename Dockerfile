@@ -10,7 +10,7 @@ ENV ZABBIX_VERSION=5.0 \
     ENABLE_CRON=TRUE \
     ENABLE_SMTP=TRUE \
     ENABLE_ZABBIX=TRUE \
-    ZABBIX_HOSTNAME=debian.stretch
+    ZABBIX_HOSTNAME=debian.jessie
 
 ### Dependencies addon
 RUN set -x && \
@@ -24,6 +24,7 @@ RUN set -x && \
             bash \
             ca-certificates \
             curl \
+            dos2unix \
             dirmngr \
             gnupg \
             less \
