@@ -1,3 +1,9 @@
+## 5.0.9 2020-08-15 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Reapply SMTP_FROM statement
+
+
 ## 5.0.8 2020-08-11 <dave at tiredofit dot ca>
 
    ### Changed
