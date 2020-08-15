@@ -28,7 +28,7 @@ if var_true "$ENABLE_SMTP" ; then
     echo "host ${SMTP_HOST}"
     echo "port ${SMTP_PORT}"
     echo "domain ${SMTP_DOMAIN}"
-    if [ -n "SMTP_FROM"]; then echo "from ${SMTP_FROM}"; fi
+    if [ -n "SMTP_FROM" ]; then echo "from ${SMTP_FROM}"; fi
     echo "maildomain ${SMTP_MAILDOMAIN}"
     if [ -n "$SMTP_AUTHENTICATION" ]; then echo "auth ${SMTP_AUTHENTICATION}"; fi
     if [ -n "$SMTP_USER" ]; then echo "user ${SMTP_USER}"; fi
