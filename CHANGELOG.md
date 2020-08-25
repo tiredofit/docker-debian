@@ -1,3 +1,9 @@
+## 5.0.10 2020-08-25 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix warning with Zabbix Agent
+
+
 ## 5.0.9 2020-08-15 <dave at tiredofit dot ca>
 
    ### Changed

@@ -118,8 +118,9 @@ for information about the following Zabbix values.
 | `ZABBIX_LOGFILE`               | Logfile location                        | `/var/log/zabbix/zabbix_agentd.log` |
 | `ZABBIX_LOGFILESIZE`           | Logfile size                            | `1`                                 |
 | `ZABBIX_DEBUGLEVEL`            | Debug level                             | `1`                                 |
-| `ZABBIX_REMOTECOMMANDS`        | Enable remote commands (0/1)            | `1`                                 |
-| `ZABBIX_REMOTECOMMANDS_LOG`    | Enable remote commands Log (0/1)        | `1`                                 |
+| `ZABBIX_REMOTECOMMANDS_ALLOW`  | Enable remote commands                  | `*`                                 |
+| `ZABBIX_REMOTECOMMANDS_DENY`   | Deny remote commands                    | `*`                                 |
+| `ZABBIX_REMOTECOMMANDS_LOG`    | Enable remote commands Log (`0`/`1`)    | `1`                                 |
 | `ZABBIX_SERVER`                | Allow connections from Zabbix server IP | `0.0.0.0/0`                         |
 | `ZABBIX_LISTEN_PORT`           | Zabbix Agent listening port             | `10050`                             |
 | `ZABBIX_LISTEN_IP`             | Zabbix Agent listening IP               | `0.0.0.0`                           |
