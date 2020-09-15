@@ -1,3 +1,9 @@
+## 5.0.10 2020-09-15 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add LOGROTATE_FORCE environment variable
+
+
 ## 5.0.9 2020-08-25 <dave at tiredofit dot ca>
 
    ### Changed
