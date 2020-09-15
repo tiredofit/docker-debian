@@ -1,3 +1,4 @@
+
 #!/usr/bin/with-contenv bash
 
 source /assets/functions/00-container
@@ -10,9 +11,12 @@ check_service_initialized init
 
 if [ ! -f /tmp/state/"$(basename "$0")" ]; then
     if var_true "$ENABLE_LOGROTATE" ; then
+		if var_true "${LOGROTATE_FORCE}" ; then
+			logrotate_force="-f"
+		fi
 	    sleep 60
 	    print_debug "Enabling log rotation"
-	    echo '59 23 * * * logrotate -f /etc/logrotate.d/* >/dev/null 2>&1' >>/assets/cron/crontab.txt
+	    echo "59 23 * * * logrotate ${logrotate_force} /etc/logrotate.d >/dev/null 2>&1" >>/assets/cron/crontab.txt
 	fi
 fi
 
