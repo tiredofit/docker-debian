@@ -1,3 +1,10 @@
+## 5.1.0 2020-11-14 <dave at tiredofit dot ca>
+
+   ### Added
+      - S6 Overlay 2.1.0.2
+      - Zabbix Agent 5.2.x
+
+
 ## 5.0.10 2020-09-15 <dave at tiredofit dot ca>
 
    ### Added
