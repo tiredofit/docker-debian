@@ -1,3 +1,9 @@
+## 5.1.1 2021-01-04 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix Group ID altering function
+
+
 ## 5.1.0 2020-11-14 <dave at tiredofit dot ca>
 
    ### Added
