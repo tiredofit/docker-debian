@@ -5,13 +5,13 @@
 [![Docker Stars](https://img.shields.io/docker/stars/tiredofit/debian.svg)](https://hub.docker.com/r/tiredofit/debian)
 [![Docker Layers](https://images.microbadger.com/badges/image/tiredofit/debian.svg)](https://microbadger.com/images/tiredofit/debian)
 =======
-[![Build 
+[![Build
 Status](https://img.shields.io/docker/build/tiredofit/debian.svg)](https://hub.docker.com/r/tiredofit/debian)
-[![Docker 
+[![Docker
 Pulls](https://img.shields.io/docker/pulls/tiredofit/debian.svg)](https://hub.docker.com/r/tiredofit/debian)
-[![Docker 
+[![Docker
 Stars](https://img.shields.io/docker/stars/tiredofit/debian.svg)](https://hub.docker.com/r/tiredofit/debian)
-[![Docker 
+[![Docker
 Layers](https://images.microbadger.com/badges/image/tiredofit/debian.svg)]
 >>>>>>> master
 
@@ -48,7 +48,6 @@ Dockerfile to build an [debian](https://www.debian.org/) container image to use 
   - [Networking](#networking)
 - [Maintenance](#maintenance)
   - [Shell Access](#shell-access)
-- [References](#references)
 
 
 ## Installation
@@ -110,20 +109,20 @@ Below is the complete list of available options that can be used to customize yo
 If you wish to have this send mail, set `ENABLE_SMTP=TRUE` and configure the following environment variables.
 See the [MSMTP Configuration Options](http://msmtp.sourceforge.net/doc/msmtp.html) for further information on options to configure MSMTP.
 
-| Parameter             | Description                                       | Default            |
-| --------------------- | ------------------------------------------------- | ------------------ |
-| `ENABLE_SMTP_GMAIL`   | Add setting to support sending through Gmail SMTP | `TRUE`             |
-| `SMTP_FROM`           | From name to send email as                        | `user@example.com` |
-| `SMTP_HOST`           | Hostname of SMTP Server                           | `postfix-relay`    |
-| `SMTP_PORT`           | Port of SMTP Server                               | `25`               |
-| `SMTP_DOMAIN`         | HELO domain                                       | `docker`           |
-| `SMTP_MAILDOMAIN`     | Mail domain from                                  | `local`            |
-| `SMTP_AUTHENTICATION` | SMTP Authentication                               | `none`             |
-| `SMTP_USER`           | SMTP Username (optional)                          |                    |
-| `SMTP_PASS`           | SMTP Password (optional)                          |                    |
-| `SMTP_TLS`            | Use TLS                                           | `off`              |
-| `SMTP_STARTTLS`       | Start TLS from within session                     | `off`              |
-| `SMTP_TLSCERTCHECK`   | Check remote certificate                          | `off`              |
+| Parameter             | Description                                                            | Default            |
+| --------------------- | ---------------------------------------------------------------------- | ------------------ |
+| `SMTP_AUTO_FROM`      | Auto send From to resolve any SMTP sending issues (Specifically GMAIL) | `TRUE`             |
+| `SMTP_FROM`           | From name to send email as                                             | `user@example.com` |
+| `SMTP_HOST`           | Hostname of SMTP Server                                                | `postfix-relay`    |
+| `SMTP_PORT`           | Port of SMTP Server                                                    | `25`               |
+| `SMTP_DOMAIN`         | HELO domain                                                            | `docker`           |
+| `SMTP_MAILDOMAIN`     | Mail domain from                                                       | `local`            |
+| `SMTP_AUTHENTICATION` | SMTP Authentication                                                    | `none`             |
+| `SMTP_USER`           | SMTP Username (optional)                                               |                    |
+| `SMTP_PASS`           | SMTP Password (optional)                                               |                    |
+| `SMTP_TLS`            | Use TLS                                                                | `off`              |
+| `SMTP_STARTTLS`       | Start TLS from within session                                          | `off`              |
+| `SMTP_TLSCERTCHECK`   | Check remote certificate                                               | `off`              |
 
 See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/5.2/manual/appendix/config/zabbix_agentd)
 for information about the following Zabbix values.
@@ -159,7 +158,7 @@ Hint, also change the Group ID to your local development users UID & GID and avo
 
 | Parameter              | Description                                                                 | Default |
 | ---------------------- | --------------------------------------------------------------------------- | ------- |
-| `ENABLE_PERMISSIONS`   | Allow changing UID or GID of environment variables                          | `FALSE` |
+| `ENABLE_PERMISSIONS`   | Allow changing UID or GID of environment variables                          | `TRUE` |
 | `DEBUG_PERMISSIONS`    | For debugging your output when changing permissions                         | `FALSE` |
 | `USER_<USERNAME>`      | The user's UID in /etc/passwd will be modified with new UID                 |         |
 | `GROUP_<GROUPNAME>`    | The group's GID in /etc/group and /etc/passwd will be modified with new GID |         |
@@ -194,7 +193,7 @@ docker exec -it (whatever your container name is e.g. debian) bash
 
 ## References
 =======
-Dockerfiles to build a [Debian Linux](https://www.debian.org) 
+Dockerfiles to build a [Debian Linux](https://www.debian.org)
 container image.
 
 * Please see individual branches for distribution variants.
