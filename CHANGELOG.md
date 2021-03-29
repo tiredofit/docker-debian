@@ -6,6 +6,7 @@
    ### Changed
       - Zabbix Agent now pulls from backports if possible, no longer installs from official Zabbix repository due to lack of multiarch capability
       - Switched back to single branch for building all versions taking advantage of GitHub actions
+      - ENABLE_PERMISSIONS by default=TRUE
 
    ### Removed
       - MailHog SMTP Tester
