@@ -1,23 +1,9 @@
 # hub.docker.com/r/tiredofit/debian
 
-<<<<<<< HEAD
 [![Docker Pulls](https://img.shields.io/docker/pulls/tiredofit/debian.svg)](https://hub.docker.com/r/tiredofit/debian)
 [![Docker Stars](https://img.shields.io/docker/stars/tiredofit/debian.svg)](https://hub.docker.com/r/tiredofit/debian)
 [![Docker Layers](https://images.microbadger.com/badges/image/tiredofit/debian.svg)](https://microbadger.com/images/tiredofit/debian)
-=======
-[![Build
-Status](https://img.shields.io/docker/build/tiredofit/debian.svg)](https://hub.docker.com/r/tiredofit/debian)
-[![Docker
-Pulls](https://img.shields.io/docker/pulls/tiredofit/debian.svg)](https://hub.docker.com/r/tiredofit/debian)
-[![Docker
-Stars](https://img.shields.io/docker/stars/tiredofit/debian.svg)](https://hub.docker.com/r/tiredofit/debian)
-[![Docker
-Layers](https://images.microbadger.com/badges/image/tiredofit/debian.svg)]
->>>>>>> master
 
-## Introduction
-
-<<<<<<< HEAD
 Dockerfile to build an [debian](https://www.debian.org/) container image to use used as a base for building other images.
 
 * Currently tracking Jessie (8), Stretch (9), Buster (10).
@@ -158,7 +144,7 @@ Hint, also change the Group ID to your local development users UID & GID and avo
 
 | Parameter              | Description                                                                 | Default |
 | ---------------------- | --------------------------------------------------------------------------- | ------- |
-| `ENABLE_PERMISSIONS`   | Allow changing UID or GID of environment variables                          | `TRUE` |
+| `ENABLE_PERMISSIONS`   | Allow changing UID or GID of environment variables                          | `TRUE`  |
 | `DEBUG_PERMISSIONS`    | For debugging your output when changing permissions                         | `FALSE` |
 | `USER_<USERNAME>`      | The user's UID in /etc/passwd will be modified with new UID                 |         |
 | `GROUP_<GROUPNAME>`    | The group's GID in /etc/group and /etc/passwd will be modified with new GID |         |
