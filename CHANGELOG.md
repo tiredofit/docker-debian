@@ -1,3 +1,12 @@
+## 6.0.1 2021-04-16 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add zstd to core applications
+
+   ### Changed
+      - Core folder permission sanity check
+
+
 ## 6.0.0 2021-03-29 <dave at tiredofit dot ca>
 
    ### Added

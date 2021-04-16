@@ -3,6 +3,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set defaults
 ARG S6_OVERLAY_VERSION=v2.2.0.3
+
 ENV DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
     DEBIAN_FRONTEND=noninteractive \
@@ -10,7 +11,6 @@ ENV DEBUG_MODE=FALSE \
     ENABLE_SMTP=TRUE \
     ENABLE_ZABBIX=TRUE \
     ZABBIX_HOSTNAME=debian
-
 
 RUN set -x && \
     if [ $(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print $1}' RS='(' FS=')') != "jessie" ] ; then echo "deb http://deb.debian.org/debian $(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print $1}' RS='(' FS=')')-backports main" > /etc/apt/sources.list.d/backports.list ; backports="/$(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print $1}' RS='(' FS=')')-backports"; fi ; \
@@ -36,17 +36,17 @@ RUN set -x && \
             tzdata \
             vim-tiny \
             zabbix-agent${backports} \
-        && \
+            zstd \
+            && \
     rm -rf /etc/zabbix/zabbix-agentd.conf.d/* && \
     rm -rf /etc/timezone && \
     ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
     echo "${TIMEZONE}" > /etc/timezone && \
     dpkg-reconfigure -f noninteractive tzdata && \
-    echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
+    echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
+    \
     ### S6 installation
-RUN set -x && \
-   debArch=$(dpkg --print-architecture) && \
+    debArch=$(dpkg --print-architecture) && \
     case "$debArch" in \
 		amd64) s6Arch='amd64' ;; \
         armel) s6Arch='arm' ;; \
@@ -55,14 +55,13 @@ RUN set -x && \
 		ppc64le) s6Arch='ppc64le' ;; \
 		*) echo >&2 "Error: unsupported architecture ($debArch)"; exit 1 ;; \
 	esac; \
-    curl -sSLk https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-${s6Arch}.tar.gz | tar xfz - --strip 0 -C /
-
+    curl -sSLk https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-${s6Arch}.tar.gz | tar xfz - --strip 0 -C / && \
+    \
     ### Cleanup
-RUN    mkdir -p /assets/cron && \
+    mkdir -p /assets/cron && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/* /root/.gnupg /var/log/* /etc/logrotate.d
-
 
 ### Networking configuration
 EXPOSE 10050/TCP
