@@ -13,11 +13,12 @@ ENV DEBUG_MODE=FALSE \
     ZABBIX_HOSTNAME=debian
 
 RUN set -x && \
-    if [ $(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print $1}' RS='(' FS=')') != "jessie" ] ; then echo "deb http://deb.debian.org/debian $(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print $1}' RS='(' FS=')')-backports main" > /etc/apt/sources.list.d/backports.list ; backports="/$(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print $1}' RS='(' FS=')')-backports"; fi ; \
+    if [ $(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print $1}' RS='(' FS=')') != "jessie" ] ; then echo "deb http://deb.debian.org/debian $(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print $1}' RS='(' FS=')')-backports main" > /etc/apt/sources.list.d/backports.list ; zstd=zstd; backports="/$(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print $1}' RS='(' FS=')')-backports"; fi ; \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
             apt-transport-https \
+            apt-utils \
             aptitude \
             bash \
             ca-certificates \
@@ -36,7 +37,7 @@ RUN set -x && \
             tzdata \
             vim-tiny \
             zabbix-agent${backports} \
-            zstd \
+            ${zstd} \
             && \
     rm -rf /etc/zabbix/zabbix-agentd.conf.d/* && \
     rm -rf /etc/timezone && \

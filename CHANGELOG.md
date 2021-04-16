@@ -1,3 +1,12 @@
+## 6.0.2 2021-04-16 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add apt-utils package
+
+   ### Changed
+      - Don't install zstd for Debian Jessie as it's breaking CI/CD
+
+
 ## 6.0.1 2021-04-16 <dave at tiredofit dot ca>
 
    ### Added
