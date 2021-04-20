@@ -1,3 +1,9 @@
+## 6.0.3 2021-04-20 <dave at tiredofit dot ca>
+
+   ### Changed
+      - FIx for 05-smtp initialization not allowing SMTP_AUTO_FROM
+
+
 ## 6.0.2 2021-04-16 <dave at tiredofit dot ca>
 
    ### Added

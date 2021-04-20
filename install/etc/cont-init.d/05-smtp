@@ -26,7 +26,7 @@ if var_true "${ENABLE_SMTP}" ; then
     echo "tls_starttls ${SMTP_STARTTLS}"
     echo "tls_certcheck ${SMTP_TLSCERTCHECK}"
     ### Gmail Specific SMTP Config
-    if var_true "${ENABLE_SMTP_GMAIL}" || "${SMTP_AUTO_FROM}"; then echo "auto_from on"; fi
+    if var_true "${ENABLE_SMTP_GMAIL}" || var_true "${SMTP_AUTO_FROM}"; then echo "auto_from on"; fi
   } >> /etc/msmtprc
 
     print_notice "Sendmail replaced and enabled to route mail to: '${SMTP_HOST}'"
