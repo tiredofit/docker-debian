@@ -6,14 +6,6 @@ prepare_service single
 PROCESS_NAME="smtp"
 
 output_off
-### Debug mode - enable mailHog
-if var_true "$DEBUG_SMTP" ; then
-    print_notice "SMTP debugging mode activated"
-    SMTP_HOST="localhost"
-    SMTP_PORT=1025
-else
-    service_stop "$(basename "$0")"
-fi
 
 rm -f /usr/sbin/sendmail
 ln -s /usr/bin/msmtp /usr/sbin/sendmail

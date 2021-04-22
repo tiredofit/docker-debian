@@ -2,18 +2,18 @@ FROM debian:buster
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set defaults
-ENV ZABBIX_VERSION=5.0 \
-    S6_OVERLAY_VERSION=v2.0.0.1 \
-    DEBUG_MODE=FALSE \
+ARG S6_OVERLAY_VERSION=v2.2.0.3
+ENV DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
     DEBIAN_FRONTEND=noninteractive \
     ENABLE_CRON=TRUE \
     ENABLE_SMTP=TRUE \
     ENABLE_ZABBIX=TRUE \
-    ZABBIX_HOSTNAME=debian.buster
+    ZABBIX_HOSTNAME=debian
 
-### Dependencies addon
+
 RUN set -x && \
+    if [ $(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print $1}' RS='(' FS=')') != "jessie" ] ; then echo "deb http://deb.debian.org/debian $(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print $1}' RS='(' FS=')')-backports main" > /etc/apt/sources.list.d/backports.list ; backports="/$(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print $1}' RS='(' FS=')')-backports"; fi ; \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
@@ -35,34 +35,37 @@ RUN set -x && \
             sudo \
             tzdata \
             vim-tiny \
-            && \
-    curl https://repo.zabbix.com/zabbix-official-repo.key | apt-key add - && \
-    echo "deb http://repo.zabbix.com/zabbix/${ZABBIX_VERSION}/debian buster main" >>/etc/apt/sources.list && \
-    echo "deb-src http://repo.zabbix.com/zabbix/${ZABBIX_VERSION}/debian buster main" >>/etc/apt/sources.list && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
-            zabbix-agent && \
+            zabbix-agent${backports} \
+        && \
     rm -rf /etc/zabbix/zabbix-agentd.conf.d/* && \
-    curl -sSLo /usr/local/bin/MailHog https://github.com/mailhog/MailHog/releases/download/v1.0.0/MailHog_linux_amd64 && \
-    curl -sSLo /usr/local/bin/mhsendmail https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 && \
-    chmod +x /usr/local/bin/MailHog && \
-    chmod +x /usr/local/bin/mhsendmail && \
-    useradd -r -s /bin/false -d /nonexistent mailhog && \
-    apt-get autoremove -y && \
-    apt-get clean -y && \
-    rm -rf /var/lib/apt/lists/* /root/.gnupg /var/log/* /etc/logrotate.d && \
-    mkdir -p /assets/cron && \
     rm -rf /etc/timezone && \
     ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
     echo "${TIMEZONE}" > /etc/timezone && \
     dpkg-reconfigure -f noninteractive tzdata && \
-    echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
-    \
-### S6 installation
-    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - --strip 0 -C /
+    echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+    ### S6 installation
+RUN set -x && \
+   debArch=$(dpkg --print-architecture) && \
+    case "$debArch" in \
+		amd64) s6Arch='amd64' ;; \
+        armel) s6Arch='arm' ;; \
+        armhf) s6Arch='armhf' ;; \
+		arm64) s6Arch='aarch64' ;; \
+		ppc64le) s6Arch='ppc64le' ;; \
+		*) echo >&2 "Error: unsupported architecture ($debArch)"; exit 1 ;; \
+	esac; \
+    curl -sSLk https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-${s6Arch}.tar.gz | tar xfz - --strip 0 -C /
+
+    ### Cleanup
+RUN    mkdir -p /assets/cron && \
+    apt-get autoremove -y && \
+    apt-get clean -y && \
+    rm -rf /var/lib/apt/lists/* /root/.gnupg /var/log/* /etc/logrotate.d
+
 
 ### Networking configuration
-EXPOSE 1025 8025 10050/TCP
+EXPOSE 10050/TCP
 
 ### Add folders
 ADD install /
