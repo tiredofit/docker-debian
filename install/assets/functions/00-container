@@ -118,8 +118,7 @@ db_ready() {
         "couch" )
             DB_PORT=${DB_PORT:-5984}
             COUNTER=0
-            # shellcheck disable=SC2086
-            while ! (nc -z "${DB_HOST}" ${DB_PORT}) ; do
+            while ! (nc -z "${DB_HOST}" "${DB_PORT}") ; do
                 sleep 5
                 (( COUNTER+=5 ))
                 print_warn "CouchDB Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
@@ -336,7 +335,7 @@ get_functions() {
     fi
 }
 
-## For writing script initalization state to ensure proper application execution
+## For writing script initialization state to ensure proper application execution
 liftoff() {
     output_off
     mkdir -p /tmp/state
