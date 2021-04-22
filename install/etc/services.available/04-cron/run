@@ -9,13 +9,13 @@ check_container_initialized
 check_service_initialized init
 
 if [ ! -f /tmp/state/"$(basename "$0")" ]; then
-    if var_true "$ENABLE_LOGROTATE" ; then
-		if var_true "${LOGROTATE_FORCE}" ; then
-			logrotate_force="-f"
+  if var_true "$ENABLE_LOGROTATE" ; then
+	  if var_true "$LOGROTATE_FORCE" ; then
+		  LOGROTATE_FORCE="-f"
 		fi
-	    sleep 60
-	    print_debug "Enabling log rotation"
-	    echo "59 23 * * * logrotate ${logrotate_force} /etc/logrotate.d >/dev/null 2>&1" >>/assets/cron/crontab.txt
+	  sleep 60
+	  print_debug "Enabling log rotation"
+	  echo "59 23 * * * logrotate ${LOGROTATE_FORCE} /etc/logrotate.d >/dev/null 2>&1" >>/assets/cron/crontab.txt
 	fi
 fi
 
