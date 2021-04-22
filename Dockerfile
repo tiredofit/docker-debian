@@ -2,8 +2,8 @@ FROM debian:jessie
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set defaults
-ENV ZABBIX_VERSION=5.0 \
-    S6_OVERLAY_VERSION=v2.0.0.1 \
+ENV ZABBIX_VERSION=5.2 \
+    S6_OVERLAY_VERSION=v2.1.0.2 \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
     DEBIAN_FRONTEND=noninteractive \

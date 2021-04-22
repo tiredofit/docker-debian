@@ -1,3 +1,16 @@
+## 5.1.1 2021-01-04 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix Permissions modify script for not updating group id's
+
+
+## 5.1.0 2020-11-14 <dave at tiredofit dot ca>
+
+   ### Added
+      - S6 Overlay 2.1.0.2
+      - Zabbix Agent 5.2.x
+
+
 ## 5.0.10 2020-09-15 <dave at tiredofit dot ca>
 
    ### Added
