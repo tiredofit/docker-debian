@@ -8,8 +8,8 @@ on:
     - cron: 1 0 * * 6
   push:
     paths:
-    - '**'
-    - '!README.md'
+      - '**'
+      - '!README.md'
 jobs:
   buster:
     env:
@@ -27,7 +27,7 @@ jobs:
             BRANCH=${GITHUB_REF#refs/heads/}
 
             case ${BRANCH} in
-              "main" | "master" )
+              main | master | *-master )
                   if [ -n "${{ secrets.LATEST }}" ] ; then
                     if [ "${RELEASE}" = "${{ secrets.LATEST }}" ]; then
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE}-latest,${DOCKER_IMAGE}:latest"
@@ -38,7 +38,7 @@ jobs:
                      BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE}-latest"
                   fi
                 ;;
-              "develop" )
+              develop | *-develop )
                   BRANCHTAG="${DOCKER_IMAGE}:develop"
                 ;;
               * )
@@ -135,7 +135,7 @@ jobs:
             BRANCH=${GITHUB_REF#refs/heads/}
 
             case ${BRANCH} in
-              "main" | "master" )
+              main | master | *-master )
                   if [ -n "${{ secrets.LATEST }}" ] ; then
                     if [ "${RELEASE}" = "${{ secrets.LATEST }}" ]; then
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE}-latest,${DOCKER_IMAGE}:latest"
@@ -146,7 +146,7 @@ jobs:
                      BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE}-latest"
                   fi
                 ;;
-              "develop" )
+              develop | *-develop )
                   BRANCHTAG="${DOCKER_IMAGE}:develop"
                 ;;
               * )
@@ -243,7 +243,7 @@ jobs:
             BRANCH=${GITHUB_REF#refs/heads/}
 
             case ${BRANCH} in
-              "main" | "master" )
+              main | master | *-master )
                   if [ -n "${{ secrets.LATEST }}" ] ; then
                     if [ "${RELEASE}" = "${{ secrets.LATEST }}" ]; then
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE}-latest,${DOCKER_IMAGE}:latest"
@@ -254,7 +254,7 @@ jobs:
                      BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE}-latest"
                   fi
                 ;;
-              "develop" )
+              develop | *-develop )
                   BRANCHTAG="${DOCKER_IMAGE}:develop"
                 ;;
               * )

@@ -3,10 +3,7 @@ name: Manual
 
 on:
   workflow_dispatch:
-    inputs:
-      Manual Build:
-        description: 'Manual Build'
-        required: false
+
 jobs:
   buster:
     env:
