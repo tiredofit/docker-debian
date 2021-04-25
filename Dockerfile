@@ -54,7 +54,7 @@ RUN set -x && \
         armel) s6Arch='arm' ;; \
         armhf) s6Arch='armhf' ;; \
 		arm64) s6Arch='aarch64' ;; \
-		ppc64le) s6Arch='ppc64le' ;; \
+		ppc64el) s6Arch='ppc64le' ;; \
 		*) echo >&2 "Error: unsupported architecture ($debArch)"; exit 1 ;; \
 	esac; \
     curl -sSLk https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-${s6Arch}.tar.gz | tar xfz - --strip 0 -C / && \
