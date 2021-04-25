@@ -116,7 +116,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: ./Dockerfile
-          platforms: linux/386,linux/amd64,linux/arm/v7,linux/arm64/v8,linux/ppc64le
+          platforms: linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le
           push: true
           tags: ${{ steps.prep.outputs.tags }}
   stretch:
@@ -224,7 +224,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: ./Dockerfile
-          platforms: linux/386,linux/amd64,linux/arm/v7,linux/arm64/v8
+          platforms: linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8
           push: true
           tags: ${{ steps.prep.outputs.tags }}
   jessie:
@@ -332,6 +332,6 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: ./Dockerfile
-          platforms: linux/386,linux/amd64,linux/arm/v7
+          platforms: linux/386,linux/amd64,linux/arm/v6,linux/arm/v7
           push: true
           tags: ${{ steps.prep.outputs.tags }}
