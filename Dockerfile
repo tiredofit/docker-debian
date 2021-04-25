@@ -49,6 +49,7 @@ RUN set -x && \
     ### S6 installation
     debArch=$(dpkg --print-architecture) && \
     case "$debArch" in \
+        x86) s6Arch='x86' ;; \
 		amd64) s6Arch='amd64' ;; \
         armel) s6Arch='arm' ;; \
         armhf) s6Arch='armhf' ;; \
