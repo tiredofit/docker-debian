@@ -1,3 +1,9 @@
+## 6.0.4 2021-05-01 <dave at tiredofit dot ca>
+
+   ### Reverted
+      - Remove routine that inserts (distrib)-backports. Was causing too many problems for debian/buster with SSL
+
+
 ## 6.0.3 2021-04-20 <dave at tiredofit dot ca>
 
    ### Changed
