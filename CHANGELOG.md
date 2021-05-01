@@ -1,3 +1,9 @@
+## 6.1.0 2021-05-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Start compiling Zabbix Agent due to too many issues with repositories and multi arch
+
+
 ## 6.0.4 2021-05-01 <dave at tiredofit dot ca>
 
    ### Reverted

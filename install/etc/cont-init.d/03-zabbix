@@ -2,7 +2,7 @@
 
 source /assets/functions/00-container
 prepare_service single
-PROCESS_NAME="zabbix"
+PROCESS_NAME="zabbix-agent"
 
 output_off
 ### Debug Mode
