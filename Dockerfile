@@ -13,7 +13,7 @@ ENV DEBUG_MODE=FALSE \
     ZABBIX_HOSTNAME=debian
 
 RUN set -x && \
-    if [ $(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print $1}' RS='(' FS=')') != "jessie" ] ; then echo "deb http://deb.debian.org/debian $(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print $1}' RS='(' FS=')')-backports main" > /etc/apt/sources.list.d/backports.list ; zstd=zstd; backports="/$(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print $1}' RS='(' FS=')')-backports"; fi ; \
+    if [ $(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print $1}' RS='(' FS=')') != "jessie" ] ; then zstd=zstd; fi ; \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
@@ -36,7 +36,7 @@ RUN set -x && \
             sudo \
             tzdata \
             vim-tiny \
-            zabbix-agent${backports} \
+            zabbix-agent \
             ${zstd} \
             && \
     rm -rf /etc/zabbix/zabbix-agentd.conf.d/* && \
@@ -50,8 +50,8 @@ RUN set -x && \
     debArch=$(dpkg --print-architecture) && \
     case "$debArch" in \
 		amd64) s6Arch='amd64' ;; \
-        armel) s6Arch='arm' ;; \
-        armhf) s6Arch='armhf' ;; \
+                armel) s6Arch='arm' ;; \
+                armhf) s6Arch='armhf' ;; \
 		arm64) s6Arch='aarch64' ;; \
 		ppc64le) s6Arch='ppc64le' ;; \
 		*) echo >&2 "Error: unsupported architecture ($debArch)"; exit 1 ;; \
