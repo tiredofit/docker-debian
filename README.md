@@ -81,7 +81,6 @@ Below is the complete list of available options that can be used to customize yo
 | `COLORIZE_OUTPUT`     | Enable/Disable colorized console output                                | `TRUE`    |
 | `CONTAINER_LOG_LEVEL` | Control level of output of container `INFO`, `WARN`, `NOTICE`, `DEBUG` | `NOTICE`  |
 | `DEBUG_MODE`          | Enable debug mode                                                      | `FALSE`   |
-| `DEBUG_SMTP`          | Setup mail catch all on port 1025 (SMTP) and 8025 (HTTP)               | `FALSE`   |
 | `ENABLE_CRON`         | Enable Cron                                                            | `TRUE`    |
 | `ENABLE_LOGROTATE`    | Enable Logrotate                                                       | `TRUE`    |
 | `ENABLE_SMTP`         | Enable SMTP services                                                   | `TRUE`    |
