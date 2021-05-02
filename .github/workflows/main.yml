@@ -1,7 +1,7 @@
 ### Top Level Base Image - Debian
 ### Dave Conroy <dave at tiredofit dot ca>
 
-name: 'Build Images'
+name: 'build'
 
 on:
   schedule:

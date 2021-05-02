@@ -1,10 +1,13 @@
-# hub.docker.com/r/tiredofit/debian
+# github.com/tiredofit/docker-debian
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/tiredofit/debian.svg)](https://hub.docker.com/r/tiredofit/debian)
-[![Docker Stars](https://img.shields.io/docker/stars/tiredofit/debian.svg)](https://hub.docker.com/r/tiredofit/debian)
-[![Docker Layers](https://images.microbadger.com/badges/image/tiredofit/debian.svg)](https://microbadger.com/images/tiredofit/debian)
+[![GitHub release](https://img.shields.io/github/v/tag/tiredofit/docker-debian?style=flat-square)](https://github.com/tiredofit/docker-debian/releases/latest)
+[![Build Status](https://img.shields.io/github/workflow/status/tiredofit/docker-debian/build?style=flat-square)](https://github.com/tiredofit/docker-debian/actions?query=workflow%3Abuild)
+[![Docker Stars](https://img.shields.io/docker/stars/tiredofit/debian.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/tiredofit/debian/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/tiredofit/debian.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/tiredofit/debian/)
+[![Become a sponsor](https://img.shields.io/badge/sponsor-tiredofit-181717.svg?logo=github&style=flat-square)](https://github.com/sponsors/tiredofit)
+[![Paypal Donate](https://img.shields.io/badge/donate-paypal-00457c.svg?logo=paypal&style=flat-square)](https://www.paypal.me/tiredofit)
 
-Dockerfile to build an [debian](https://www.debian.org/) container image to use used as a base for building other images.
+Dockerfile to build an [debian](https://www.debian.org/) container image to be used as a base for building other images.
 
 * Currently tracking Jessie (8), Stretch (9), Buster (10).
 * Multi Arch Compatible for amd64, arm arm64
@@ -13,44 +16,66 @@ Dockerfile to build an [debian](https://www.debian.org/) container image to use 
 * Cron installed along with other tools (curl, less, logrotate, nano, vim) for easier management.
 * Ability to update User ID and Group ID permissions for development purposes dynamically.
 
-## Authors
+## Maintainer
 
-- [Dave Conroy](https://github.com/tiredofit/)
+- [Dave Conroy](https://github.com/tiredofit)
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [Authors](#authors)
+- [Maintainer](#maintainer)
 - [Table of Contents](#table-of-contents)
+- [Prerequisites and Assumptions](#prerequisites-and-assumptions)
 - [Installation](#installation)
-  - [Quick Start](#quick-start)
+  - [Build from Source](#build-from-source)
+  - [Prebuilt Images](#prebuilt-images)
+    - [Multi Archictecture](#multi-archictecture)
 - [Configuration](#configuration)
-  - [Data-Volumes](#data-volumes)
+  - [Quick Start](#quick-start)
+  - [Persistent Storage](#persistent-storage)
   - [Environment Variables](#environment-variables)
-    - [Container Config](#container-config)
+    - [Container Options](#container-options)
     - [SMTP Redirection](#smtp-redirection)
-    - [Zabbix](#zabbix)
-    - [Changing Permissions](#changing-permissions)
+    - [Zabbix Options](#zabbix-options)
+    - [Permissions](#permissions)
   - [Networking](#networking)
 - [Maintenance](#maintenance)
   - [Shell Access](#shell-access)
+- [Support](#support)
+  - [Usage](#usage)
+  - [Bugfixes](#bugfixes)
+  - [Feature Requests](#feature-requests)
+  - [Updates](#updates)
+- [License](#license)
 
+## Prerequisites and Assumptions
+
+No prerequisites required
 
 ## Installation
 
-Automated builds of the image are available on [Docker Hub](https://hub.docker.com/r/tiredofit/debian)
+### Build from Source
+Clone this repository and build the image with `docker build <arguments> (imagename) .`
+
+### Prebuilt Images
+Builds of the image are available on [Docker Hub](https://hub.docker.com/r/tiredofit/debian) and is the recommended method of installation.
 
 ```bash
 docker pull tiredofit/debian:(imagetag)
 ```
 
-The following image tags are available:
+The following image tags are available along with their taged release based on what's written in the [Changelog](CHANGELOG.md):
 
-* `latest` - Debian Buster - 10 (amd64, arm6, arm7. arm64)
-* `buster` - Debian Buster - 10 (amd64, arm6, arm7. arm64)
-* `stretch` - Debian Stretch - 9 (amd64, arm6, arm7. arm64)
-* `jessie:` - Debian Jessie - 8 (amd64, arm7)
+| Debian version | Tag        |
+| -------------- | ---------- |
+| `10`           | `:buster`  |
+| `9`            | `:stretch` |
+| `8`            | `:jessie`  |
 
+#### Multi Archictecture
+Images are built primarily for `amd64` architecture, and may also include builds for `arm/v6`, `arm/v7`, `arm64` and others. These variants are all unsupported. Consider [sponsoring](https://github.com/sponsors/tiredofit) my work so that I can work with various hardware. To see if this image supports multiple architecures, type `docker manifest (image):(tag)`
+
+
+## Configuration
 
 ### Quick Start
 
@@ -58,43 +83,37 @@ Utilize this image as a base for further builds. By default, it does not start t
 Bash. Please visit the [s6 overlay repository](https://github.com/just-containers/s6-overlay) for
 instructions on how to enable the S6 init system when using this base or look at some of my other images
 which use this as a base.
+### Persistent Storage
 
-## Configuration
-
-### Data-Volumes
-The following directories are used for configure and can be mapped for persistent storage.
+The following directories are used for configuration and can be mapped for persistent storage.
 
 | Directory                           | Description                          |
 | ----------------------------------- | ------------------------------------ |
 | `/etc/zabbix/zabbix_agentd.conf.d/` | Zabbix Agent configuration directory |
 | `/assets/cron-custom`               | Drop custom crontabs here            |
 
-
 ### Environment Variables
 
 Below is the complete list of available options that can be used to customize your installation.
-
-#### Container Config
-
-| Parameter             | Description                                                            | Default   |
-| --------------------- | ---------------------------------------------------------------------- | --------- |
-| `COLORIZE_OUTPUT`     | Enable/Disable colorized console output                                | `TRUE`    |
-| `CONTAINER_LOG_LEVEL` | Control level of output of container `INFO`, `WARN`, `NOTICE`, `DEBUG` | `NOTICE`  |
-| `DEBUG_MODE`          | Enable debug mode                                                      | `FALSE`   |
-| `ENABLE_CRON`         | Enable Cron                                                            | `TRUE`    |
-| `ENABLE_LOGROTATE`    | Enable Logrotate                                                       | `TRUE`    |
-| `ENABLE_SMTP`         | Enable SMTP services                                                   | `TRUE`    |
-| `ENABLE_ZABBIX`       | Enable Zabbix Agent                                                    | `TRUE`    |
-| `SKIP_SANITY_CHECK`   | Disable container startup routine check                                | `FALSE`   |
-| `TIMEZONE`            | Set Timezone                                                           | `Etc/GMT` |
-
+#### Container Options
+| Parameter             | Description                                                            | Default          |
+| --------------------- | ---------------------------------------------------------------------- | ---------------- |
+| `COLORIZE_OUTPUT`     | Enable/Disable colorized console output                                | `TRUE`           |
+| `CONTAINER_LOG_LEVEL` | Control level of output of container `INFO`, `WARN`, `NOTICE`, `DEBUG` | Default `NOTICE` |
+| `DEBUG_MODE`          | Enable debug mode                                                      | `FALSE`          |
+| `ENABLE_CRON`         | Enable Cron                                                            | `TRUE`           |
+| `ENABLE_LOGROTATE`    | Enable Logrotate (if Cron enabled)                                     | `TRUE`           |
+| `ENABLE_SMTP`         | Enable SMTP services                                                   | `TRUE`           |
+| `ENABLE_ZABBIX`       | Enable Zabbix Agent                                                    | `TRUE`           |
+| `SKIP_SANITY_CHECK`   | Disable container startup routine check                                | `FALSE`          |
+| `TIMEZONE`            | Set Timezone                                                           | `Etc/GMT`        |
 
 #### SMTP Redirection
 
-If you wish to have this send mail, set `ENABLE_SMTP=TRUE` and configure the following environment variables.
+If you wish to have this sends mail, set `ENABLE_SMTP=TRUE` and configure the following environment variables.
 See the [MSMTP Configuration Options](http://msmtp.sourceforge.net/doc/msmtp.html) for further information on options to configure MSMTP.
 
-| Parameter             | Description                                                            | Default            |
+ Parameter             | Description                                                            | Default            |
 | --------------------- | ---------------------------------------------------------------------- | ------------------ |
 | `SMTP_AUTO_FROM`      | Auto send From to resolve any SMTP sending issues (Specifically GMAIL) | `TRUE`             |
 | `SMTP_FROM`           | From name to send email as                                             | `user@example.com` |
@@ -109,17 +128,20 @@ See the [MSMTP Configuration Options](http://msmtp.sourceforge.net/doc/msmtp.htm
 | `SMTP_STARTTLS`       | Start TLS from within session                                          | `off`              |
 | `SMTP_TLSCERTCHECK`   | Check remote certificate                                               | `off`              |
 
+
+#### Zabbix Options
+
 See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/5.2/manual/appendix/config/zabbix_agentd)
 for information about the following Zabbix values.
 
-#### Zabbix
+
 | Parameter                      | Description                             | Default                             |
 | ------------------------------ | --------------------------------------- | ----------------------------------- |
 | `ZABBIX_LOGFILE`               | Logfile location                        | `/var/log/zabbix/zabbix_agentd.log` |
 | `ZABBIX_LOGFILESIZE`           | Logfile size                            | `1`                                 |
 | `ZABBIX_DEBUGLEVEL`            | Debug level                             | `1`                                 |
 | `ZABBIX_REMOTECOMMANDS_ALLOW`  | Enable remote commands                  | `*`                                 |
-| `ZABBIX_REMOTECOMMANDS_DENY`   | Deny remote commands                    | `*`                                 |
+| `ZABBIX_REMOTECOMMANDS_DENY`   | Deny remote commands                    |                                     |
 | `ZABBIX_REMOTECOMMANDS_LOG`    | Enable remote commands Log (`0`/`1`)    | `1`                                 |
 | `ZABBIX_SERVER`                | Allow connections from Zabbix server IP | `0.0.0.0/0`                         |
 | `ZABBIX_LISTEN_PORT`           | Zabbix Agent listening port             | `10050`                             |
@@ -134,53 +156,61 @@ for information about the following Zabbix values.
 | `ZABBIX_ALLOW_ROOT`            | Allow running as root                   | `1`                                 |
 | `ZABBIX_USER`                  | Zabbix user to start as                 | `zabbix`                            |
 
-
-#### Changing Permissions
-If you enable `ENABLE_PERIMISSIONS_PERMISSIONS=TRUE` all the users and groups have been modified in accordance with environment
-variables will be displayed in output.
+If you enable `DEBUG_PERMISSIONS=TRUE` all the users and groups have been modified in accordance with
+environment variables will be displayed in output.
 e.g. If you add `USER_NGINX=1000` it will reset the containers `nginx` user id from `82` to `1000` -
 Hint, also change the Group ID to your local development users UID & GID and avoid Docker permission issues when developing.
 
-| Parameter              | Description                                                                 | Default |
-| ---------------------- | --------------------------------------------------------------------------- | ------- |
-| `ENABLE_PERMISSIONS`   | Allow changing UID or GID of environment variables                          | `TRUE`  |
-| `DEBUG_PERMISSIONS`    | For debugging your output when changing permissions                         | `FALSE` |
-| `USER_<USERNAME>`      | The user's UID in /etc/passwd will be modified with new UID                 |         |
-| `GROUP_<GROUPNAME>`    | The group's GID in /etc/group and /etc/passwd will be modified with new GID |         |
-| `GROUP_ADD_<USERNAME>` | The username will be added in /etc/group after the group name defined       |         |
-
+#### Permissions
+| Parameter              | Description                                                                 |
+| ---------------------- | --------------------------------------------------------------------------- |
+| `USER_<USERNAME>`      | The user's UID in /etc/passwd will be modified with new UID                 |
+| `GROUP_<GROUPNAME>`    | The group's GID in /etc/group and /etc/passwd will be modified with new GID |
+| `GROUP_ADD_<USERNAME>` | The username will be added in /etc/group after the group name defined       |
 
 ### Networking
 
 The following ports are exposed.
 
-| Port    | Description  |
-| ------- | ------------ |
-| `10050` | Zabbix Agent |
+| Port    | Description                                  |
+| ------- | -------------------------------------------- |
+| `10050` | Zabbix Agent                                 |
 
-
-
-# Debug Mode
+#@ Debug Mode
 
 When using this as a base image, create statements in your startup scripts to check for existence of `DEBUG_MODE=TRUE`
 and set various parameters in your applications to output more detail, enable debugging modes, and so on.
 In this base image it does the following:
+
 * Sets zabbix-agent to output logs in verbosity
+* Enables MailHog mailcatcher, which replaces `/usr/sbin/sendmail` with it's own catchall executable. It also opens
+port `1025` for SMTP trapping, and you can view the messages it's trapped at port `8025`
 
 ## Maintenance
+
 ### Shell Access
 
 For debugging and maintenance purposes you may want access the containers shell.
 
-```bash
-docker exec -it (whatever your container name is e.g. debian) bash
-```
+``bash
+docker exec -it (whatever your container name is) bash
+``
+## Support
 
-## References
-=======
-Dockerfiles to build a [Debian Linux](https://www.debian.org)
-container image.
+These images were built to serve a specific need in a production environment and gradually have had more functionality added based on requests from the community.
+### Usage
+- The [Discussions board](../../discussions) is a great place for working with the community on tips and tricks of using this image.
+- Consider [sponsoring me](https://github.com/sponsors/tiredofit) personalized support.
+### Bugfixes
+- Please, submit a [Bug Report](issues/new) if something isn't working as expected. I'll do my best to issue a fix in short order.
 
-* Please see individual branches for distribution variants.
->>>>>>> master
+### Feature Requests
+- Feel free to submit a feature request, however there is no guarantee that it will be added, or at what timeline.
+- Consider [sponsoring me](https://github.com/sponsors/tiredofit) regarding development of features.
 
+### Updates
+- Best effort to track upstream changes, More priority if I am actively using the image in a production environment.
+- Consider [sponsoring me](https://github.com/sponsors/tiredofit) for up to date releases.
+
+## License
+MIT. See [LICENSE](LICENSE) for more details.
