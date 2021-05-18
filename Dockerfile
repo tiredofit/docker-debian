@@ -5,7 +5,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 ARG S6_OVERLAY_VERSION=v2.2.0.3
 ARG ZABBIX_VERSION
 
-ENV ZABBIX_VERSION=${ZABBIX_VERSION:-"5.2.5"} \
+ENV ZABBIX_VERSION=${ZABBIX_VERSION:-"5.2.6"} \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
     DEBIAN_FRONTEND=noninteractive \
@@ -28,28 +28,28 @@ RUN set -ex && \
                     libssl-dev \
                     ' && \
     apt-get install -y --no-install-recommends \
-            apt-transport-https \
-            apt-utils \
-            aptitude \
-            bash \
-            ca-certificates \
-            curl \
-            dirmngr \
-            dos2unix \
-            gnupg \
-            less \
-            logrotate \
-            msmtp \
-            nano \
-            net-tools \
-            netcat-openbsd \
-            procps \
-            sudo \
-            tzdata \
-            vim-tiny \
-            ${zstd} \
-            ${ZABBIX_BUILD_DEPS} \
-            && \
+                    apt-transport-https \
+                    apt-utils \
+                    aptitude \
+                    bash \
+                    ca-certificates \
+                    curl \
+                    dirmngr \
+                    dos2unix \
+                    gnupg \
+                    less \
+                    logrotate \
+                    msmtp \
+                    nano \
+                    net-tools \
+                    netcat-openbsd \
+                    procps \
+                    sudo \
+                    tzdata \
+                    vim-tiny \
+                    ${zstd} \
+                    ${ZABBIX_BUILD_DEPS} \
+                    && \
     \
     rm -rf /etc/timezone && \
     ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
@@ -103,7 +103,7 @@ RUN set -ex && \
     ### S6 installation
     debArch=$(dpkg --print-architecture) && \
     case "$debArch" in \
-		amd64) s6Arch='amd64' ;; \
+        amd64) s6Arch='amd64' ;; \
         armel) s6Arch='arm' ;; \
         armhf) s6Arch='armhf' ;; \
 		arm64) s6Arch='aarch64' ;; \

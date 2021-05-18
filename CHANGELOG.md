@@ -1,3 +1,10 @@
+## 6.1.1 2021-05-18 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add bullseye builds
+      - Zabbix Agent 5.2.6
+
+
 ## 6.1.0 2021-05-01 <dave at tiredofit dot ca>
 
    ### Added
