@@ -5,7 +5,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 ARG S6_OVERLAY_VERSION=v2.2.0.3
 ARG ZABBIX_VERSION
 
-ENV ZABBIX_VERSION=${ZABBIX_VERSION:-"5.2.6"} \
+ENV ZABBIX_VERSION=${ZABBIX_VERSION:-"5.4.0"} \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
     DEBIAN_FRONTEND=noninteractive \
