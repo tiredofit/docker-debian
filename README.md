@@ -111,7 +111,7 @@ Below is the complete list of available options that can be used to customize yo
 #### SMTP Redirection
 
 If you wish to have this sends mail, set `ENABLE_SMTP=TRUE` and configure the following environment variables.
-See the [MSMTP Configuration Options](http://msmtp.sourceforge.net/doc/msmtp.html) for further information on options to configure MSMTP.
+See the [MSMTP Configuration Options](https://marlam.de/msmtp/msmtp.html) for further information on options to configure MSMTP.
 
  Parameter             | Description                                                            | Default            |
 | --------------------- | ---------------------------------------------------------------------- | ------------------ |
@@ -131,7 +131,7 @@ See the [MSMTP Configuration Options](http://msmtp.sourceforge.net/doc/msmtp.htm
 
 #### Zabbix Options
 
-See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/5.2/manual/appendix/config/zabbix_agentd)
+See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/5.4/manual/appendix/config/zabbix_agentd)
 for information about the following Zabbix values.
 
 
