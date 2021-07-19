@@ -43,6 +43,7 @@ RUN debArch=$(dpkg --print-architecture) && \
                     apt-utils \
                     aptitude \
                     bash \
+                    busybox-static \
                     ca-certificates \
                     curl \
                     dirmngr \
@@ -62,6 +63,10 @@ RUN debArch=$(dpkg --print-architecture) && \
                     ${ZABBIX_BUILD_DEPS} ${FLUENTBIT_BUILD_DEPS} \
                     && \
     \
+    rm -rf /usr/bin/crontab && \
+    rm -rf /usr/sbin/cron && \
+    ln -s /bin/busybox /usr/bin/crontab && \
+    ln -s /bin/busybox /usr/bin/crond && \
     mkdir -p /usr/local/go && \
     echo "Downloading Go ${GO_VERSION}..." && \
     curl -sSL  https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz | tar xvfz - --strip 1 -C /usr/local/go && \
