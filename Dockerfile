@@ -65,8 +65,8 @@ RUN debArch=$(dpkg --print-architecture) && \
     \
     rm -rf /usr/bin/crontab && \
     rm -rf /usr/sbin/cron && \
-    ln -s /bin/busybox /usr/bin/crontab && \
-    ln -s /bin/busybox /usr/bin/crond && \
+    ln -s /bin/busybox /usr/sbin/crontab && \
+    ln -s /bin/busybox /usr/sbin/crond && \
     mkdir -p /usr/local/go && \
     echo "Downloading Go ${GO_VERSION}..." && \
     curl -sSL  https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz | tar xvfz - --strip 1 -C /usr/local/go && \
