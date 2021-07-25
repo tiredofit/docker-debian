@@ -180,29 +180,30 @@ This image comes with Zabbix Agent 1 (Classic or C compiled) and Zabbix Agent 2 
 
 | Parameter                      | Description                                                                       | Default                             | 1   | 2   |
 | ------------------------------ | --------------------------------------------------------------------------------- | ----------------------------------- | --- | --- |
-| `FLUENTBIT_SETUP_TYPE`         | Automatically generate configuration based on these variables `AUTO` or `MANUAL`  | `AUTO`                              |
-| `ZABBIX_AGENT_TYPE`            | Which version of Zabbix Agent to load `1` or `2`                                  | 1                                   | N/A | N/A |
-| `ZABBIX_LOG_FILE`              | Logfile location                                                                  | `/var/log/zabbix/zabbix_agentd.log` | x   | x   |
-| `ZABBIX_LOG_FILE_SIZE`         | Logfile size                                                                      | `1`                                 | x   | x   |
-| `ZABBIX_DEBUGLEVEL`            | Debug level                                                                       | `1`                                 | x   | x   |
-| `ZABBIX_REMOTECOMMANDS_ALLOW`  | Enable remote commands                                                            | `*`                                 | x   | x   |
-| `ZABBIX_REMOTECOMMANDS_DENY`   | Deny remote commands                                                              |                                     | x   | x   |
-| `ZABBIX_REMOTECOMMANDS_LOG`    | Enable remote commands Log (`0`/`1`)                                              | `1`                                 | x   |     |
-| `ZABBIX_SERVER`                | Allow connections from Zabbix server IP                                           | `0.0.0.0/0`                         | x   | x   |
-| `ZABBIX_STATUS_PORT`           | Agent will listen to this port for status requests (http://localhost:port/status) | 10050                               |     | x   |
-| `ZABBIX_LISTEN_PORT`           | Zabbix Agent listening port                                                       | `10050`                             | x   | x   |
-| `ZABBIX_LISTEN_IP`             | Zabbix Agent listening IP                                                         | `0.0.0.0`                           | x   | x   |
-| `ZABBIX_START_AGENTS`          | How many Zabbix Agents to start                                                   | `1`                                 | x   |     |
-| `ZABBIX_SERVER_ACTIVE`         | Server for active checks                                                          | `zabbix-proxy`                      | x   | x   |
-| `ZABBIX_HOSTNAME`              | Container hostname to report to server                                            | `docker`                            | x   | x   |
-| `ZABBIX_REFRESH_ACTIVE_CHECKS` | Seconds to refresh Active Checks                                                  | `120`                               | x   | x   |
-| `ZABBIX_BUFFER_SEND`           | Buffer Send                                                                       | `5`                                 | x   | x   |
-| `ZABBIX_BUFFER_SIZE`           | Buffer Size                                                                       | `100`                               | x   | x   |
-| `ZABBIX_MAXLINES_SECOND`       | Max Lines Per Second                                                              | `20`                                | x   |     |
-| `ZABBIX_SOCKET`                | Socket for communicating                                                          | `/tmp/zabbix.sock`                  |     | x   |
-| `ZABBIX_ALLOW_ROOT`            | Allow running as root                                                             | `1`                                 | x   |     |
-| `ZABBIX_USER`                  | User to start agent                                                               | `zabbix`                            | x   | x   |
-| `ZABBIX_USER_SUDO`             | Allow Zabbix user to utilize sudo commands                                        | `TRUE`                              | x   | x   |
+| `ZABBIX_SETUP_TYPE`         | Automatically generate configuration based on these variables `AUTO` or `MANUAL`  | `AUTO`                   |
+| `ZABBIX_AGENT_TYPE`            | Which version of Zabbix Agent to load `1` or `2`                                  | 1                        | N/A | N/A |
+| `ZABBIX_AGENT_LOG_PATH`        | Log File Path                                                                     | `/var/log/zabbix/agent/` | x   | x   |
+| `ZABBIX_AGENT_LOG_FILE`        | Logfile name                                                                      | `zabbix_agentd.log`      | x   | x   |
+| `ZABBIX_LOG_FILE_SIZE`         | Logfile size                                                                      | `0`                      | x   | x   |
+| `ZABBIX_DEBUGLEVEL`            | Debug level                                                                       | `1`                      | x   | x   |
+| `ZABBIX_REMOTECOMMANDS_ALLOW`  | Enable remote commands                                                            | `*`                      | x   | x   |
+| `ZABBIX_REMOTECOMMANDS_DENY`   | Deny remote commands                                                              |                          | x   | x   |
+| `ZABBIX_REMOTECOMMANDS_LOG`    | Enable remote commands Log (`0`/`1`)                                              | `1`                      | x   |     |
+| `ZABBIX_SERVER`                | Allow connections from Zabbix server IP                                           | `0.0.0.0/0`              | x   | x   |
+| `ZABBIX_STATUS_PORT`           | Agent will listen to this port for status requests (http://localhost:port/status) | 10050                    |     | x   |
+| `ZABBIX_LISTEN_PORT`           | Zabbix Agent listening port                                                       | `10050`                  | x   | x   |
+| `ZABBIX_LISTEN_IP`             | Zabbix Agent listening IP                                                         | `0.0.0.0`                | x   | x   |
+| `ZABBIX_START_AGENTS`          | How many Zabbix Agents to start                                                   | `1`                      | x   |     |
+| `ZABBIX_SERVER_ACTIVE`         | Server for active checks                                                          | `zabbix-proxy`           | x   | x   |
+| `ZABBIX_HOSTNAME`              | Container hostname to report to server                                            | `docker`                 | x   | x   |
+| `ZABBIX_REFRESH_ACTIVE_CHECKS` | Seconds to refresh Active Checks                                                  | `120`                    | x   | x   |
+| `ZABBIX_BUFFER_SEND`           | Buffer Send                                                                       | `5`                      | x   | x   |
+| `ZABBIX_BUFFER_SIZE`           | Buffer Size                                                                       | `100`                    | x   | x   |
+| `ZABBIX_MAXLINES_SECOND`       | Max Lines Per Second                                                              | `20`                     | x   |     |
+| `ZABBIX_SOCKET`                | Socket for communicating                                                          | `/tmp/zabbix.sock`       |     | x   |
+| `ZABBIX_ALLOW_ROOT`            | Allow running as root                                                             | `1`                      | x   |     |
+| `ZABBIX_USER`                  | User to start agent                                                               | `zabbix`                 | x   | x   |
+| `ZABBIX_USER_SUDO`             | Allow Zabbix user to utilize sudo commands                                        | `TRUE`                   | x   | x   |
 
 #### Logging Options
 

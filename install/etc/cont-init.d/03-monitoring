@@ -42,7 +42,7 @@ DebugLevel=${ZABBIX_DEBUGLEVEL}
 Hostname=${ZABBIX_HOSTNAME}
 ListenIP=${ZABBIX_LISTEN_IP}
 ListenPort=${ZABBIX_LISTEN_PORT}
-LogFile=${ZABBIX_LOG_PATH}/${ZABBIX_LOG_FILE}
+LogFile=${ZABBIX_AGENT_LOG_PATH}/${ZABBIX_AGENT_LOG_FILE}
 LogFileSize=${ZABBIX_LOG_FILE_SIZE}
 LogRemoteCommands=${ZABBIX_REMOTECOMMANDS_LOG}
 MaxLinesPerSecond=${ZABBIX_MAXLINES_SECOND}
@@ -78,22 +78,14 @@ EOF
 
         ;;
         "2" | "m" | "n" | "modern" | "new" )
-            os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
-              case ${os} in
-                "alpine" )
-                  case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
-                    3.11|3.12|3.13|3.14|edge)
-                      :
-                    ;;
-                    *)
-                      print_error "Sorry, Modern version not available for this images version (Alpine 3.11 + only)"
-                      exit 1
-                    ;;
-                  esac
-                ;;
-                "debian" )
-                  echo "UserParameter=packages.upgradable,sudo apt-get update >/dev/null && sudo aptitude search '~U' | wc -l" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/updated_packages.conf
-                ;;
+          case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
+            3.11|3.12|3.13|3.14|edge)
+              :
+            ;;
+            *)
+              print_error "Sorry, Modern version not available for this images version (Alpine 3.11 + only)"
+              exit 1
+            ;;
           esac
           if [ "${ZABBIX_SETUP_TYPE}" = "AUTO" ] || [ "${ZABBIX_SETUP_TYPE}" = "auto" ] ; then
             print_debug "Configuring Zabbix modern Agent"
@@ -141,9 +133,10 @@ EOF
         ;;
       esac
 
-      mkdir -p "${ZABBIX_LOG_PATH}"
-      chown -R "${ZABBIX_USER}" "${ZABBIX_LOG_PATH}"
+      mkdir -p "${ZABBIX_AGENT_LOG_PATH}"
+      chown -R "${ZABBIX_USER}" "${ZABBIX_AGENT_LOG_PATH}"
       chown -R "${ZABBIX_USER}" ${ZABBIX_CONFIG_PATH}/
+      create_logrotate zabbix-agent ${ZABBIX_AGENT_LOG_PATH}/${ZABBIX_AGENT_LOG_FILE} ${ZABBIX_USER} root
       print_notice "Container configured for monitoring with '${CONTAINER_MONITORING_BACKEND} ${ZABBIX_AGENT_TYPE}'"
     ;;
     * )
