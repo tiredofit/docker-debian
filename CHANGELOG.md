@@ -1,3 +1,88 @@
+## 7.1.5 2021-08-30 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-bit 1.8.5
+
+
+## 7.1.4 2021-08-30 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 5.4.4
+
+
+## 7.1.3 2021-08-30 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add Zabbix Agent (classic/modern) Log Shipping parsers for fluent-bit
+
+
+## 7.1.2 2021-08-30 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change references from 'edge' to 3.15 when looking at os-release
+
+
+## 7.1.1 2021-08-27 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add TLS Verification for LOKI Output plugin (Logshipping/Fluent-bit)
+
+
+## 7.1.0 2021-08-25 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-Bit 1.8.3 - Only available for Alpine 3.11 and up
+      - Customize the amount of days logrotate retains archived logs
+      - New CONTAINER_NAME variable that is used for Monitoring and log shipping
+      - Auto configuration of output plugins for Fluent-Bit (NULL, LOKI, Forward/FluentD)
+      - Auto configuration of Log shipping for files already setup to use log rotation
+      - Multiple Parsers support for Log Shipping
+      - Add new log to ship via fluent-bit via environment variable
+
+   ### Changed
+      - Change SMTP_TLS, SMTP_STARTTLS, SMTP_TLSCERTCHECK from "on/off" values to `TRUE|FALSE`
+      - Fix for MSMTP backend not properly accounting for legacy variables (ENABLE_SMTP)
+
+## 7.0.3 2021-08-04 <dave at tiredofit dot ca>
+
+   ### Added
+      - Bring monitoring cont-init.d script up to parity with debian side for ease of codebase
+
+
+## 7.0.2 2021-07-26 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for Zabbix Agent 2 File Logging
+
+
+## 7.0.1 2021-07-25 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 5.4.3
+
+   ### Changed
+      - Change the location where Zabbix Agent logs
+
+
+## 7.0.0 2021-07-05 <dave at tiredofit dot ca>
+
+Major changes to this base image, reworking technical debt, creating consistency, and building hooks and expansion capabilities for future purposes.
+
+   ### Added
+      - Log Shipping support, presently supporting Fluent Bit (x86_64 only)
+      - Zabbix Agent 5.4.2
+      - Zabbix Agent 2 (modern/go) included, 1 (classic/c) still remains
+      - Dyanmically add crontab entries via CRON_* environment variables
+      - Prefix container logs with Timestamp
+      - Process watchdog support should a process execute multiple times (hooks)
+      - Development functions for ease of use
+
+   ### Changed
+      - Service Names, and order of execution
+      - db_ready and sanity_db functions take additional arguments
+      - Environment Variable names have changed, attempts have been made to ensure legacy variable names will still function but will be removed at a later date
+      - Rewrote permissions changing routines from scratch
+
 ## 6.1.3 2021-07-19 <dave at tiredofit dot ca>
 
    ### Changed

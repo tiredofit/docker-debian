@@ -5,22 +5,21 @@ LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
 ARG ZABBIX_VERSION
-ARG GO_VERSION=1.16.6
+ARG GO_VERSION=1.16.7
 
-ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.7.9"} \
+ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.8.5"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"v2.2.0.3"} \
-    ZABBIX_VERSION=${ZABBIX_VERSION:-"5.4.3"} \
+    ZABBIX_VERSION=${ZABBIX_VERSION:-"5.4.4"} \
     CONTAINER_ENABLE_SCHEDULING=TRUE \
     CONTAINER_ENABLE_MESSAGING=TRUE \
     CONTAINER_ENABLE_MONITORING=TRUE \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
-    DEBIAN_FRONTEND=noninteractive \
-    ZABBIX_HOSTNAME=debian
+    DEBIAN_FRONTEND=noninteractive
 
 RUN debArch=$(dpkg --print-architecture) && \
     case "$debArch" in \
-        amd64) fluentbit='true' ; FLUENTBIT_BUILD_DEPS="bison cmake flex libssl-dev libsasl2-dev libsystemd-dev zlib1g-dev " ;; \
+        amd64) fluentbit='true' ; FLUENTBIT_BUILD_DEPS="bison cmake flex libssl-dev libsasl2-dev libsystemd-dev pkg-config zlib1g-dev " ;; \
 		*) : ;; \
 	esac; \
     set -ex && \
@@ -36,6 +35,7 @@ RUN debArch=$(dpkg --print-architecture) && \
                     pkg-config \
                     libpcre3-dev \
                     libssl-dev \
+                    upx-ucl \
                     zlib1g-dev \
                     ' && \
     apt-get install -y --no-install-recommends \
@@ -119,13 +119,16 @@ RUN debArch=$(dpkg --print-architecture) && \
     cp src/go/bin/zabbix_agent2 /usr/sbin/zabbix_agent2 && \
     strip /usr/sbin/zabbix_agentd && \
     strip /usr/sbin/zabbix_sender && \
+    if [ "$debArch" = "amd64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_agentd ; fi ; \
+    if [ "$debArch" = "amd64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_agent2 ; fi ; \
+    if [ "$debArch" = "amd64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_sender ; fi ; \
     mkdir -p /etc/zabbix/zabbix_agentd.conf.d && \
     mkdir -p /var/log/zabbix && \
     chown -R zabbix:root /var/log/zabbix && \
     chown --quiet -R zabbix:root /etc/zabbix && \
     rm -rf /usr/src/zabbix && \
     \
-    ### Fluentbit compilation
+### Fluentbit compilation
     mkdir -p /usr/src/fluentbit && \
     curl -sSL https://github.com/fluent/fluent-bit/archive/v${FLUENTBIT_VERSION}.tar.gz | tar xfz - --strip 1 -C /usr/src/fluentbit && \
     cd /usr/src/fluentbit && \
@@ -133,35 +136,58 @@ RUN debArch=$(dpkg --print-architecture) && \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_INSTALL_LIBDIR=lib \
         -DCMAKE_BUILD_TYPE=None \
-        -DFLB_JEMALLOC=Yes \
-        -DFLB_RELEASE=Yes \
-        -DFLB_SIGNV4=Yes \
+        -DFLB_AWS=No \
         -DFLB_BACKTRACE=No \
-        -DFLB_HTTP_SERVER=Yes \
+        -DFLB_DEBUG=No \
         -DFLB_EXAMPLES=No \
+        -DFLB_FILTER_AWS=No \
+        -DFLB_FILTER_KUBERNETES=No \
+        -DFLB_HTTP_SERVER=Yes \
+        -DFLB_IN_COLLECTD=No \
+        -DFLB_IN_CPU=No \
+        -DFLB_IN_DOCKER=No \
+        -DFLB_IN_DOCKER_EVENTS=No \
+        -DFLB_IN_KMSG=No \
+        -DFLB_IN_MEM=No \
+        -DFLB_IN_MQTT=No \
+        -DFLB_IN_NETIF=No \
         -DFLB_IN_SERIAL=No \
         -DFLB_IN_SYSTEMD=No \
+        -DFLB_IN_TCP=No \
+        -DFLB_IN_THERMAL=No \
         -DFLB_IN_WINLOG=No \
         -DFLB_IN_WINSTAT=No \
-        -DFLB=FLB_IN_KMSG=No \
-        -DFLB_IN_SYSTEMD=No \
+        -DFLB_JEMALLOC=Yes \
+        -DFLB_LUAJIT=No \
         -DFLB_OUT_AZURE=No \
         -DFLB_OUT_AZURE_BLOB=No \
         -DFLB_OUT_BIGQUERY=No \
-        -DFLB_OUT_DATADOG=No \
+        -DFLB_OUT_CALYPTIA=No \
+        -DFLB_OUT_CLOUDWATCH_LOGS=No \
         -DFLB_OUT_COUNTER=No \
+        -DFLB_OUT_DATADOG=No \
+        -DFLB_OUT_GELF=No \
         -DFLB_OUT_INFLUXDB=No \
-        -DFLB_OUT_NRLOGS=No \
-        -DFLB_OUT_LOGDNA=No \
         -DFLB_OUT_KAFKA=No \
         -DFLB_OUT_KAFKA_REST=No \
         -DFLB_OUT_KINESIS_FIREHOSE=No \
         -DFLB_OUT_KINESIS_STREAMS=No \
+        -DFLB_OUT_LOGDNA=No \
+        -DFLB_OUT_NATS=No \
+        -DFLB_OUT_NRLOGS=No \
         -DFLB_OUT_PGSQL=No \
+        -DFLB_OUT_S3=No \
         -DFLB_OUT_SLACK=No \
         -DFLB_OUT_SPLUNK=No \
+        -DFLB_OUT_STACKDRIVER=No \
+        -DFLB_OUT_TCP=No \
+        -DFLB_OUT_TD=No \
+        -DFLB_RELEASE=Yes \
+        -DFLB_SHARED_LIB=Off \
+        -DFLB_SIGNV4=No \
+        -DFLB_SMALL=No \
         . && \
-    if [ "$debArch" = "amd64" ] ; then make -j"$(nproc)" ; make install ; mv /usr/etc/fluent-bit /etc/fluent-bit ; strip /usr/bin/fluent-bit ; if [ "$debArch" = "amd64" ] && [ "$no_upx" != "true "]; then upx /usr/bin/fluent-bit ; fi ; fi ; \
+    if [ "$debArch" = "amd64" ] ; then make -j"$(nproc)" ; make install ; mv /usr/etc/fluent-bit /etc/fluent-bit ; strip /usr/bin/fluent-bit ; if [ "$debArch" = "amd64" ] && [ "$no_upx" != "true" ]; then upx /usr/bin/fluent-bit ; fi ; fi ; \
     \
     ### S6 installation
     debArch=$(dpkg --print-architecture) && \
@@ -185,7 +211,7 @@ RUN debArch=$(dpkg --print-architecture) && \
     rm -rf /usr/src/* && \
     rm -rf /root/go && \
     rm -rf /root/.cache && \
-    rm -rf /var/lib/apt/lists/* /root/.gnupg /var/log/* /etc/logrotate.d
+    rm -rf /var/lib/apt/lists/* /root/.gnupg /var/log/* /etc/logrotate.d/*
 
 ### Networking configuration
 EXPOSE 10050/TCP

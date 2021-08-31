@@ -125,7 +125,7 @@ create_logrotate() {
 $2 {
     daily
     ifempty
-    rotate 7
+    rotate ${LOGROTATE_RETAIN_DAYS}
     missingok
     compress
     dateext
@@ -486,9 +486,11 @@ grant_sudo() {
 }
 
 log_prefix() {
+    output_off
     if [ "${CONTAINER_ENABLE_LOG_PREFIX}" = "TRUE" ] || [ "${CONTAINER_ENABLE_LOG_PREFIX}" = "true" ] ; then
         echo "$(date +"${CONTAINER_LOG_PREFIX_DATE_FMT}")${CONTAINER_LOG_PREFIX_SEPERATOR}$(date +"${CONTAINER_PROCESS_HELPER_TIME_FMT}") "
     fi
+    output_on
 }
 
 ## For writing script initalization state to ensure proper application execution
