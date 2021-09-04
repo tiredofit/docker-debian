@@ -1,3 +1,10 @@
+## 7.1.11 2021-09-04 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for create_logrotate function unneccessarily requesting su access
+      - Zabbix Agent Logrotate/Fluent bit configuration fix
+
+
 ## 7.1.10 2021-09-03 <dave at tiredofit dot ca>
 
    ### Changed
