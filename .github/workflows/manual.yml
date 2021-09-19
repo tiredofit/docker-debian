@@ -106,7 +106,7 @@ jobs:
       - name: Switch
         id: Switch
         run: |
-          sed -i "s|FROM debian:.*|FROM debian:${RELEASE}|g" Dockerfile
+          sed -i "s|FROM docker.io/debian:.*|FROM docker.io/debian:${RELEASE}|g" Dockerfile
 
       - name: Build
         uses: docker/build-push-action@v2
@@ -215,7 +215,7 @@ jobs:
       - name: Switch
         id: Switch
         run: |
-          sed -i "s|FROM debian:.*|FROM debian:${RELEASE}|g" Dockerfile
+          sed -i "s|FROM docker.io/debian:.*|FROM docker.io/debian:${RELEASE}|g" Dockerfile
 
       - name: Build
         uses: docker/build-push-action@v2
@@ -324,7 +324,7 @@ jobs:
       - name: Switch
         id: Switch
         run: |
-          sed -i "s|FROM debian:.*|FROM debian:${RELEASE}|g" Dockerfile
+          sed -i "s|FROM docker.io/debian:.*|FROM docker.io/debian:${RELEASE}|g" Dockerfile
 
       - name: Build
         uses: docker/build-push-action@v2
@@ -433,7 +433,7 @@ jobs:
       - name: Switch
         id: Switch
         run: |
-          sed -i "s|FROM debian:.*|FROM debian:${RELEASE}|g" Dockerfile
+          sed -i "s|FROM docker.io/debian:.*|FROM docker.io/debian:${RELEASE}|g" Dockerfile
 
       - name: Build
         uses: docker/build-push-action@v2
