@@ -1,3 +1,9 @@
+## 7.1.17 2021-09-23 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix fluent-bit parsing configuration
+
+
 ## 7.1.15 2021-09-19 <dave at tiredofit dot ca>
 
    ### Added
