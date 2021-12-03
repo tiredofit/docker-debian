@@ -2,10 +2,10 @@ FROM docker.io/debian:buster
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ### Set defaults
+ARG GOLANG_VERSION=1.17.4
 ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
 ARG ZABBIX_VERSION
-ARG GO_VERSION=1.17.3
 
 ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.8.10"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"v2.2.0.3"} \
@@ -68,8 +68,8 @@ RUN debArch=$(dpkg --print-architecture) && \
     ln -s /bin/busybox /usr/sbin/crontab && \
     ln -s /bin/busybox /usr/sbin/crond && \
     mkdir -p /usr/local/go && \
-    echo "Downloading Go ${GO_VERSION}..." && \
-    curl -sSL  https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz | tar xvfz - --strip 1 -C /usr/local/go && \
+    echo "Downloading Go ${GOLANG_VERSION}..." && \
+    curl -sSL  https://dl.google.com/go/go${GOLANG_VERSION}.linux-amd64.tar.gz | tar xvfz - --strip 1 -C /usr/local/go && \
     ln -sf /usr/local/go/bin/go /usr/local/bin/ && \
     ln -sf /usr/local/go/bin/godoc /usr/local/bin/ && \
     ln -sf /usr/local/go/bin/gfmt /usr/local/bin/ && \
