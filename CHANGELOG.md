@@ -1,3 +1,10 @@
+## 7.2.2 2021-12-03 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Consolidate Zabbix Container Agent configuration into one file and introduce Autoregister header
+      - Tighten up permissions on Zabbix log and configuration areas
+
+
 ## 7.2.1 2021-12-03 <dave at tiredofit dot ca>
 
    ### Changed
