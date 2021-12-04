@@ -95,7 +95,9 @@ RUN debArch=$(dpkg --print-architecture) && \
     mkdir -p /var/lib/zabbix && \
     mkdir -p /var/lib/zabbix/enc && \
     mkdir -p /var/lib/zabbix/modules && \
+    mkdir -p /var/lib/zabbix/run && \
     chown --quiet -R zabbix:root /var/lib/zabbix && \
+    chmod -R 770 zabbix:root /var/lib/zabbix/run && \
     rm -rf /etc/zabbix/zabbix-agentd.conf.d/* && \
     mkdir -p /usr/src/zabbix && \
     curl -sSLk https://github.com/zabbix/zabbix/archive/${ZABBIX_VERSION}.tar.gz | tar xfz - --strip 1 -C /usr/src/zabbix && \
