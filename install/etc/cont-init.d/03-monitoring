@@ -147,13 +147,23 @@ EOF
         ;;
       esac
 
-      print_debug "Zabbix Agent - Adding Autoregister Configuration '$(grep -h "# Autoregister=" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf | cut -d = -f2 | xargs | tr " " ":" | sed 's/^/:/' | sed 's/$/:/')'"
-      sed -i "/^Include=.*/i HostMetadata=$(grep -h "# Autoregister=" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf | cut -d = -f2 | xargs | tr " " ":" | sed 's/^/:/' | sed 's/$/:/')" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
+      mkdir -p "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}.d"
+      cat <<EOF > "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}.d"/tiredofit-container_agent.conf
+# Zabbix Container Agent Configuration - Automatically Generated based on Operating System
+# Find Companion Zabbix Server Templates at https://github.com/tiredofit/docker-alpine or https://github.com/tiredofit/docker-debian
+# Autoregister=toica
+
+## Report on Container OS
+UserParameter=agent.os,grep "PRETTY_NAME" /etc/os-release | cut -d '"' -f2"
+
+## Report on packages that are available to be upgraded
+${updated_packages}
+EOF
 
       mkdir -p "${ZABBIX_AGENT_LOG_PATH}"
       chown -R "${ZABBIX_USER}:root" "${ZABBIX_AGENT_LOG_PATH}"
       chown -R "${ZABBIX_USER}:root" "${ZABBIX_CONFIG_PATH}/"
-      chmod 770 "${ZABBIX_CONFIG_PATH}"
+      chmod 775 "${ZABBIX_CONFIG_PATH}"
       create_logrotate zabbix-agent ${ZABBIX_AGENT_LOG_PATH}/${ZABBIX_AGENT_LOG_FILE} zabbix-agent-${logship_version} ${ZABBIX_USER} root
       print_notice "Container configured for monitoring with '${CONTAINER_MONITORING_BACKEND} ${ZABBIX_AGENT_TYPE}'"
     ;;
