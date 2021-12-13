@@ -1,3 +1,10 @@
+## 7.2.10 2021-12-13 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add switchable Zabbix Autoregistration capability
+      - Add Zabbix Autoregistration by DNS name instead of IP address capability
+
+
 ## 7.2.9 2021-12-10 <dave at tiredofit dot ca>
 
    ### Changed
