@@ -1,3 +1,9 @@
+## 7.2.11 2021-12-15 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Do the same cleanup for AUTOREGISTER_DNS as Autoregister
+
+
 ## 7.2.10 2021-12-13 <dave at tiredofit dot ca>
 
    ### Added
