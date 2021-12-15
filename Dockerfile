@@ -91,11 +91,11 @@ RUN debArch=$(dpkg --print-architecture) && \
             zabbix \
             && \
     mkdir -p /etc/zabbix && \
-    mkdir -p /etc/zabbix/zabbix_agentd.d && \
     mkdir -p /var/lib/zabbix && \
     mkdir -p /var/lib/zabbix/enc && \
     mkdir -p /var/lib/zabbix/modules && \
     mkdir -p /var/lib/zabbix/run && \
+    mkdir -p /etc/zabbix/zabbix_agentd.conf.d && \
     chown --quiet -R zabbix:root /var/lib/zabbix && \
     chmod -R 770 /var/lib/zabbix/run && \
     rm -rf /etc/zabbix/zabbix-agentd.conf.d/* && \
@@ -119,14 +119,15 @@ RUN debArch=$(dpkg --print-architecture) && \
     cp src/zabbix_agent/zabbix_agentd /usr/sbin/zabbix_agentd && \
     cp src/zabbix_get/zabbix_get /usr/sbin/zabbix_get && \
     cp src/zabbix_sender/zabbix_sender /usr/sbin/zabbix_sender && \
-    if [ "$zabbix_agent2" = "true" ] ; then cp src/go/bin/zabbix_agent2 /usr/sbin/zabbix_agent2 ; fi ; \
+    cp src/go/bin/zabbix_agent2 /usr/sbin/zabbix_agent2 && \
     strip /usr/sbin/zabbix_agentd && \
     strip /usr/sbin/zabbix_get && \
     strip /usr/sbin/zabbix_sender && \
-    if [ "$zabbix_agent2" = true ] ; then strip /usr/sbin/zabbix_agent2 ; fi ; \
-    if [ "$apkArch" = "x86_64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_agentd ; fi ; \
-    if [ "$apkArch" = "x86_64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_get ; fi ; \
-    if [ "$apkArch" = "x86_64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_sender ; fi ; \
+    strip /usr/sbin/zabbix_agent2 && \
+    if [ "$debArch" = "amd64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_agentd ; fi ; \
+    if [ "$debArch" = "amd64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_agent2; fi ; \
+    if [ "$debArch" = "amd64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_get ; fi ; \
+    if [ "$debArch" = "amd64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_sender ; fi ; \
     mkdir -p /etc/zabbix/zabbix_agentd.conf.d && \
     mkdir -p /var/log/zabbix && \
     chown -R zabbix:root /var/log/zabbix && \
