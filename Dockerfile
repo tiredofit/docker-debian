@@ -49,6 +49,7 @@ RUN debArch=$(dpkg --print-architecture) && \
                     dirmngr \
                     dos2unix \
                     gnupg \
+                    jq \
                     less \
                     logrotate \
                     msmtp \
