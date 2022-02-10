@@ -1,3 +1,9 @@
+## 7.3.1 2022-02-10 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for slower machines that timeout after 5 seconds of container configuration
+
+
 ## 7.3.0 2022-02-07 <dave at tiredofit dot ca>
 
    ### Added
