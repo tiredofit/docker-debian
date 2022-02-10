@@ -3,19 +3,30 @@ LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ### Set defaults
 ARG GOLANG_VERSION=1.17.6
+ARG DOAS_VERSION
 ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
 ARG ZABBIX_VERSION
 
-ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.8.11"} \
-    S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"v2.2.0.3"} \
-    ZABBIX_VERSION=${ZABBIX_VERSION:-"5.4.9"} \
-    CONTAINER_ENABLE_SCHEDULING=TRUE \
-    CONTAINER_ENABLE_MESSAGING=TRUE \
-    CONTAINER_ENABLE_MONITORING=TRUE \
+ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.8.12"} \
+    S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.0.0.2"} \
+    ZABBIX_VERSION=${ZABBIX_VERSION:-"5.4.10"} \
+    DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
-    DEBIAN_FRONTEND=noninteractive
+    CONTAINER_ENABLE_SCHEDULING=TRUE \
+    CONTAINER_SCHEDULING_BACKEND=cron \
+    CONTAINER_ENABLE_MESSAGING=TRUE \
+    CONTAINER_MESSAGING_BACKEND=msmtp \
+    CONTAINER_ENABLE_MONITORING=TRUE \
+    CONTAINER_MONITORING_BACKEND=zabbix \
+    CONTAINER_ENABLE_LOGSHIPPING=FALSE \
+    DEBIAN_FRONTEND=noninteractive \
+    S6_GLOBAL_PATH=/command:/usr/bin:/bin:/usr/sbin:sbin:/usr/local/bin:/usr/local/sbin \
+    S6_KEEP_ENV=1 \
+    IMAGE_NAME="tiredofit/debian" \
+    IMAGE_REPO_URL="https://github.com/tiredofit/docker-debian/"
+
 
 RUN debArch=$(dpkg --print-architecture) && \
     case "$debArch" in \
@@ -70,7 +81,7 @@ RUN debArch=$(dpkg --print-architecture) && \
     ln -s /bin/busybox /usr/sbin/crond && \
     mkdir -p /usr/local/go && \
     echo "Downloading Go ${GOLANG_VERSION}..." && \
-    curl -sSL  https://dl.google.com/go/go${GOLANG_VERSION}.linux-amd64.tar.gz | tar xvfz - --strip 1 -C /usr/local/go && \
+    curl -sSLk  https://dl.google.com/go/go${GOLANG_VERSION}.linux-amd64.tar.gz | tar xvfz - --strip 1 -C /usr/local/go && \
     ln -sf /usr/local/go/bin/go /usr/local/bin/ && \
     ln -sf /usr/local/go/bin/godoc /usr/local/bin/ && \
     ln -sf /usr/local/go/bin/gfmt /usr/local/bin/ && \
@@ -79,6 +90,19 @@ RUN debArch=$(dpkg --print-architecture) && \
     ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
     echo "${TIMEZONE}" > /etc/timezone && \
     dpkg-reconfigure -f noninteractive tzdata && \
+    \
+    ### Build Doas
+    mkdir -p /usr/src/doas && \
+    curl -sSLk https://github.com/Duncaen/OpenDoas/archive/${DOAS_VERSION}.tar.gz | tar xfz - --strip 1 -C /usr/src/doas && \
+    cd /usr/src/doas && \
+    ./configure --prefix=/usr \
+                --enable-static \
+                --without-pam \
+                && \
+    make && \
+    make install && \
+    mkdir -p /etc/doas.d && \
+    \
     ## Zabbix Agent Install
     addgroup --gid 10050 zabbix && \
     adduser --uid 10050 \
@@ -137,7 +161,7 @@ RUN debArch=$(dpkg --print-architecture) && \
     \
 ### Fluentbit compilation
     mkdir -p /usr/src/fluentbit && \
-    curl -sSL https://github.com/fluent/fluent-bit/archive/v${FLUENTBIT_VERSION}.tar.gz | tar xfz - --strip 1 -C /usr/src/fluentbit && \
+    curl -sSLk https://github.com/fluent/fluent-bit/archive/v${FLUENTBIT_VERSION}.tar.gz | tar xfz - --strip 1 -C /usr/src/fluentbit && \
     cd /usr/src/fluentbit && \
     cmake \
         -DCMAKE_INSTALL_PREFIX=/usr \
@@ -192,21 +216,38 @@ RUN debArch=$(dpkg --print-architecture) && \
         -DFLB_RELEASE=Yes \
         -DFLB_SHARED_LIB=Off \
         -DFLB_SIGNV4=No \
-        -DFLB_SMALL=No \
+        -DFLB_SMALL=Yes \
         . && \
     if [ "$debArch" = "amd64" ] ; then make -j"$(nproc)" ; make install ; mv /usr/etc/fluent-bit /etc/fluent-bit ; strip /usr/bin/fluent-bit ; if [ "$debArch" = "amd64" ] && [ "$no_upx" != "true" ]; then upx /usr/bin/fluent-bit ; fi ; fi ; \
     \
     ### S6 installation
     debArch=$(dpkg --print-architecture) && \
     case "$debArch" in \
-        amd64) s6Arch='amd64' ;; \
-        armel) s6Arch='arm' ;; \
+        amd64) s6Arch='x86_64' ;; \
+        armel) s6Arch='armhf' ;; \
         armhf) s6Arch='armhf' ;; \
 		arm64) s6Arch='aarch64' ;; \
-		ppc64le) s6Arch='ppc64le' ;; \
 		*) echo >&2 "Error: unsupported architecture ($debArch)"; exit 1 ;; \
 	esac; \
-    curl -sSLk https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-${s6Arch}.tar.gz | tar xfz - --strip 0 -C / && \
+    curl -sSLk https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch-${S6_OVERLAY_VERSION}.tar.xz | tar xvpfJ - -C / && \
+    curl -sSLk https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${s6Arch}-${S6_OVERLAY_VERSION}.tar.xz | tar xvpfJ - -C / && \
+    curl -sSLk https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-symlinks-noarch-${S6_OVERLAY_VERSION}.tar.xz | tar xvpfJ - -C / && \
+    curl -sSLk https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-symlinks-arch-${S6_OVERLAY_VERSION}.tar.xz | tar xvpfJ - -C / && \
+    mkdir -p /etc/cont-init.d && \
+    mkdir -p /etc/cont-finish.d && \
+    mkdir -p /etc/services.d && \
+    chown -R 0755 /etc/cont-init.d && \
+    chown -R 0755 /etc/cont-finish.d && \
+    chmod -R 0755 /etc/services.d && \
+    # To remove when S6 3.1.0 is released
+    echo "/command:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin" > /etc/s6-overlay/config/global_path && \
+    ##
+    sed -i "s|s6-rc -v2|s6-rc -v1|g" /package/admin/s6-overlay/etc/s6-linux-init/skel/rc.init && \
+    sed -i "s|s6-rc -v2|s6-rc -v1|g" /package/admin/s6-overlay/etc/s6-linux-init/skel/rc.shutdown && \
+    sed -i "s|echo|# echo |g" /package/admin/s6-overlay/etc/s6-rc/scripts/cont-init && \
+    sed -i "s|echo|# echo |g" /package/admin/s6-overlay/etc/s6-rc/scripts/cont-finish && \
+    sed -i "s|echo ' (no readiness notification)'|# echo ' (no readiness notification)'|g" /package/admin/s6-overlay/etc/s6-rc/scripts/services-up && \
+    sed -i "s|s6-echo -n|# s6-echo -n|g" /package/admin/s6-overlay/etc/s6-rc/scripts/services-up && \
     \
     ### Cleanup
     mkdir -p /assets/cron && \
@@ -221,7 +262,7 @@ RUN debArch=$(dpkg --print-architecture) && \
     rm -rf /var/lib/apt/lists/* /root/.gnupg /var/log/* /etc/logrotate.d/*
 
 ### Networking configuration
-EXPOSE 10050/TCP
+EXPOSE 2020/TCP 10050/TCP
 
 ### Add folders
 ADD install /

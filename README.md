@@ -101,19 +101,20 @@ The following directories are used for configuration and can be mapped for persi
 
 Below is the complete list of available options that can be used to customize your installation.
 #### Container Options
-| Parameter                           | Description                                                            | Default                  |
-| ----------------------------------- | ---------------------------------------------------------------------- | ------------------------ |
-| `CONAINER_ENABLE_LOG_TIMESTAMP`     | Prefix this images container logs with timestamp                       | `TRUE`                   |
-| `CONTAINER_COLORIZE_OUTPUT`         | Enable/Disable colorized console output                                | `TRUE`                   |
-| `CONTAINER_CUSTOM_PATH`             | Used for adding custom files into the image upon startup               | `/assets/custom`         |
-| `CONTAINER_CUSTOM_SCRIPTS_PATH`     | Used for adding custom scripts to execute upon startup                 | `/assets/custom-scripts` |
-| `CONTAINER_ENABLE_PROCESS_COUNTER`  | Show how many times process has executed in console log                | `TRUE`                   |
-| `CONTAINER_LOG_LEVEL`               | Control level of output of container `INFO`, `WARN`, `NOTICE`, `DEBUG` | `NOTICE`                 |
-| `CONTAINER_LOG_TIMESAMP_TIME_FMT`   | Timestamp Time Format                                                  | `%H:%M:%S`               |
-| `CONTAINER_LOG_TIMESTAMP_DATE_FMT`  | Timestamp Date Format                                                  | `%Y-%m-%d`               |
-| `CONTAINER_LOG_TIMESTAMP_SEPERATOR` | Timestamp seperator                                                    | `-`                      |
-| `CONTAINER_NAME`                    | Used for setting entries in Monnitoring and Log Shipping               | (hostname)               |
-| `TIMEZONE`                          | Set Timezone                                                           | `Etc/GMT`                |
+| Parameter                           | Description                                                                         | Default                  |
+| ----------------------------------- | ----------------------------------------------------------------------------------- | ------------------------ |
+| `CONAINER_ENABLE_LOG_TIMESTAMP`     | Prefix this images container logs with timestamp                                    | `TRUE`                   |
+| `CONTAINER_COLORIZE_OUTPUT`         | Enable/Disable colorized console output                                             | `TRUE`                   |
+| `CONTAINER_CUSTOM_BASH_PROMPT`      | If you wish to set a different bash prompt then '(imagename):(version) HH:MM:SS # ' |                          |
+| `CONTAINER_CUSTOM_PATH`             | Used for adding custom files into the image upon startup                            | `/assets/custom`         |
+| `CONTAINER_CUSTOM_SCRIPTS_PATH`     | Used for adding custom scripts to execute upon startup                              | `/assets/custom-scripts` |
+| `CONTAINER_ENABLE_PROCESS_COUNTER`  | Show how many times process has executed in console log                             | `TRUE`                   |
+| `CONTAINER_LOG_LEVEL`               | Control level of output of container `INFO`, `WARN`, `NOTICE`, `DEBUG`              | `NOTICE`                 |
+| `CONTAINER_LOG_TIMESAMP_TIME_FMT`   | Timestamp Time Format                                                               | `%H:%M:%S`               |
+| `CONTAINER_LOG_TIMESTAMP_DATE_FMT`  | Timestamp Date Format                                                               | `%Y-%m-%d`               |
+| `CONTAINER_LOG_TIMESTAMP_SEPERATOR` | Timestamp seperator                                                                 | `-`                      |
+| `CONTAINER_NAME`                    | Used for setting entries in Monnitoring and Log Shipping                            | (hostname)               |
+| `TIMEZONE`                          | Set Timezone                                                                        | `Etc/GMT`                |
 
 
 #### Scheduling Options
@@ -135,7 +136,7 @@ There are two ways to add jobs to be triggered via cron. One is to drop files in
 
 | Parameter | Description                                            | Default |
 | --------- | ------------------------------------------------------ | ------- |
-| `CRON_*`  | Name of the job value of the time and output to be run |         |
+| `CRON_*`  | Name of the job value of the time and output to be run | ``      |
 
 Example: `CRON_HELLO="* * * * * echo 'hello' > /tmp/hello.log`
 
@@ -149,6 +150,7 @@ If you wish to send mail, set `CONTAINER_ENABLE_MESSAGING=TRUE` and configure th
 | ----------------------------- | ------------------------------------------ | ------- |
 | `CONTAINER_ENABLE_MESSAGING`  | Enable Messaging services like SMTP        | `TRUE`  |
 | `CONTAINER_MESSAGING_BACKEND` | Messaging Backend - presently only `msmtp` | `msmtp` |
+
 ##### MSMTP Options
 
 See the [MSMTP Configuration Options](https://marlam.de/msmtp/msmtp.html) for further information on options to configure MSMTP.
@@ -166,7 +168,6 @@ See the [MSMTP Configuration Options](https://marlam.de/msmtp/msmtp.html) for fu
 | `SMTP_STARTTLS`       | Start TLS from within session                     | `FALSE`         |
 | `SMTP_TLSCERTCHECK`   | Check remote certificate                          | `FALSE`         |
 
-
 See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/5.4/manual/appendix/config/zabbix_agentd)
 for information about the following Zabbix values.
 
@@ -177,7 +178,6 @@ This image includes the capability of using agents inside the image to monitor m
 | ----------------------------- | -------------------------------------------- | -------- |
 | `CONTAINER_ENABLE_MONITORING` | Enable Monitoring of applications or metrics | `TRUE`   |
 | `CONTAINR_MONITORING_BACKEND` | What monitoring agent to use `zabbix`        | `zabbix` |
-
 ##### Zabbix Options
 
 This image comes with Zabbix Agent 1 (Classic or C compiled) and Zabbix Agent 2 (Modern, or Go compiled). See which variables work for each version and make your agent choice. Drop files in `/etc/zabbix/zabbix_agentd.conf.d` to setup your metrics. The environment variables below only affect the system end of the configuration. If you wish to use your own system configuration without these variables, change `ZABBIX_SETUP_TYPE` to `MANUAL`
@@ -218,6 +218,7 @@ This image comes with Zabbix Agent 1 (Classic or C compiled) and Zabbix Agent 2 
 | `ZABBIX_USER_SUDO`                   | Allow Zabbix user to utilize sudo commands                                                    | `TRUE`                   | x   | x   |
 
 This image supports autoregistering configuration as an Active Agent to a Zabbix Proxy or a Server. It looks in `/etc/zabbix_agent.conf.d/*.conf` for the string `# Autoregister=` and takes these values and adds it to the `HostMetadata` configuration entry automatically wrapped around `:` eg `:application:` . Use it by creating an Auto register rule and search for that string. You can find server templates in this repository in the `[zabbix_templates](zabbix_templates/)` directory.
+
 #### Logging Options
 
 This is work in progress for a larger logging solution. Presently there is functionality to rotate logs on a daily basis, however as this section matures there will be the capability to also ship the logs to an external data warehouse like Loki, or Elastic Search. At present Log shipping is only supported by `fluent-bit` and x86_64 only.
@@ -242,10 +243,6 @@ Create a line in the `logrotate.d/<file>` that looks like `# logship: <parser>`.
 | ----------------------------------- | ------------------------------------------------------------------------------------ | ------- |
 | `LOGSHIPPING_AUTO_CONFIG_LOGROTATE` | Automatically configure log shipping for files that are listed in `/etc/logrotate.d` | `TRUE`  |
 
-
-##### Fluent-Bit Options
-
-Drop files in `/etc/fluent-bit/conf.d` to setup your inputs and outputs. The environment variables below only affect the system end of the configuration. If you wish to use your own system configuration without these variables, change `FLUENTBIT_SETUP_TYPE` to `MANUAL`. Container will attempt to automatically create configuration to send to a destination, or can also be set to act as a receiver from other fluent-bit hosts and forward data to a remote log analysis service.
 
 ##### Fluent-Bit Options
 
