@@ -1,3 +1,9 @@
+## 7.3.2 2022-02-11 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for cron log directory not being created at startup
+
+
 ## 7.3.1 2022-02-10 <dave at tiredofit dot ca>
 
    ### Changed
