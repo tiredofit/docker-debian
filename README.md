@@ -1,16 +1,20 @@
-# github.com/tiredofit/docker-debian
+# github.com/tiredofit/docker-alpine
 
-[![GitHub release](https://img.shields.io/github/v/tag/tiredofit/docker-debian?style=flat-square)](https://github.com/tiredofit/docker-debian/releases/latest)
-[![Build Status](https://img.shields.io/github/workflow/status/tiredofit/docker-debian/build?style=flat-square)](https://github.com/tiredofit/docker-debian/actions?query=workflow%3Abuild)
-[![Docker Stars](https://img.shields.io/docker/stars/tiredofit/debian.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/tiredofit/debian/)
-[![Docker Pulls](https://img.shields.io/docker/pulls/tiredofit/debian.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/tiredofit/debian/)
+[![GitHub release](https://img.shields.io/github/v/tag/tiredofit/docker-alpine?style=flat-square)](https://github.com/tiredofit/docker-alpine/releases/latest)
+[![Build Status](https://img.shields.io/github/workflow/status/tiredofit/docker-alpine/build?style=flat-square)](https://github.com/tiredofit/docker-alpine/actions?query=workflow%3Abuild)
+[![Docker Stars](https://img.shields.io/docker/stars/tiredofit/alpine.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/tiredofit/alpine/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/tiredofit/alpine.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/tiredofit/alpine/)
 [![Become a sponsor](https://img.shields.io/badge/sponsor-tiredofit-181717.svg?logo=github&style=flat-square)](https://github.com/sponsors/tiredofit)
 [![Paypal Donate](https://img.shields.io/badge/donate-paypal-00457c.svg?logo=paypal&style=flat-square)](https://www.paypal.me/tiredofit)
 
-Dockerfile to build an [debian](https://www.debian.org/) container image to be used as a base for building other images.
+* * *
 
-* Currently tracking Jessie (8), Stretch (9), Buster (10), Bullseye (11).
-* Multi Arch Compatible for amd64, arm arm64
+
+## About
+
+Dockerfile to build an [alpine](https://www.alpinelinux.org/) linux container image.
+
+* Currently tracking 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 3.12, 3.13, 3.14, 3.15 and edge.
 * [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 init capabilities.
 * [zabbix-agent](https://zabbix.org) (Classic and Modern) for individual container monitoring.
 * Scheduling via cron with other helpful tools (bash, curl, less, logrotate, nano, vim) for easier management.
@@ -20,10 +24,11 @@ Dockerfile to build an [debian](https://www.debian.org/) container image to be u
 
 ## Maintainer
 
-- [Dave Conroy](https://github.com/tiredofit)
+- [Dave Conroy](https://github/tiredofit)
 
 ## Table of Contents
 
+- [About](#about)
 - [Maintainer](#maintainer)
 - [Table of Contents](#table-of-contents)
 - [Prerequisites and Assumptions](#prerequisites-and-assumptions)
@@ -36,10 +41,17 @@ Dockerfile to build an [debian](https://www.debian.org/) container image to be u
   - [Persistent Storage](#persistent-storage)
   - [Environment Variables](#environment-variables)
     - [Container Options](#container-options)
-    - [SMTP Redirection](#smtp-redirection)
-    - [Zabbix Options](#zabbix-options)
+    - [Scheduling Options](#scheduling-options)
+    - [Messaging Options](#messaging-options)
+    - [Monitoring Options](#monitoring-options)
+      - [Zabbix Options](#zabbix-options)
+    - [Logging Options](#logging-options)
+      - [Fluent-Bit Options](#fluent-bit-options)
     - [Permissions](#permissions)
+    - [Process Watchdog](#process-watchdog)
   - [Networking](#networking)
+- [Developing / Overriding](#developing--overriding)
+- [Debug Mode](#debug-mode)
 - [Maintenance](#maintenance)
   - [Shell Access](#shell-access)
 - [Support](#support)
@@ -48,6 +60,7 @@ Dockerfile to build an [debian](https://www.debian.org/) container image to be u
   - [Feature Requests](#feature-requests)
   - [Updates](#updates)
 - [License](#license)
+- [References](#references)
 
 ## Prerequisites and Assumptions
 
@@ -59,20 +72,28 @@ No prerequisites required
 Clone this repository and build the image with `docker build <arguments> (imagename) .`
 
 ### Prebuilt Images
-Builds of the image are available on [Docker Hub](https://hub.docker.com/r/tiredofit/debian) and is the recommended method of installation.
+Builds of the image are available on [Docker Hub](https://hub.docker.com/r/tiredofit/alpine) and is the recommended method of installation.
 
 ```bash
-docker pull tiredofit/debian:(imagetag)
+docker pull tiredofit/alpine:(imagetag)
 ```
 
 The following image tags are available along with their tagged release based on what's written in the [Changelog](CHANGELOG.md):
 
-| Debian version | Tag         |
-| -------------- | ----------- |
-| `11`           | `:bullseye` |
-| `10`           | `:buster`   |
-| `9`            | `:stretch`  |
-| `8`            | `:jessie`   |
+| Alpine version | Tag     |
+| -------------- | ------- |
+| `edge`         | `:edge` |
+| `3.15`         | `:3.15` |
+| `3.14`         | `:3.14` |
+| `3.13`         | `:3.13` |
+| `3.12`         | `:3.12` |
+| `3.11`         | `:3.11` |
+| `3.10`         | `:3.10` |
+| `3.9`          | `:3.9`  |
+| `3.8`          | `:3.8`  |
+| `3.7`          | `:3.7`  |
+| `3.6`          | `:3.6`  |
+| `3.5`          | `:3.5`  |
 
 #### Multi Architecture
 Images are built primarily for `amd64` architecture, and may also include builds for `arm/v6`, `arm/v7`, `arm64` and others. These variants are all unsupported. Consider [sponsoring](https://github.com/sponsors/tiredofit) my work so that I can work with various hardware. To see if this image supports multiple architecures, type `docker manifest (image):(tag)`
@@ -360,7 +381,7 @@ See `/assets/functions/00-container` for more detailed documentation for the var
   Put at the top:
 
 ````bash
-#!/usr/bin/with-contenv bash          # Pull in Container Environment Variables from Dockerfile/Docker Runtime
+#!/command/with-contenv bash          # Pull in Container Environment Variables from Dockerfile/Docker Runtime
 source /assets/functions/00-container # Pull in all custom container functions from this image
 prepare_service single                # Read functions and defaults only from files matching this script filename - see detailed docs for more
 PROCESS_NAME="process"                # set the prefix for any logging
@@ -378,7 +399,7 @@ liftoff                               # this writes to the state files at /tmp/s
   Put at the top:
 
 ````bash
-#!/usr/bin/with-contenv bash          # Pull in Container Environment Variables from Dockerfile/Docker Runtime
+#!/command/with-contenv bash          # Pull in Container Environment Variables from Dockerfile/Docker Runtime
 source /assets/functions/00-container # Pull in all custom container functions from this image
 prepare_service defaults single       # Read defaults only from files matching this script filename - see detailed docs for more
 PROCESS_NAME="process"                # set the prefix for any logging
@@ -435,4 +456,3 @@ These images were built to serve a specific need in a production environment and
 
 ## License
 MIT. See [LICENSE](LICENSE) for more details.
-
