@@ -2,7 +2,7 @@ FROM docker.io/debian:buster
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ### Set defaults
-ARG GOLANG_VERSION=1.17.7
+ARG GOLANG_VERSION=1.18
 ARG DOAS_VERSION
 ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
