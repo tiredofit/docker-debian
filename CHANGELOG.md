@@ -1,3 +1,9 @@
+## 7.5.3 2022-03-22 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add inetutils-ping package
+
+
 ## 7.5.2 2022-03-18 <dave at tiredofit dot ca>
 
    ### Added

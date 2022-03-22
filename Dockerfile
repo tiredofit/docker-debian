@@ -61,6 +61,7 @@ RUN debArch=$(dpkg --print-architecture) && \
                     dirmngr \
                     dos2unix \
                     gnupg \
+                    inetutils-ping \
                     jq \
                     less \
                     logrotate \
