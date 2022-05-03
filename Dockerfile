@@ -10,7 +10,7 @@ ARG ZABBIX_VERSION
 
 ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.8.15"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.0.1"} \
-    ZABBIX_VERSION=${ZABBIX_VERSION:-"6.0.3"} \
+    ZABBIX_VERSION=${ZABBIX_VERSION:-"6.0.4"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
@@ -234,7 +234,7 @@ RUN debArch=$(dpkg --print-architecture) && \
     curl -sSLk https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz | tar xvpfJ - -C / && \
     curl -sSLk https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${s6Arch}.tar.xz | tar xvpfJ - -C / && \
     curl -sSLk https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-symlinks-noarch.tar.xz | tar xvpfJ - -C / && \
-    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-symlinks-arch.tar.xz | tar xvpfJ - -C / && \
+    curl -sSLk https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-symlinks-arch.tar.xz | tar xvpfJ - -C / && \
     mkdir -p /etc/cont-init.d && \
     mkdir -p /etc/cont-finish.d && \
     mkdir -p /etc/services.d && \
