@@ -1,3 +1,9 @@
+## 7.6.2 2022-05-24 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change bash prompt to show pathname when working inside container
+
+
 ## 7.6.1 2022-05-03 <dave at tiredofit dot ca>
 
    ### Changed
