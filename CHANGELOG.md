@@ -1,3 +1,9 @@
+## 7.6.5 2022-06-03 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add Ubuntu init script support
+
+
 ## 7.6.4 2022-06-01 <dave at tiredofit dot ca>
 
    ### Added
