@@ -82,7 +82,7 @@ The following image tags are available along with their tagged release based on 
 
 | Debian version | Tag         |
 | -------------- | ----------- |
-| `bullseye`     | `:bullseyer |
+| `bullseye`     | `:bullseye` |
 | `buster`       | `:buster`   |
 
 #### Multi Architecture
