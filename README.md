@@ -1,9 +1,9 @@
-# github.com/tiredofit/docker-alpine
+# github.com/tiredofit/docker-
 
-[![GitHub release](https://img.shields.io/github/v/tag/tiredofit/docker-alpine?style=flat-square)](https://github.com/tiredofit/docker-alpine/releases/latest)
-[![Build Status](https://img.shields.io/github/workflow/status/tiredofit/docker-alpine/build?style=flat-square)](https://github.com/tiredofit/docker-alpine/actions?query=workflow%3Abuild)
-[![Docker Stars](https://img.shields.io/docker/stars/tiredofit/alpine.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/tiredofit/alpine/)
-[![Docker Pulls](https://img.shields.io/docker/pulls/tiredofit/alpine.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/tiredofit/alpine/)
+[![GitHub release](https://img.shields.io/github/v/tag/tiredofit/docker-debian?style=flat-square)](https://github.com/tiredofit/docker-debian/releases/latest)
+[![Build Status](https://img.shields.io/github/workflow/status/tiredofit/docker-debian/build?style=flat-square)](https://github.com/tiredofit/docker-debian/actions?query=workflow%3Abuild)
+[![Docker Stars](https://img.shields.io/docker/stars/tiredofit/debian.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/tiredofit/debian/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/tiredofit/debian.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/tiredofit/debian/)
 [![Become a sponsor](https://img.shields.io/badge/sponsor-tiredofit-181717.svg?logo=github&style=flat-square)](https://github.com/sponsors/tiredofit)
 [![Paypal Donate](https://img.shields.io/badge/donate-paypal-00457c.svg?logo=paypal&style=flat-square)](https://www.paypal.me/tiredofit)
 
@@ -12,9 +12,9 @@
 
 ## About
 
-Dockerfile to build an [alpine](https://www.alpinelinux.org/) linux container image.
+Dockerfile to build a [Debian](https://www.debian.org/) linux container image.
 
-* Currently tracking 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 3.12, 3.13, 3.14, 3.15 and edge.
+* Currently tracking buster, and bullseye.
 * [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 init capabilities.
 * [zabbix-agent](https://zabbix.org) (Classic and Modern) for individual container monitoring.
 * Scheduling via cron with other helpful tools (bash, curl, less, logrotate, nano, vim) for easier management.
@@ -72,28 +72,18 @@ No prerequisites required
 Clone this repository and build the image with `docker build <arguments> (imagename) .`
 
 ### Prebuilt Images
-Builds of the image are available on [Docker Hub](https://hub.docker.com/r/tiredofit/alpine) and is the recommended method of installation.
+Builds of the image are available on [Docker Hub](https://hub.docker.com/r/tiredofit/debian) and is the recommended method of installation.
 
 ```bash
-docker pull tiredofit/alpine:(imagetag)
+docker pull tiredofit/debian:(imagetag)
 ```
 
 The following image tags are available along with their tagged release based on what's written in the [Changelog](CHANGELOG.md):
 
-| Alpine version | Tag     |
-| -------------- | ------- |
-| `edge`         | `:edge` |
-| `3.15`         | `:3.15` |
-| `3.14`         | `:3.14` |
-| `3.13`         | `:3.13` |
-| `3.12`         | `:3.12` |
-| `3.11`         | `:3.11` |
-| `3.10`         | `:3.10` |
-| `3.9`          | `:3.9`  |
-| `3.8`          | `:3.8`  |
-| `3.7`          | `:3.7`  |
-| `3.6`          | `:3.6`  |
-| `3.5`          | `:3.5`  |
+| Debian version | Tag         |
+| -------------- | ----------- |
+| `bullseye`     | `:bullseyer |
+| `buster`       | `:buster`   |
 
 #### Multi Architecture
 Images are built primarily for `amd64` architecture, and may also include builds for `arm/v7`, `arm64` and others. These variants are all unsupported. Consider [sponsoring](https://github.com/sponsors/tiredofit) my work so that I can work with various hardware. To see if this image supports multiple architecures, type `docker manifest (image):(tag)`

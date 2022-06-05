@@ -1,3 +1,12 @@
+## 7.6.8 2022-06-05 <dave at tiredofit dot ca>
+
+   ### Reverted
+      - Drop Jessie and Stretch Support
+
+
+## 7.6.7 2022-06-05 <dave at tiredofit dot ca>
+
+
 ## 7.6.6 2022-06-04 <dave at tiredofit dot ca>
 
    ### Added

@@ -35,7 +35,6 @@ RUN debArch=$(dpkg --print-architecture) && \
 		*) : ;; \
 	esac; \
     set -ex && \
-    if [ $(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print "$1"}' RS='(' FS=')') != "jessie" ] ; then zstd=zstd; fi ; \
     apt-get update && \
     apt-get upgrade -y && \
     ZABBIX_BUILD_DEPS=' \
@@ -73,7 +72,7 @@ RUN debArch=$(dpkg --print-architecture) && \
                     sudo \
                     tzdata \
                     vim-tiny \
-                    ${zstd} \
+                    zstd \
                     ${ZABBIX_BUILD_DEPS} ${FLUENTBIT_BUILD_DEPS} \
                     && \
     \
