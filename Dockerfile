@@ -1,4 +1,4 @@
-FROM docker.io/debian:buster
+FROM docker.io/debian:bullseye
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ### Set defaults
@@ -35,7 +35,7 @@ RUN debArch=$(dpkg --print-architecture) && \
 		*) : ;; \
 	esac; \
     set -ex && \
-    if [ $(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print $1}' RS='(' FS=')') != "jessie" ] ; then zstd=zstd; fi ; \
+    if [ $(cat /etc/os-release |grep "VERSION=" | awk 'NR>1{print "$1"}' RS='(' FS=')') != "jessie" ] ; then zstd=zstd; fi ; \
     apt-get update && \
     apt-get upgrade -y && \
     ZABBIX_BUILD_DEPS=' \
@@ -258,7 +258,16 @@ RUN debArch=$(dpkg --print-architecture) && \
     rm -rf /usr/src/* && \
     rm -rf /root/go && \
     rm -rf /root/.cache && \
-    rm -rf /var/lib/apt/lists/* /root/.gnupg /var/log/* /etc/logrotate.d/*
+    rm -rf /var/lib/apt/lists/* /root/.gnupg /var/log/* /etc/logrotate.d/* && \
+    rm -rf /usr/share/doc/* \
+           /usr/share/info/* \
+           /usr/share/linda/* \
+           /usr/share/lintian/overrides/* \
+           /usr/share/locale/* \
+           /usr/share/man/* \
+           /usr/share/doc/kde/HTML/*/* \
+           /usr/share/gnome/help/*/* \
+           /usr/share/omf/*/*-*.emf
 
 ### Networking configuration
 EXPOSE 2020/TCP 10050/TCP

@@ -1,3 +1,9 @@
+## 7.6.6 2022-06-04 <dave at tiredofit dot ca>
+
+   ### Added
+      - Strip 30mb from base image due to cleanup that occurs similar to debian:sim
+
+
 ## 7.6.5 2022-06-03 <dave at tiredofit dot ca>
 
    ### Added
