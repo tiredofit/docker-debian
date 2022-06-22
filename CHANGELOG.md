@@ -1,3 +1,9 @@
+## 7.6.11 2022-06-22 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Rollback to S6 Overlay 3.1.0.1
+
+
 ## 7.6.10 2022-06-17 <dave at tiredofit dot ca>
 
    ### Added
