@@ -63,6 +63,7 @@ RUN debArch=$(dpkg --print-architecture) && \
                     inetutils-ping \
                     jq \
                     less \
+                    libyaml-0-2 \
                     logrotate \
                     msmtp \
                     nano \

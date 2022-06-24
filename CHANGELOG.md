@@ -1,3 +1,9 @@
+## 7.6.14 2022-06-24 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add libyaml-0-2 for runtime operations
+
+
 ## 7.6.13 2022-06-23 <dave at tiredofit dot ca>
 
    ### Changed
