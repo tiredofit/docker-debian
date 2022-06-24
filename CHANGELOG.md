@@ -1,3 +1,9 @@
+## 7.6.13 2022-06-23 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Add libyaml-dev to properly compile fluent-bit
+
+
 ## 7.6.12 2022-06-23 <dave at tiredofit dot ca>
 
    ### Added

@@ -31,7 +31,7 @@ ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.9.5"} \
 
 RUN debArch=$(dpkg --print-architecture) && \
     case "$debArch" in \
-        amd64) fluentbit='true' ; FLUENTBIT_BUILD_DEPS="bison cmake flex libssl-dev libsasl2-dev libsystemd-dev pkg-config zlib1g-dev " ;; \
+        amd64) fluentbit='true' ; FLUENTBIT_BUILD_DEPS="bison cmake flex libssl-dev libsasl2-dev libsystemd-dev libyaml-dev pkg-config zlib1g-dev " ;; \
 		*) : ;; \
 	esac; \
     set -ex && \
