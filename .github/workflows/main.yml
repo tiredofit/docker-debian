@@ -106,11 +106,6 @@ jobs:
             fi
           fi
 
-      - name: Switch
-        id: Switch
-        run: |
-          sed -i "s|FROM docker.io/debian:.*|FROM docker.io/debian:${RELEASE}|g" Dockerfile
-
       - name: Build
         uses: docker/build-push-action@v3
         with:
@@ -120,6 +115,9 @@ jobs:
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           push: true
           tags: ${{ steps.prep.outputs.tags }}
+          build-args: |
+             DEBIAN_VERSION=${{ env.RELEASE }}
+
   buster:
     env:
       RELEASE: buster
@@ -215,11 +213,6 @@ jobs:
             fi
           fi
 
-      - name: Switch
-        id: Switch
-        run: |
-          sed -i "s|FROM docker.io/debian:.*|FROM docker.io/debian:${RELEASE}|g" Dockerfile
-
       - name: Build
         uses: docker/build-push-action@v3
         with:
@@ -229,3 +222,5 @@ jobs:
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           push: true
           tags: ${{ steps.prep.outputs.tags }}
+          build-args: |
+             DEBIAN_VERSION=${{ env.RELEASE }}

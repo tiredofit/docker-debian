@@ -1,12 +1,13 @@
-FROM docker.io/debian:bullseye
-LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
-### Set defaults
+ARG DEBIAN_VERSION=bullseye
 ARG GOLANG_VERSION=1.18.3
 ARG DOAS_VERSION
 ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
 ARG ZABBIX_VERSION
+
+FROM docker.io/debian:${DEBIAN_VERSION}
+LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.9.5"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.1.2"} \
