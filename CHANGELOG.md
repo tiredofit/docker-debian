@@ -1,3 +1,9 @@
+## 7.6.21 2022-07-18 <dave at tiredofit dot ca>
+
+   ### Added
+      - Version parity to tiredofit/alpine:7.6.21
+
+
 ## 7.6.20 2022-07-07 <dave at tiredofit dot ca>
 
    ### Added
