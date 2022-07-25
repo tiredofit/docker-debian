@@ -1,3 +1,9 @@
+## 7.6.24 2022-07-25 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix Process Watchdog in various situations from throwing an error about line 729
+
+
 ## 7.6.23 2022-07-25 <dave at tiredofit dot ca>
 
    ### Added
