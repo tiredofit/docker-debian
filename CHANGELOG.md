@@ -1,3 +1,9 @@
+## 7.6.26 2022-07-27 <dave at tiredofit dot ca>
+
+   ### Added
+      - Added option to show output of application on the final execution before process runaway guard is activated
+
+
 ## 7.6.25 2022-07-27 <dave at tiredofit dot ca>
 
    ### Changed
