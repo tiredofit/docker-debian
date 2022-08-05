@@ -3,7 +3,7 @@ ARG DEBIAN_VERSION=bullseye
 FROM docker.io/debian:${DEBIAN_VERSION}
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
-ARG GOLANG_VERSION=1.19
+ARG GOLANG_VERSION=1.18.5
 ARG DOAS_VERSION
 ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
@@ -29,7 +29,6 @@ ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.9.6"} \
     IMAGE_NAME="tiredofit/debian" \
     IMAGE_REPO_URL="https://github.com/tiredofit/docker-debian/"
 
-
 RUN debArch=$(dpkg --print-architecture) && \
     case "$debArch" in \
         amd64) fluentbit='true' ; FLUENTBIT_BUILD_DEPS="bison cmake flex libssl-dev libsasl2-dev libsystemd-dev libyaml-dev pkg-config zlib1g-dev " ;; \
@@ -53,6 +52,7 @@ RUN debArch=$(dpkg --print-architecture) && \
     apt-get install -y --no-install-recommends \
                     apt-transport-https \
                     apt-utils \
+#                    acl \
                     aptitude \
                     bash \
                     busybox-static \
@@ -60,8 +60,10 @@ RUN debArch=$(dpkg --print-architecture) && \
                     curl \
                     dirmngr \
                     dos2unix \
+                    fail2ban \
                     gnupg \
                     inetutils-ping \
+                    iptables \
                     jq \
                     less \
                     libyaml-0-2 \
@@ -222,6 +224,20 @@ RUN debArch=$(dpkg --print-architecture) && \
         -DFLB_SMALL=Yes \
         . && \
     if [ "$debArch" = "amd64" ] ; then make -j"$(nproc)" ; make install ; mv /usr/etc/fluent-bit /etc/fluent-bit ; strip /usr/bin/fluent-bit ; if [ "$debArch" = "amd64" ] && [ "$no_upx" != "true" ]; then upx /usr/bin/fluent-bit ; fi ; fi ; \
+    \
+    ### Fail2ban Configuration
+#    groupadd -g 65550 fail2ban && \
+#    usermod -a -G fail2ban zabbix && \
+    rm -rf /var/run/fail2ban && \
+    mkdir -p /var/run/fail2ban && \
+#    chown -R root:fail2ban /var/run/fail2ban && \
+#    setfacl -d -m g:fail2ban:rwx /var/run/fail2ban && \
+    find /etc/fail2ban/action.d/ -type f -not -name 'iptables*.conf' -delete && \
+    rm -rf /etc/fail2ban/filter.d && \
+    mkdir -p /etc/fail2ban/filter.d && \
+    rm -rf /etc/fail2ban/fail2ban.d && \
+    rm -rf /etc/fail2ban/jail.d/* && \
+    rm -rf /etc/fail2ban/paths* && \
     \
     ### S6 installation
     debArch=$(dpkg --print-architecture) && \
