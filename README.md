@@ -248,12 +248,15 @@ This image supports autoregistering configuration as an Active Agent to a Zabbix
 
 This is work in progress for a larger logging solution. Presently there is functionality to rotate logs on a daily basis, however as this section matures there will be the capability to also ship the logs to an external data warehouse like Loki, or Elastic Search. At present Log shipping is only supported by `fluent-bit` and x86_64 only.
 
-| Parameter                       | Description                              | Default      |
-| ------------------------------- | ---------------------------------------- | ------------ |
-| `CONTAINER_ENABLE_LOGROTATE`    | Enable Logrotate (if scheduling enabled) | `TRUE`       |
-| `CONTAINER_ENABLE_LOGSHIPPING`  | Enable Log Shipping                      | `FALSE`      |
-| `CONTAINER_LOGSHIPPING_BACKEND` | Log shipping backend `fluent-bit`        | `fluent-bit` |
-| `LOGROTATE_RETAIN_DAYS`         | Rotate and retain logs for x days        | `7`          |
+| Parameter                                | Description                                                 | Default      |
+| ---------------------------------------- | ----------------------------------------------------------- | ------------ |
+| `CONTAINER_ENABLE_LOGROTATE`             | Enable Logrotate (if scheduling enabled)                    | `TRUE`       |
+| `CONTAINER_ENABLE_LOGSHIPPING`           | Enable Log Shipping                                         | `FALSE`      |
+| `CONTAINER_LOGSHIPPING_BACKEND`          | Log shipping backend `fluent-bit`                           | `fluent-bit` |
+| `LOGROTATE_COMPRESSION_TYPE`             | Logfile compression algorithm `NONE` `BZIP2` `GZIP` `ZSTD`  | `ZSTD`       |
+| `LOGROTATE_COMPRESSION_VALUE`            | What level of compression to use                            | `8`          |
+| `LOGROTATE_COMPRESSION_EXTRA_PARAMETERS` | Pass extra parameters to the compression command (optional) |              |
+| `LOGROTATE_RETAIN_DAYS`                  | Rotate and retain logs for x days                           | `7`          |
 
 ##### Log Shipping Parsing
 
