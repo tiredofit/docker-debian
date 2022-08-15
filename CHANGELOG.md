@@ -1,3 +1,9 @@
+## 7.7.7 2022-08-15 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change Fail2ban gid to 65500 as LXC containers can't start on higher than 65535
+
+
 ## 7.7.6 2022-08-12 <dave at tiredofit dot ca>
 
    ### Changed

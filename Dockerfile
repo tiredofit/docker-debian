@@ -226,7 +226,7 @@ RUN debArch=$(dpkg --print-architecture) && \
     if [ "$debArch" = "amd64" ] ; then make -j"$(nproc)" ; make install ; mv /usr/etc/fluent-bit /etc/fluent-bit ; strip /usr/bin/fluent-bit ; if [ "$debArch" = "amd64" ] && [ "$no_upx" != "true" ]; then upx /usr/bin/fluent-bit ; fi ; fi ; \
     \
     ### Fail2ban Configuration
-#    groupadd -g 65550 fail2ban && \
+    groupadd -g 65500 fail2ban && \
 #    usermod -a -G fail2ban zabbix && \
     rm -rf /var/run/fail2ban && \
     mkdir -p /var/run/fail2ban && \
