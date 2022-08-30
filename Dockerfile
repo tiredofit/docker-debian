@@ -3,15 +3,15 @@ ARG DEBIAN_VERSION=bullseye
 FROM docker.io/debian:${DEBIAN_VERSION}
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
-ARG GOLANG_VERSION=1.18.5
+ARG GOLANG_VERSION=1.19
 ARG DOAS_VERSION
 ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
 ARG ZABBIX_VERSION
 
 ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.9.7"} \
-    S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.1.2"} \
-    ZABBIX_VERSION=${ZABBIX_VERSION:-"6.2.1"} \
+    S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.2.1"} \
+    ZABBIX_VERSION=${ZABBIX_VERSION:-"6.2.2"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
@@ -52,7 +52,7 @@ RUN debArch=$(dpkg --print-architecture) && \
     apt-get install -y --no-install-recommends \
                     apt-transport-https \
                     apt-utils \
-#                    acl \
+                    acl \
                     aptitude \
                     bash \
                     busybox-static \
