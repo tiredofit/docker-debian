@@ -1,3 +1,9 @@
+## 7.7.16 2022-09-29 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Add check for git existence for clone_git_repo
+
+
 ## 7.7.15 2022-09-29 <dave at tiredofit dot ca>
 
    ### Added
