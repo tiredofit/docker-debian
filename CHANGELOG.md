@@ -1,3 +1,9 @@
+## 7.7.15 2022-09-29 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add envsubst binary
+
+
 ## 7.7.14 2022-09-29 <dave at tiredofit dot ca>
 
    ### Added

@@ -61,6 +61,7 @@ RUN debArch=$(dpkg --print-architecture) && \
                     dirmngr \
                     dos2unix \
                     fail2ban \
+                    gettext \
                     gnupg \
                     inetutils-ping \
                     iptables \
@@ -80,6 +81,7 @@ RUN debArch=$(dpkg --print-architecture) && \
                     ${ZABBIX_BUILD_DEPS} ${FLUENTBIT_BUILD_DEPS} \
                     && \
     \
+    mv /usr/bin/envsubst /usr/local/bin && \
     rm -rf /usr/bin/crontab && \
     rm -rf /usr/sbin/cron && \
     ln -s /bin/busybox /usr/sbin/crontab && \
@@ -267,7 +269,7 @@ RUN debArch=$(dpkg --print-architecture) && \
     \
     ### Cleanup
     mkdir -p /assets/cron && \
-    apt-get purge -y ${ZABBIX_BUILD_DEPS} ${FLUENTBIT_BUILD_DEPS} && \
+    apt-get purge -y ${ZABBIX_BUILD_DEPS} ${FLUENTBIT_BUILD_DEPS} gettext && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     rm -rf /usr/local/go && \
