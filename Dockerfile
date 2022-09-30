@@ -288,6 +288,9 @@ RUN debArch=$(dpkg --print-architecture) && \
            /usr/share/gnome/help/*/* \
            /usr/share/omf/*/*-*.emf
 
+### Set Shell to Bash
+SHELL ["/bin/bash", "-c"]
+
 ### Networking configuration
 EXPOSE 2020/TCP 10050/TCP
 

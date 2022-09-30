@@ -1,3 +1,12 @@
+## 7.7.17 2022-09-29 <dave at tiredofit dot ca>
+
+   ### Added
+      - Change default shell to /bin/bash when building descendent Dockerfiles
+
+   ### Changed
+      - Refine clone_git_repo function
+
+
 ## 7.7.16 2022-09-29 <dave at tiredofit dot ca>
 
    ### Changed
