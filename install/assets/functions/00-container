@@ -71,10 +71,12 @@ clone_git_repo() {
     if ! [ -x "$(command -v git)" ]; then
         echo '[clone_git_repo] Git is not installed'
         exit 1
+    else
+        git config --global init.defaultBranch main
     fi
 
     if [ -n "$1" ] ; then
-        repo=$(echo ${1,,} | sed "s|\.git||g" | awk -F/ '{print $NF}' | sed 's/[^a-zA-Z0-9]//g')
+        repo=$(echo ${1,,} | sed -e "s|-|_|g" -e "s|\.git||g" | awk -F/ '{print $NF}' | sed 's/[^a-zA-Z0-9_]//g')
         export GIT_REPO_SRC=${GIT_REPO_SRC:-"/usr/src/${repo}"}
         export GIT_REPO_SRC_${repo^^}="/usr/src/${repo}"
         if [ -d /usr/src/"${repo}" ] ; then
@@ -91,7 +93,7 @@ clone_git_repo() {
             if [ -n "${2}" ] ; then repo_commit="${2}" ; fi
             echo "[clone_git_repo] Cloning Git Repo ${1} ${2}"
             git fetch --depth 1 origin ${2}
-            git checkout FETCH_HEAD
+            git -c advice.detachedHead=false checkout FETCH_HEAD
         fi
     else
         echo "[clone_git_repo] You tried to call the function but there's no arguments"
@@ -1101,28 +1103,33 @@ update_template() {
     ## Replace placeholders with values
     ## Usage: 'update_template <filename> <varname>
     ## Can have multiple varnames - Don't prefix the varname with $
-    local template_file="${1?missing argument}"
+    ## You can use wildcards if you Quote the first argument eg "*.template"
+    template_files=${1}
+    templates=$(echo "${template_files}" | tr " " "\n")
     shift
-    [[ ! -f "${template_file}" ]] && return 1
+    for template_file in $templates; do
 
-    local template_variables="$@"
-    local template_user=$(stat -c %U "${template_file}")
-    local tmp_template_file=$(mktemp)
-    cp -a "${template_file}" "${tmp_template_file}"
+        [[ ! -f "${template_file}" ]] && return 1
 
-    local variable
-    for variable in ${template_variables[@]}; do
+        template_variables=($@)
+        template_user=$(stat -c %U "${template_file}")
+        template_tmp_file=$(mktemp)
+        cp -a "${template_file}" "${template_tmp_file}"
+
+        for template_variable in ${template_variables[@]}; do
         # Keep the compatibilty: {{VAR}} => ${VAR}
-        sed -ri "s/[{]{2}$variable[}]{2}/\${$variable}/g" "${tmp_template_file}"
-        print_debug "[update_template] Template: '${template_file}' updating field '${variable}'"
-    done
+            sed -ri "s/[{]{2}$template_variable[}]{2}/\${$template_variable}/g" "${template_tmp_file}"
+            print_debug "[update_template] Template: '${template_file}' updating field '${template_variable}'"
+        done
 
-    # Replace placeholders
-    (
-        export ${template_variables[@]}
-        local IFS=":"; sudo -HEu ${template_user} envsubst "${template_variables[*]/#/$}" < "${tmp_template_file}" > "${template_file}"
-    )
-    rm -f "${tmp_templatefile}"
+        # Replace placeholders
+        (
+            export ${template_variables[@]}
+            local IFS=":"; sudo -HEu ${template_user} envsubst "${template_variables[*]/#/$}" < "${template_tmp_file}" > "${template_file}"
+        )
+
+        rm -f "${template_tmp_file}"
+    done
 }
 
 truefalse_onoff() {
