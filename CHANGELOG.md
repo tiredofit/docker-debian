@@ -1,3 +1,9 @@
+## 7.7.23 2022-10-04 <dave at tiredofit dot ca>
+
+   ### Changed
+      - For real, fix for clone_git_repo and .git extensions
+
+
 ## 7.7.22 2022-10-03 <dave at tiredofit dot ca>
 
    ### Changed
