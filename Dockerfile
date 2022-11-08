@@ -11,7 +11,7 @@ ARG ZABBIX_VERSION
 
 ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"2.0.3"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.2.1"} \
-    ZABBIX_VERSION=${ZABBIX_VERSION:-"6.2.3"} \
+    ZABBIX_VERSION=${ZABBIX_VERSION:-"6.2.4"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
@@ -295,7 +295,7 @@ SHELL ["/bin/bash", "-c"]
 EXPOSE 2020/TCP 10050/TCP
 
 ### Add folders
-ADD install /
+COPY install /
 
 ### Entrypoint configuration
 ENTRYPOINT ["/init"]
