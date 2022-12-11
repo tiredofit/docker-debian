@@ -4,6 +4,7 @@ FROM docker.io/debian:${DEBIAN_VERSION}
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ARG GOLANG_VERSION=1.19.3
+ARG BUSYBOX_VERSION
 ARG DOAS_VERSION
 ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
@@ -11,8 +12,9 @@ ARG ZABBIX_VERSION
 
 ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"2.0.6"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.2.1"} \
-    ZABBIX_VERSION=${ZABBIX_VERSION:-"6.2.4"} \
+    ZABBIX_VERSION=${ZABBIX_VERSION:-"6.2.6"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
+    BUSYBOX_VERSION=${BUSYBOX_VERSION:-"master"} \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
     CONTAINER_ENABLE_SCHEDULING=TRUE \
@@ -37,7 +39,15 @@ RUN debArch=$(dpkg --print-architecture) && \
     set -ex && \
     apt-get update && \
     apt-get upgrade -y && \
-    ZABBIX_BUILD_DEPS=' \
+      BUSYBOX_BUILD_DEPS=' \
+                       bzip2 \
+                       build-essential \
+                       gcc \
+                       git \
+                       libncurses-dev \
+                       make \
+                       ' && \
+      ZABBIX_BUILD_DEPS=' \
                     autoconf \
                     automake \
                     autotools-dev\
@@ -78,8 +88,16 @@ RUN debArch=$(dpkg --print-architecture) && \
                     tzdata \
                     vim-tiny \
                     zstd \
-                    ${ZABBIX_BUILD_DEPS} ${FLUENTBIT_BUILD_DEPS} \
+                    ${BUSYBOX_BUILD_DEPS} ${ZABBIX_BUILD_DEPS} ${FLUENTBIT_BUILD_DEPS} \
                     && \
+    \
+    ## Busybox install
+    #git clone https://github.com/mirror/busybox /usr/src/ && \
+    #cd /usr/src/busybox && \
+    #git checkout "${BUSYBOX_VERSION}" && \
+    #make defconfig && \
+    #make -j $(nproc) && \
+    #./make_single_applets.sh && \
     \
     mv /usr/bin/envsubst /usr/local/bin && \
     rm -rf /usr/bin/crontab && \
@@ -237,9 +255,10 @@ RUN debArch=$(dpkg --print-architecture) && \
     find /etc/fail2ban/action.d/ -type f -not -name 'iptables*.conf' -delete && \
     rm -rf /etc/fail2ban/filter.d && \
     mkdir -p /etc/fail2ban/filter.d && \
-    rm -rf /etc/fail2ban/fail2ban.d && \
-    rm -rf /etc/fail2ban/jail.d/* && \
-    rm -rf /etc/fail2ban/paths* && \
+    rm -rf /etc/fail2ban/fail2ban.d \
+           /etc/fail2ban/jail.d/* \
+           /etc/fail2ban/paths* \
+           && \
     \
     ### S6 installation
     debArch=$(dpkg --print-architecture) && \
@@ -269,33 +288,31 @@ RUN debArch=$(dpkg --print-architecture) && \
     \
     ### Cleanup
     mkdir -p /assets/cron && \
-    apt-get purge -y ${ZABBIX_BUILD_DEPS} ${FLUENTBIT_BUILD_DEPS} gettext && \
+    apt-get purge -y ${BUSYBOX_BUILD_DEPS} ${ZABBIX_BUILD_DEPS} ${FLUENTBIT_BUILD_DEPS} gettext && \
     apt-get autoremove -y && \
     apt-get clean -y && \
-    rm -rf /usr/local/go && \
-    rm -rf /usr/local/bin/go* && \
-    rm -rf /usr/src/* && \
-    rm -rf /root/go && \
-    rm -rf /root/.cache && \
-    rm -rf /var/lib/apt/lists/* /root/.gnupg /var/log/* /etc/logrotate.d/* && \
-    rm -rf /usr/share/doc/* \
-           /usr/share/info/* \
-           /usr/share/linda/* \
-           /usr/share/lintian/overrides/* \
-           /usr/share/locale/* \
-           /usr/share/man/* \
-           /usr/share/doc/kde/HTML/*/* \
-           /usr/share/gnome/help/*/* \
-           /usr/share/omf/*/*-*.emf
+    rm -rf \
+        /etc/logrotate.d/* \
+        /root/.cache && \
+        /root/.gnupg \
+        /root/go && \
+        /usr/local/bin/go* \
+        /usr/local/go \
+        /usr/share/doc/* \
+        /usr/share/doc/kde/HTML/*/* \
+        /usr/share/gnome/help/*/* \
+        /usr/share/info/* \
+        /usr/share/linda/* \
+        /usr/share/lintian/overrides/* \
+        /usr/share/locale/* \
+        /usr/share/man/* \
+        /usr/share/omf/*/*-*.emf \
+        /usr/src/* \
+        /var/lib/apt/lists/* \
+        /var/log/* \
+        && \
 
-### Set Shell to Bash
 SHELL ["/bin/bash", "-c"]
-
-### Networking configuration
 EXPOSE 2020/TCP 10050/TCP
-
-### Add folders
 COPY install /
-
-### Entrypoint configuration
 ENTRYPOINT ["/init"]
