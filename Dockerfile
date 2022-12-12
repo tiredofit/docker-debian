@@ -293,9 +293,9 @@ RUN debArch=$(dpkg --print-architecture) && \
     apt-get clean -y && \
     rm -rf \
         /etc/logrotate.d/* \
-        /root/.cache && \
+        /root/.cache \
         /root/.gnupg \
-        /root/go && \
+        /root/go \
         /usr/local/bin/go* \
         /usr/local/go \
         /usr/share/doc/* \

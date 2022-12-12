@@ -1,3 +1,9 @@
+## 7.7.41 2022-12-12 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for optimized rm command
+
+
 ## 7.7.40 2022-12-12 <dave at tiredofit dot ca>
 
    ### Added
