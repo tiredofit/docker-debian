@@ -309,8 +309,7 @@ RUN debArch=$(dpkg --print-architecture) && \
         /usr/share/omf/*/*-*.emf \
         /usr/src/* \
         /var/lib/apt/lists/* \
-        /var/log/* \
-        && \
+        /var/log/*
 
 SHELL ["/bin/bash", "-c"]
 EXPOSE 2020/TCP 10050/TCP

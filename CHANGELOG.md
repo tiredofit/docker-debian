@@ -1,3 +1,9 @@
+## 7.7.42 2022-12-12 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix extra ampersand in Dockerfile
+
+
 ## 7.7.41 2022-12-12 <dave at tiredofit dot ca>
 
    ### Changed
