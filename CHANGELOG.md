@@ -1,3 +1,10 @@
+## 7.7.43 2022-12-22 <dave at tiredofit dot ca>
+
+   ### Added
+      - Start building and including yq (presently 4.30.6) - Upcoming releases will remove jq
+      - prepare_service function ingests variables much differently when called from /etc/cont-init.d
+
+
 ## 7.7.42 2022-12-12 <dave at tiredofit dot ca>
 
    ### Changed

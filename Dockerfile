@@ -8,10 +8,12 @@ ARG BUSYBOX_VERSION
 ARG DOAS_VERSION
 ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
+ARG YQ_VERSION
 ARG ZABBIX_VERSION
 
 ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"2.0.6"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.2.1"} \
+    YQ_VERSION=${YQ_VERSION:-"v4.30.6"} \
     ZABBIX_VERSION=${ZABBIX_VERSION:-"6.2.6"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
     BUSYBOX_VERSION=${BUSYBOX_VERSION:-"master"} \
@@ -128,7 +130,13 @@ RUN debArch=$(dpkg --print-architecture) && \
     make install && \
     mkdir -p /etc/doas.d && \
     \
-    ## Zabbix Agent Install
+  ## yq Install
+    git clone https://github.com/mikefarah/yq /usr/src/yq && \
+    cd /usr/src/yq && \
+    git checkout ${YQ_VERSION} && \
+    go build && \
+    cp -R yq /usr/local/bin && \
+  ## Zabbix Agent Install
     addgroup --gid 10050 zabbix && \
     adduser --uid 10050 \
             --gid 10050 \
