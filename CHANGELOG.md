@@ -1,3 +1,13 @@
+## 7.7.46 2023-02-06 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent Bit version 2.0.9
+      - S6 Overlay 3.1.3.0
+      - Zabbix Agent 6.2.7
+      - YQ 4.30.8
+      - Go build environment 1.20
+
+
 ## 7.7.45 2022-12-31 <dave at tiredofit dot ca>
 
    ### Changed
