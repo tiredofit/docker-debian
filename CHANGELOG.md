@@ -1,3 +1,9 @@
+## 7.7.47 2023-02-14 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for grant_doas function not saving to correct location and set proper permissions
+
+
 ## 7.7.46 2023-02-06 <dave at tiredofit dot ca>
 
    ### Added
