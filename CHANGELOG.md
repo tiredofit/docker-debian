@@ -1,3 +1,9 @@
+## 7.7.48 2023-02-15 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix S6 overlay verbosity hack which now throws errors due to a blank if statement
+
+
 ## 7.7.47 2023-02-14 <dave at tiredofit dot ca>
 
    ### Changed
