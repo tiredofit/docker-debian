@@ -1,3 +1,9 @@
+## 7.7.49 2023-02-15 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Additional doas fixes
+
+
 ## 7.7.48 2023-02-15 <dave at tiredofit dot ca>
 
    ### Changed
