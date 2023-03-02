@@ -17,7 +17,7 @@ Dockerfile to build a [Debian](https://www.debian.org/) linux container image.
 * Currently tracking buster, and bullseye.
 * [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 init capabilities.
 * [zabbix-agent](https://zabbix.org) (Classic and Modern) for individual container monitoring.
-* Scheduling via cron with other helpful tools (bash, curl, less, logrotate, nano, vim) for easier management.
+* Scheduling via cron with other helpful tools (bash, curl, less, logrotate, nano) for easier management.
 * Messaging ability via MSMTP enabled to send mail from container to external SMTP server.
 * Firewall included with capabilities of monitoring logs to block remote hosts via [Fail2ban](https://github.com/fail2ban/fail2ban)
 * Logshipping capabilities to remote log analysis servers via [Fluent-Bit](https://github.com/fluent/fluent-bit)
