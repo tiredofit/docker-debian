@@ -1,3 +1,12 @@
+## 7.7.55 2023-03-26 <dave at tiredofit dot ca>
+
+   ### Added
+      - YQ 4.33.1
+
+   ### Changed
+      - Fix issue with fluentbit version
+
+
 ## 7.7.54 2023-03-16 <dave at tiredofit dot ca>
 
    ### Added
