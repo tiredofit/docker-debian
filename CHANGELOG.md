@@ -1,3 +1,10 @@
+## 7.7.56 2023-03-31 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 6.4.1
+      - YQ 4.33.1
+
+
 ## 7.7.55 2023-03-26 <dave at tiredofit dot ca>
 
    ### Added
