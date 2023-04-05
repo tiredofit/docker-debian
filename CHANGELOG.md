@@ -1,3 +1,10 @@
+## 7.7.58 2023-04-05 <dave at tiredofit dot ca>
+
+   ### Added
+      - Go Build 1.20.3
+      - Fluent-bit 2.0.11
+
+
 ## 7.7.57 2023-04-03 <dave at tiredofit dot ca>
 
    ### Added
