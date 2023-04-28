@@ -1,3 +1,12 @@
+## 7.8.0 2023-04-26 <dave at tiredofit dot ca>
+
+   ### Added
+      - Introduce _FILE support for environment variables
+      - Quiet down DEBUG_MODE for "base image" services
+      - Zabbix Agent 6.4.2
+      - Fluent-bit 2.1.2
+
+
 ## 7.7.59 2023-04-21 <dave at tiredofit dot ca>
 
    ### Added
