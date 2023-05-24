@@ -81,7 +81,7 @@ Clone this repository and build the image with `docker build <arguments> (imagen
 Builds of the image are available on [Docker Hub](https://hub.docker.com/r/tiredofit/debian)
 
 ```bash
-docker pull docker.io/tiredofdit/debian:(imagetag)
+docker pull docker.io/tiredofit/debian:(imagetag)
 ```
 
 Builds of the image are also available on the [Github Container Registry](https://github.com/tiredofit/docker-debian/pkgs/container/docker-debian)
