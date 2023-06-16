@@ -1,3 +1,9 @@
+## 7.8.2 2023-06-16 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix issue with newer versions of fluent-bit not compiling due to a problem with node-exporter not respecting the fact we aren't building the systemd input
+
+
 ## 7.8.1 2023-05-03 <dave at tiredofit dot ca>
 
    ### Added
