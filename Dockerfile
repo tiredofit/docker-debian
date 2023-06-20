@@ -1,4 +1,4 @@
-ARG DEBIAN_VERSION=bullseye
+ARG DEBIAN_VERSION=bookworm
 
 FROM docker.io/debian:${DEBIAN_VERSION}
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
@@ -58,7 +58,6 @@ RUN debArch=$(dpkg --print-architecture) && \
                     pkg-config \
                     libpcre3-dev \
                     libssl-dev \
-                    upx-ucl \
                     zlib1g-dev \
                     ' && \
     apt-get install -y --no-install-recommends \
@@ -182,10 +181,6 @@ RUN debArch=$(dpkg --print-architecture) && \
     strip /usr/sbin/zabbix_get && \
     strip /usr/sbin/zabbix_sender && \
     strip /usr/sbin/zabbix_agent2 && \
-    if [ "$debArch" = "amd64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_agentd ; fi ; \
-    if [ "$debArch" = "amd64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_agent2; fi ; \
-    if [ "$debArch" = "amd64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_get ; fi ; \
-    if [ "$debArch" = "amd64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_sender ; fi ; \
     mkdir -p /etc/zabbix/zabbix_agentd.conf.d && \
     mkdir -p /var/log/zabbix && \
     chown -R zabbix:root /var/log/zabbix && \
@@ -251,7 +246,7 @@ RUN debArch=$(dpkg --print-architecture) && \
         -DFLB_SIGNV4=No \
         -DFLB_SMALL=Yes \
         . && \
-    if [ "$debArch" = "amd64" ] ; then make -j"$(nproc)" ; make install ; mv /usr/etc/fluent-bit /etc/fluent-bit ; strip /usr/bin/fluent-bit ; if [ "$debArch" = "amd64" ] && [ "$no_upx" != "true" ]; then upx /usr/bin/fluent-bit ; fi ; fi ; \
+    if [ "$debArch" = "amd64" ] ; then make -j"$(nproc)" ; make install ; mv /usr/etc/fluent-bit /etc/fluent-bit ; strip /usr/bin/fluent-bit ; fi ; \
     \
     ### Fail2ban Configuration
     groupadd -g 65500 fail2ban && \

@@ -1,3 +1,9 @@
+## 7.8.4 2023-06-20 <dave at tiredofit dot ca>
+
+   ### Reverted
+      - Stop using UPX to pack executibles
+
+
 ## 7.8.3 2023-06-20 <dave at tiredofit dot ca>
 
    ### Added
