@@ -78,6 +78,7 @@ RUN debArch=$(dpkg --print-architecture) && \
                     iptables \
                     jq \
                     less \
+                    libpcre3 \
                     libyaml-0-2 \
                     logrotate \
                     msmtp \

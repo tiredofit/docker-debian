@@ -1,3 +1,9 @@
+## 7.8.8 2023-07-28 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add 'libpcre3' package
+
+
 ## 7.8.7 2023-07-28 <dave at tiredofit dot ca>
 
    ### Added
