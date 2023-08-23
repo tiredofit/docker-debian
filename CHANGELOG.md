@@ -1,3 +1,12 @@
+## 7.8.9 2023-08-23 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 6.4.6
+      - Go Build 1.21.0
+      - YQ 4.35.1
+      - Add SMTP_ALLOW_FROM override (credit to coolibre@github)
+
+
 ## 7.8.8 2023-07-28 <dave at tiredofit dot ca>
 
    ### Added

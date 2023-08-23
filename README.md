@@ -204,6 +204,7 @@ See the [MSMTP Configuration Options](https://marlam.de/msmtp/msmtp.html) for fu
 | `SMTP_TLS`            | Use TLS                                           | `FALSE`         |         |
 | `SMTP_STARTTLS`       | Start TLS from within session                     | `FALSE`         |         |
 | `SMTP_TLSCERTCHECK`   | Check remote certificate                          | `FALSE`         |         |
+| `SMTP_ALLOW_FROM_OVERRIDE` | SMTP Allow From Override                          | ``              |         |
 
 See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/5.4/manual/appendix/config/zabbix_agentd)
 for information about the following Zabbix values.
