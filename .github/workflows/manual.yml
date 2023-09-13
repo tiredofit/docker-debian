@@ -106,7 +106,7 @@ jobs:
 
       - name: Build
         if: github.event_name != 'pull_request'
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
@@ -224,7 +224,7 @@ jobs:
 
       - name: Build
         if: github.event_name != 'pull_request'
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
@@ -341,7 +341,7 @@ jobs:
 
       - name: Build
         if: github.event_name != 'pull_request'
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
