@@ -1,3 +1,12 @@
+## 7.8.10 2023-09-22 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix Golang version issues
+
+   ### Reverted
+      - Remove stale busybox development routines
+
+
 ## 7.8.9 2023-08-23 <dave at tiredofit dot ca>
 
    ### Added

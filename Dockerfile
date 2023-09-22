@@ -1,10 +1,9 @@
-ARG DEBIAN_VERSION=bookworm
+ARG DEBIAN_VERSION=bullseye
 
 FROM docker.io/debian:${DEBIAN_VERSION}
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
-ARG GOLANG_VERSION=1.22.0
-ARG BUSYBOX_VERSION
+ARG GOLANG_VERSION=1.21.1
 ARG DOAS_VERSION
 ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
@@ -16,7 +15,6 @@ ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"2.1.8"} \
     YQ_VERSION=${YQ_VERSION:-"v4.35.1"} \
     ZABBIX_VERSION=${ZABBIX_VERSION:-"6.4.6"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
-    BUSYBOX_VERSION=${BUSYBOX_VERSION:-"master"} \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
     CONTAINER_ENABLE_SCHEDULING=TRUE \
@@ -41,14 +39,6 @@ RUN debArch=$(dpkg --print-architecture) && \
     set -ex && \
     apt-get update && \
     apt-get upgrade -y && \
-      BUSYBOX_BUILD_DEPS=' \
-                       bzip2 \
-                       build-essential \
-                       gcc \
-                       git \
-                       libncurses-dev \
-                       make \
-                       ' && \
       ZABBIX_BUILD_DEPS=' \
                     autoconf \
                     automake \
@@ -74,6 +64,7 @@ RUN debArch=$(dpkg --print-architecture) && \
                     fail2ban \
                     gettext \
                     gnupg \
+                    git \
                     inetutils-ping \
                     iptables \
                     jq \
@@ -90,16 +81,8 @@ RUN debArch=$(dpkg --print-architecture) && \
                     tzdata \
                     vim-tiny \
                     zstd \
-                    ${BUSYBOX_BUILD_DEPS} ${ZABBIX_BUILD_DEPS} ${FLUENTBIT_BUILD_DEPS} \
+                    ${ZABBIX_BUILD_DEPS} ${FLUENTBIT_BUILD_DEPS} \
                     && \
-    \
-    ## Busybox install
-    #git clone https://github.com/mirror/busybox /usr/src/ && \
-    #cd /usr/src/busybox && \
-    #git checkout "${BUSYBOX_VERSION}" && \
-    #make defconfig && \
-    #make -j $(nproc) && \
-    #./make_single_applets.sh && \
     \
     mv /usr/bin/envsubst /usr/local/bin && \
     rm -rf /usr/bin/crontab && \
