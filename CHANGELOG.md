@@ -1,3 +1,10 @@
+## 7.8.12 2023-09-28 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-bit 2.1.10
+      - Add option for gzip compression for fluent-bit output/loki
+
+
 ## 7.8.11 2023-09-26 <dave at tiredofit dot ca>
 
    ### Added
