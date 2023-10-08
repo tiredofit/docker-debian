@@ -1,3 +1,9 @@
+## 7.8.13 2023-10-08 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change around Fluent-bit compression parameter
+
+
 ## 7.8.12 2023-09-28 <dave at tiredofit dot ca>
 
    ### Added
