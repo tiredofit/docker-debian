@@ -1,3 +1,9 @@
+## 7.8.14 2023-11-06 <dave at tiredofit dot ca>
+
+   ### Added
+      - S6 Overlay 3.16.0
+
+
 ## 7.8.13 2023-10-08 <dave at tiredofit dot ca>
 
    ### Changed
