@@ -1,3 +1,10 @@
+## 7.8.15 2023-11-08 <dave at tiredofit dot ca>
+
+   ### Added
+      - Golang 1.21.4
+      - Zabbix Agent 6.4.8
+
+
 ## 7.8.14 2023-11-06 <dave at tiredofit dot ca>
 
    ### Added
