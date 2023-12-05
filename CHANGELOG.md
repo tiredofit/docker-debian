@@ -1,3 +1,9 @@
+## 7.8.16 2023-12-05 <dave at tiredofit dot ca>
+
+   ### Changed
+      - When using service_stop do not pass DONOTSTART to running script if $1 is different
+
+
 ## 7.8.15 2023-11-08 <dave at tiredofit dot ca>
 
    ### Added
