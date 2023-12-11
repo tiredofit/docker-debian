@@ -291,11 +291,11 @@ Create a line in the `logrotate.d/<file>` that looks like `# logship: <parser>`.
 Drop files in `/etc/fluent-bit/conf.d` to setup your inputs and outputs. The environment variables below only affect the system end of the configuration. If you wish to use your own system configuration without these variables, change `FLUENTBIT_SETUP_TYPE` to `MANUAL`. Container will attempt to automatically create configuration to send to a destination, or can also be set to act as a receiver from other fluent-bit hosts and forward data to a remote log analysis service.
 
 | Parameter | Description | Default | `_FILE` |
-| --------- | ----------- | ------- || ------- |
-| `FLUENTBIT_CONFIG_PARSERS`            | Parsers config file name                                                                         | `parsers.conf`           ||
-| `FLUENTBIT_CONFIG_PLUGINS`            | Plugins config file name                                                                         | `plugins.conf`           ||
-| `FLUENTBIT_ENABLE_HTTP_SERVER`        | Embedded HTTP Server for metrics `TRUE` / `FALSE`                                                | `TRUE`                   ||
-| `FLUENTBIT_ENABLE_STORAGE_METRICS`    | Public storage pipeline metrics in /api/v1/storage                                               | `TRUE`                   ||
+| --------- | ----------- | ------- | ------- |
+| `FLUENTBIT_CONFIG_PARSERS`            | Parsers config file name                                                                         | `parsers.conf`           | |
+| `FLUENTBIT_CONFIG_PLUGINS`            | Plugins config file name                                                                         | `plugins.conf`           | |
+| `FLUENTBIT_ENABLE_HTTP_SERVER`        | Embedded HTTP Server for metrics `TRUE` / `FALSE`                                                | `TRUE`                   | |
+| `FLUENTBIT_ENABLE_STORAGE_METRICS`    | Public storage pipeline metrics in /api/v1/storage                                               | `TRUE`                   | |
 | `FLUENTBIT_FLUSH_SECONDS`             | Wait time to flush records in seconds                                                            | `1`                      ||
 | `FLUENTBIT_FORWARD_BUFFER_CHUNK_SIZE` | Buffer Chunk Size                                                                                | `32KB`                   ||
 | `FLUENTBIT_FORWARD_BUFFER_MAX_SIZE`   | Buffer Maximum Size                                                                              | `64KB`                   ||
