@@ -1,3 +1,13 @@
+## 7.8.17 2023-12-12 <dave at tiredofit dot ca>
+
+   ### Added
+      - YQ 4.40.5
+      - Fluent-bit 2.2.0
+
+   ### Changed
+      - Fix issue with service_down function bringing up services unintentionally
+
+
 ## 7.8.16 2023-12-05 <dave at tiredofit dot ca>
 
    ### Changed
