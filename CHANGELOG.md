@@ -1,3 +1,9 @@
+## 7.9.0 2024-06-25 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add CONTAINER_PROCESS_RUNAWAY_DELAY environment variable to add a configurable (default 1) second delay in between restarting processes
+
+
 ## 7.8.34 2024-06-11 <dave at tiredofit dot ca>
 
    ### Added
