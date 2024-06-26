@@ -1,3 +1,9 @@
+## 7.9.1 2024-06-26 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Tweak print_start functions to avoid unnecessary process start delays
+
+
 ## 7.9.0 2024-06-25 <dave at tiredofit dot ca>
 
    ### Added
