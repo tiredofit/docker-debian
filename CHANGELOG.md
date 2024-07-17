@@ -1,3 +1,10 @@
+## 7.10.4 2024-07-17 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-bit 3.1.3
+      - S6 Overlay 3.2.0.0
+
+
 ## 7.10.1 2024-07-11 <dave at tiredofit dot ca>
 
    ### Added
