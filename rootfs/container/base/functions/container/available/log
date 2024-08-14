@@ -1,0 +1,245 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+create_logrotate() {
+    ## Usage <Logrotate Config Name> <path> (optional logship parser) (optional user) (optional group)
+    ## e.g. create_logrotate cron /var/log/cron/cron.log cron root root
+    ## If you dont have a parser just use 'none'
+    ## If you are passing wilcard characters ie /logs/*.log make sure you 'set -f' before the function and 'set +f' afterwards.
+    if [ -n "$1" ] && [ -n "$2" ]; then
+        if [ ! -f /conntainer/state/logrotate/"$1" ] ; then
+            print_debug "Creating Logrotate Entry for $2"
+            if [ -n "$3" ] ; then
+                if [ "${3,,}" != "none" ] ; then
+                    lrlsparser="# logship: $3"
+                fi
+            fi
+            if [ -n "$4" ] && [ -n "$5" ]; then
+                lruser="    su $4 $5"
+            fi
+
+            if [ ! -d "/container/logrotate/" ] ; then
+                mkdir -p /container/logrotate/
+            fi
+
+            cat <<EOF > /container/logrotate/"${1}"
+${lrlsparser}
+$2 {
+    missingok
+${lruser}
+}
+EOF
+            chown root:root /container/logrotate/"${1}"
+            chmod 0644 /container/logrotate/"${1}"
+        else
+            print_debug "Skipping creating automatic logrotation for ${1}"
+        fi
+    fi
+    set +x
+}
+
+log_prefix() {
+    output_off
+    if [ "${CONTAINER_ENABLE_LOG_PREFIX,,}" = "true" ] ; then
+        echo "$(date +"${CONTAINER_LOG_PREFIX_DATE_FMT}")${CONTAINER_LOG_PREFIX_SEPERATOR}$(date +"${CONTAINER_PROCESS_HELPER_TIME_FMT}") "
+    fi
+    output_on
+}
+
+print_debug() {
+    ### Text Coloration
+    output_off
+    case "${CONTAINER_LOG_LEVEL,,}" in
+        "debug" )
+            if [ "${DEBUG_MODE,,}" = "true" ] ; then
+                if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+                    echo -e "$(log_prefix)[DEBUG] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                else
+                    echo -e "$(log_prefix)${bdm}[DEBUG]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                fi
+            else
+                if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+                    echo -e "$(log_prefix)[DEBUG] ** [${PROCESS_NAME}] $1"
+                else
+                    echo -e "$(log_prefix)${bdm}[DEBUG]${boff} ** [${PROCESS_NAME}] $1"
+                fi
+            fi
+        ;;
+    esac
+
+    case "${CONTAINER_LOG_FILE_LEVEL,,}" in
+        "debug" )
+            echo -e "$(log_prefix)[DEBUG] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+        ;;
+    esac
+    output_on
+}
+
+print_error() {
+    output_off
+    case "${CONTAINER_LOG_LEVEL,,}" in
+        "debug" | "notice" | "warn" | "error")
+            if [ "${DEBUG_MODE,,}" = "true" ] ; then
+                if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+                    echo -e "$(log_prefix)[ERROR] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                else
+                    echo -e "$(log_prefix)${blr}[ERROR]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                fi
+            else
+                if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+                    echo -e "$(log_prefix)[ERROR] ** [${PROCESS_NAME}] $1"
+                else
+                    echo -e "$(log_prefix)${blr}[ERROR]${boff} ** [${PROCESS_NAME}] $1"
+                fi
+            fi
+        ;;
+    esac
+
+    case "${CONTAINER_LOG_FILE_LEVEL,,}" in
+        "debug" | "notice" | "warn" | "error")
+            echo -e "$(log_prefix)[ERROR] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+        ;;
+    esac
+    output_on
+}
+
+print_info() {
+    output_off
+    if [ "${DEBUG_MODE,,}" = "true" ] ; then
+        if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+            echo -e "$(log_prefix)[INFO] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+        else
+            echo -e "$(log_prefix)${bdg}[INFO]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+        fi
+    else
+        if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+            echo -e "$(log_prefix)[INFO] ** [${PROCESS_NAME}] $1"
+        else
+            echo -e "$(log_prefix)${bdg}[INFO]${boff} ** [${PROCESS_NAME}] $1"
+        fi
+    fi
+
+    echo -e "$(log_prefix)[INFO] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+    output_on
+}
+
+print_notice() {
+    output_off
+    case "${CONTAINER_LOG_LEVEL,,}" in
+        "debug" | "notice" )
+            if [ "${DEBUG_MODE,,}" = "true" ] ; then
+                if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+                    echo -e "$(log_prefix)[NOTICE] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                else
+                    echo -e "$(log_prefix)${bdgy}[NOTICE]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                fi
+            else
+                if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+                    echo -e "$(log_prefix)[NOTICE] ** [${PROCESS_NAME}] $1"
+                else
+                    echo -e "$(log_prefix)${bdgy}[NOTICE]${boff} ** [${PROCESS_NAME}] $1"
+                fi
+            fi
+        ;;
+    esac
+
+    case "${CONTAINER_LOG_FILE_LEVEL,,}" in
+        "debug" | "notice" )
+            echo -e "$(log_prefix)[NOTICE] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+        ;;
+    esac
+    output_on
+}
+
+print_start() {
+    output_off
+    if [ "${CONTAINER_ENABLE_PROCESS_COUNTER,,}" = "true" ] ; then
+        if [ -f /container/state/run/"$(basename $PWD)" ]; then
+            proc_start_count=$(cat /container/state/run/"$(basename $PWD)" | wc -l)
+            proc_start_wrapper="[${proc_start_count}] "
+        fi
+
+        if [ -z "${proc_start_count}" ] ; then proc_start_count=1 ; fi
+
+        proc_help_arg="$(date +"${CONTAINER_PROCESS_HELPER_DATE_FMT}") $(date +"${CONTAINER_PROCESS_HELPER_TIME_FMT}") $(basename "$(pwd)") ${proc_start_count} $(cat /etc/hostname)"
+        if [ -d "${CONTAINER_PROCESS_HELPER_PATH}" ]; then
+            if [ -f "${CONTAINER_PROCESS_HELPER_PATH}"/"$(basename $0)".sh ]; then
+                exec "${CONTAINER_PROCESS_HELPER_PATH}"/"$(basename $0)".sh "${proc_help_arg}"
+                elif [ -f "${CONTAINER_PROCESS_HELPER_PATH}"/"${CONTAINER_PROCESS_HELPER_SCRIPT}".sh ] ; then
+                exec "${CONTAINER_PROCESS_HELPER_PATH}"/"${CONTAINER_PROCESS_HELPER_SCRIPT}".sh "${proc_help_arg}"
+            fi
+        fi
+
+        if [ "${CONTAINER_PROCESS_RUNAWAY_PROTECTOR,,}" = "true" ] ; then
+            if [ "${CONTAINER_PROCESS_RUNAWAY_SHOW_OUTPUT_FINAL,,}" = "true" ] ; then
+                if [ "${proc_start_count}" -eq "${CONTAINER_PROCESS_RUNAWAY_LIMIT}" ] ; then SHOW_OUTPUT=TRUE ; fi
+            fi
+            if [ "${proc_start_count}" -gt "${CONTAINER_PROCESS_RUNAWAY_LIMIT}" ] ; then
+                print_error "POTENTIAL RUNAWAY DETECTECTED: Disabling '$(basename $PWD)' service because it has tried restarting '${CONTAINER_PROCESS_RUNAWAY_LIMIT}' times"
+                s6-svc -d /var/run/s6/legacy-services/$(basename "$PWD")
+                sleep 3
+                exit 1
+            fi
+
+            if [ "${proc_start_count}" -gt 1 ] ; then
+                print_debug "[process_restart] - Sleeping for ${CONTAINER_PROCESS_RUNAWAY_DELAY} seconds"
+                sleep "${CONTAINER_PROCESS_RUNAWAY_DELAY}"
+            fi
+        fi
+    fi
+
+    if [ "${DEBUG_MODE,,}" = "true" ] ; then
+        if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+            echo -e "$(log_prefix)[STARTING] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
+
+        else
+            echo -e "$(log_prefix)${bdg}[STARTING]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
+        fi
+        echo -e "$(log_prefix)[STARTING] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] ${proc_start_wrapper}$1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+    else
+        if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+            echo -e "$(log_prefix)[STARTING] ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
+        else
+            echo -e "$(log_prefix)${bdg}[STARTING]${boff} ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
+        fi
+        echo -e "$(log_prefix)[STARTING] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] ${proc_start_wrapper}$1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+    fi
+    output_on
+}
+
+print_warn() {
+    output_off
+    case "${CONTAINER_LOG_LEVEL,,}" in
+        "debug" | "notice" | "warn" )
+            if [ "${DEBUG_MODE,,}" = "true" ] ; then
+                if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+                    echo -e "$(log_prefix)[WARN] ** [${PROCESS_NAME}] $1"
+                else
+                    echo -e "$(log_prefix)${bdb}[WARN]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                fi
+            else
+                if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+                    echo -e "$(log_prefix)[WARN] ** [${PROCESS_NAME}] $1"
+                else
+                    echo -e "$(log_prefix)${bdb}[WARN]${boff} ** [${PROCESS_NAME}] $1"
+                fi
+            fi
+    esac
+
+    case "${CONTAINER_LOG_FILE_LEVEL,,}" in
+        "debug" | "notice" | "warn" )
+            echo -e "$(log_prefix)[WARN] ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+    esac
+
+    output_on
+}
+
+silent() {
+    ## Quiet down output
+    if [ "${DEBUG_MODE}" = "true" ] || [ "${SHOW_OUTPUT,,}" = "true" ] || [ "${CONTAINER_LOG_LEVEL,,}" = "debug" ] ;  then
+        "$@"
+    else
+        "$@" > /dev/null 2>&1
+    fi
+}

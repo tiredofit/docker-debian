@@ -1,0 +1,22 @@
+#!/command/with-contenv bash
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+source /container/base/functions/container/init
+output_off
+prepare_service 04-scheduling 05-logging
+PROCESS_NAME="logging"
+
+if var_true "${CONTAINER_ENABLE_LOGROTATE}" ; then
+    call toi_configure_logging_logrotate_init
+fi
+
+if var_true "${CONTAINER_ENABLE_LOGSHIPPING}" ; then
+    call toi_configure_logging_${CONTAINER_LOGSHIPPING_BACKEND/-/}_init
+else
+    service_stop "$(basename "$0")"
+fi
+
+liftoff
+output_on

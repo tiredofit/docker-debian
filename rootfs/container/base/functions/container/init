@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+for init_function in /container/base/functions/container/init.d/* ; do
+    if  [ ! -d "${init_function}" ] ; then
+        #echo "Sourcing ${init_function}"
+        source "${init_function}"
+    fi
+done

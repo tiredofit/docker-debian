@@ -1,0 +1,7 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+if [ "${CONTAINER_ENABLE_METRICS,,}" = "true" ]; then
+    :
+fi

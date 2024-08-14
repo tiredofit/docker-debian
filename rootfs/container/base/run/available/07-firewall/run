@@ -1,0 +1,13 @@
+#!/command/with-contenv bash
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+source /container/base/functions/container/init
+output_off
+PROCESS_NAME="firewall"
+prepare_service single
+check_container_initialized
+check_service_initialized init
+
+call toi_configure_firewall_fail2ban_init

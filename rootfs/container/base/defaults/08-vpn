@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+if [ "${CONTAINER_ENABLE_VPN,,}" = "true" ]; then
+    if [ -f "/container/base/defaults/vpn/${CONTAINER_VPN_BACKEND,,}" ]; then
+        source /container/base/defaults/vpn/"${CONTAINER_VPN_BACKEND,,}"
+    fi
+fi

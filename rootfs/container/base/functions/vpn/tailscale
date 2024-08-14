@@ -1,0 +1,210 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+toi_configure_vpn_tailscale_init() {
+    tailscale_bootstrap_filesystem() {
+        if [ ! -d "${TAILSCALE_DATA_PATH}" ]; then
+            mkdir -p "${TAILSCALE_DATA_PATH}"
+        fi
+        if [ "$(stat -c %U "${TAILSCALE_DATA_PATH}")" != "tailscale" ] ; then chown tailscale:tailscale "${TAILSCALE_DATA_PATH}" ; fi
+
+        if [ ! -d "${TAILSCALE_LOG_PATH}" ]; then
+            mkdir -p "${TAILSCALE_LOG_PATH}"
+        fi
+        if [ "$(stat -c %U "${TAILSCALE_LOG_PATH}")" != "tailscale" ] ; then chown -R tailscale:tailscale "${TAILSCALE_LOG_PATH}" ; fi
+
+        if [ ! -d "${TAILSCALE_SOCKET_PATH}" ]; then
+            mkdir -p "${TAILSCALE_SOCKET_PATH}"
+        fi
+        if [ "$(stat -c %U "${TAILSCALE_SOCKET_PATH}")" != "tailscale" ] ; then chown -R tailscale:tailscale "${TAILSCALE_SOCKET_PATH}" ; fi
+    }
+
+    tailscale_configure_client() {
+        cat <<EOF >>/etc/bash/tailscale
+_tailscale() {
+    local cur prev words cword
+    _init_completion -n = || return
+
+    if [[ \$cword -eq 1 ]]; then
+        SUBCOMMANDS=\$(tailscale --help 2>&1 | awk '/SUBCOMMANDS/{ f = 1; next } /FLAGS/{ f = 0 } f{print \$1}')
+        SUBCOMMANDS="\$SUBCOMMANDS debug"
+        FLAGS="-h --help --socket"
+        COMPREPLY=( \$(compgen -W "\$SUBCOMMANDS \$FLAGS" -- "\$cur" ))
+        return
+    else
+        subcmd="\${COMP_WORDS[1]}"
+        if [[ "\$cur" = *=* ]]; then
+            COMPREPLY=( \$(compgen -W 'false' -- "\${cur#*=}") )
+            return
+        elif [[ "\$cur" = -* ]]; then
+            FLAGS=\$(tailscale "\$subcmd" --help 2>&1 | awk '/FLAGS/{ f = 1; next } f'  | grep -oE -- '--[^ ]+[=]?' | tr -d ',')
+            FLAGS="\$FLAGS --help"
+            COMPREPLY=( \$(compgen -W "\$FLAGS" -- "\$cur" ))
+            return
+        else
+            case "\$subcmd" in
+                "ping"|"ssh")
+                    IP_AND_HOSTNAME=\$(tailscale status 2>&1  | awk '{print \$1"\n"\$2}')
+                    COMPREPLY=( \$(compgen -W "\$IP_AND_HOSTNAME" -- "\$cur" ))
+                ;;
+                "debug")
+                    SUBCOMMANDS=""
+                    if [[ \$cword -eq 2 ]]; then
+                        SUBCOMMANDS=\$(tailscale "\$subcmd" --help 2>&1 | awk '/SUBCOMMANDS/{ f = 1; next } /FLAGS/{ f = 0 } f{print \$1}')
+                    fi
+                    FLAGS=\$(tailscale "\$subcmd" --help 2>&1 | awk '/FLAGS/{ f = 1; next } f'  | grep -oE -- '--[^ ]+[=]?' | tr -d ',')
+                    COMPREPLY=( \$(compgen -W "\$SUBCOMMANDS \$FLAGS" -- "\$cur" ))
+                ;;
+            esac
+        fi
+    fi
+}
+
+complete -F _tailscale tailscale
+EOF
+
+        mkdir -p /container/run/available/08-vpn-tailscale_client
+        cat <<EOF > /container/run/available/08-vpn-tailscale_client/run
+#!/command/with-contenv bash
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+source /container/base/functions/container/init
+PROCESS_NAME="vpn-tailscale_client"
+source /container/defaults/08-vpn
+source /container/functions/08-vpn
+
+check_container_initialized
+
+call toi_configure_vpn_tailscale_client_run
+EOF
+        chmod +x /container/run/available/08-vpn-tailscale_client/run
+    }
+
+    tailscale_configure_daemon() {
+        case "${TAILSCALE_LOG_TYPE,,}" in
+            file )
+                create_logrotate tailscaled "${TAILSCALE_LOG_PATH}"/"${TAILSCALE_LOG_FILE}" tailscale tailscale
+            ;;
+        esac
+
+        if [ -n "${TAILSCALE_MACHINEKEY}" ] ; then
+            cat <<EOF > sudo -u tailscale tee "${TAILSCALE_DATA_PATH}"/tailscaled.state
+{
+"_machinekey": "${TAILSCALE_MACHINEKEY}"
+}
+EOF
+        fi
+
+        mkdir -p /container/run/available/08-vpn-tailscale_daemon
+        cat <<EOF > /container/run/available/08-vpn-tailscale_daemon/run
+#!/command/with-contenv bash
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+source /container/base/functions/container/init
+PROCESS_NAME="vpn-tailscale_daemon"
+source /container/defaults/08-vpn
+source /container/functions/08-vpn
+
+check_container_initialized
+
+call toi_configure_vpn_tailscale_daemon_run
+EOF
+        chmod +x /container/run/available/08-vpn-tailscale_daemon/run
+    }
+
+    tailscale_setup_container_mode() {
+        if [ -f "/container/state/vpn/tailscale/CONTAINER_MODE" ]; then
+            print_debug "Importing MODE environment generated variables"
+            source /container/state/vpn/tailscale/CONTAINER_MODE
+        else
+            mkdir -p /container/state/vpn/tailscale/
+            modes=$(echo "${TAILSCALE_MODE}" | tr "," "\n")
+            for mode in $modes ; do
+                case "${mode,,}" in
+                    "client" )
+                        print_debug "Enabling Container Mode for: CLIENT"
+                        echo "ENABLE_CLIENT=TRUE" >> /container/state/vpn/tailscale/CONTAINER_MODE
+                    ;;
+                    "daemon" )
+                        print_debug "Enabling Container Mode for: DAEMON"
+                        echo "ENABLE_DAEMON=TRUE" >> /container/state/vpn/tailscale/CONTAINER_MODE
+                    ;;
+                    "standalone" | "manual" )
+                        print_debug "Enabling Container Mode for: STANDALONE"
+                        echo "ENABLE_STANDALONE=TRUE" >> /container/state/vpn/tailscale/CONTAINER_MODE
+                    ;;
+                    *)
+                        print_error "Unknown 'MODE' environment variable - exitting.."
+                        exit 1
+                    ;;
+                esac
+            done
+            source /container/state/vpn/tailscale/CONTAINER_MODE
+        fi
+    }
+
+
+    print_info "Configuring VPN"
+    tailscale_setup_container_mode
+    tailscale_bootstrap_filesystem
+
+    if [ ! -f "/container/state/restart" ] ; then
+        if var_true "${TAILSCALE_ENABLE_CLIENT}" ; then
+            print_debug "Configuring Client"
+            tailscale_configure_client
+        else
+            s6-svc -d /var/run/s6/legacy-services/"$(basename "$0")_client"
+        fi
+
+        if var_true "${TAILSCALE_ENABLE_DAEMON}" ; then
+            print_debug "Configuring Daemon"
+            tailscale_configure_daemon
+        else
+            s6-svc -d /var/run/s6/legacy-services/"$(basename "$0")"
+        fi
+
+        if var_true "${TAILSCALE_ENABLE_STANDALONE}" ; then
+            print_debug "Configuring Standlone"
+            liftoff
+            exit 0
+        fi
+    fi
+}
+
+toi_configure_vpn_tailscale_daemon_run() {
+    print_info "Running VPN Daemon"
+    case "${TAILSCAE_LOG_TYPE}" in
+        console)
+            TAILSCALE_LOG_PATH=/dev
+            TAILSCALE_LOG_FILE=stderr
+        ;;
+    esac
+
+    liftoff
+    print_start "Starting Tailscaled ${TAILSCALE_VERSION}"
+    exec s6-setuidgid "${TAILSCALE_USER}" \
+                                    tailscaled \
+                                                -port "${TAILSCALE_LISTEN_PORT}" \
+                                                -socket "${TAILSCALE_SOCKET_PATH}"/"${TAILSCALE_SOCKET_FILE}" \
+                                                -statedir "${TAILSCALE_DATA_PATH}" \
+                                                -tun "${TAILSCALE_TUNNEL_INTERFACE}" \
+                                                -verbose "${TAILSCALE_LOG_LEVEL}" \
+                                                ${tailscale_nologtail} ${TAILSCALED_ARGS} \
+                                                2> "${TAILSCALE_LOG_PATH}"/"${TAILSCALE_LOG_FILE}"
+}
+
+toi_configure_vpn_tailscale_client_run() {
+    print_info "Running VPN Client"
+    wait_for_socket "${TAILSCALE_SOCKET_PATH}"/"${TAILSCALE_SOCKET_FILE}"
+    liftoff
+
+    print_start "Starting Tailscale Client ${TAILSCALE_VERSION}"
+    exec s6-setuidgid "${TAILSCALE_USER}" \
+                                            tailscale up \
+                                            ${TAILSCALE_ARGS}
+}

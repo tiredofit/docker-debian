@@ -1,0 +1,14 @@
+#!/command/with-contenv bash
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+source /container/base/functions/container/init
+PROCESS_NAME="monitoring"
+output_off
+prepare_service single
+check_container_initialized
+check_service_initialized init
+liftoff
+
+call toi_configure_monitoring_${CONTAINER_MONITORING_BACKEND,,}_run

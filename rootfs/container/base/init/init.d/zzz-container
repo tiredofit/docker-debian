@@ -1,0 +1,132 @@
+#!/command/with-contenv bash
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+source /container/base/functions/container/init
+
+if var_false "${CONTAINER_SKIP_SANITY_CHECK}" ; then
+    files_init=$(find /container/base/init/init.d/ /container/init/init.d/ -maxdepth 1 ! -name *.enc* ! -name .tiredofit ! zzz-container -type f 2>/dev/null | wc -l)
+    declare -a files_init_name
+    declare -a length_of_files_init_name
+    for f in /container/init/init.d/*; do
+        files_init_name[length_of_files_init_name + 1]=filename
+        files_init_name[${#files_init_name[@]}+1]=$(echo "$f" | sed -e "s#filename##g" -e "s#/container/init/init.d/##g" );
+    done
+
+    init_complete=$(find /container/state/init/* -maxdepth 1 ! -name *.enc* ! -name *.enc* ! -name .tiredofit -type f 2>/dev/null | wc -l)
+    declare -a init_complete_name
+    declare -a length_of_init_complete_name
+    for f in /container/state/init/*; do
+        init_complete_name[length_of_init_complete_name + 1]=filename
+        init_complete_name[${#init_complete_name[@]}+1]=$(echo "$f" | sed -e "s#filename##g" -e "s#/container/state/init/##g" -e "s#-init##g");
+    done
+
+    uninitialized_scripts=()
+    for i in "${files_init_name[@]}"; do
+        skip=
+        for j in "${init_complete_name[@]}"; do
+            [[ $i == "$j" ]] && { skip=1; break; }
+        done
+        [[ -n $skip ]] || uninitialized_scripts+=("$i")
+    done
+    declare uninitialized_scripts
+
+    if [ "$files_init" != "$init_complete" ]; then
+        if [ "$init_complete" -gt "$files_init" ] ; then
+            :
+        else
+            if [ -n "${IMAGE_NAME}" ] ; then
+                if [ -f "/container/build/${IMAGE_NAME/\//_}/CHANGELOG.md" ] ; then
+                    image_version=$(head -n1 /container/build/"${IMAGE_NAME/\//_}"/CHANGELOG.md | awk '{print $2}')
+                    elif [ -f /container/build/docker-"${IMAGE_NAME/\//_}"/CHANGELOG.md ] ; then
+                    image_version=$(head -n1 /container/build/docker-"${IMAGE_NAME/\//_}"/CHANGELOG.md | awk '{print $2}')
+                else
+                    if [ -f /container/build/tiredofit_docker-"${IMAGE_NAME/\//_}"/CHANGELOG.md ] ; then
+                        image_version=$(head -n1 /container/build/tiredofit_docker-"${IMAGE_NAME/\//_}"/CHANGELOG.md | awk '{print $2}')
+                    fi
+                fi
+
+                image_string="Image: ${IMAGE_NAME}"
+
+                if [ -n "${image_version}" ] ; then
+                    image_string="${image_string} | Version ${image_version} Type 'changelog' for details"
+                fi
+
+                image_string="${image_string}"
+
+                if [ -n "${IMAGE_REPO_URL}" ] ; then
+                    image_url="Repository/Issues/Support: ${IMAGE_REPO_URL}"
+                fi
+            fi
+            echo "**********************************************************************************************************************"
+            echo "**********************************************************************************************************************"
+            echo "****                                                                                                              ****"
+            echo "****       ERROR - Some initialization scripts haven't completed                                                  ****"
+            echo "****             - The following scripts in '/container/init/init.d' did not pass their completion check          ****"
+            echo "****             - All services are now halted                                                                    ****"
+            echo "****                                                                                                              ****"
+            echo "**********************************************************************************************************************"
+            echo "**********************************************************************************************************************"
+            echo ""
+            echo "${uninitialized_scripts[@]}" | tr ' ' '\n' | uniq -u
+            echo ""
+            echo "**********************************************************************************************************************"
+            echo "**********************************************************************************************************************"
+            echo "****                                                                                                              ****"
+            echo "****       This could have happened for a variety of reasons. Please make sure you have followed the README       ****"
+            echo "****       relating to this image and have proper configuration such as environment variables and volumes set     ****"
+            echo "****                                                                                                              ****"
+            echo "****       If you feel that you have encountered a bug, please submit an issue on the revision control system     ****"
+            echo "****       and provide full debug logs by setting the environment variable 'DEBUG_MODE=TRUE'                      ****"
+            echo "****                                                                                                              ****"
+            echo "**********************************************************************************************************************"
+            echo "**********************************************************************************************************************"
+            echo ""
+            echo "$image_string"
+            echo "$image_url"
+            exit 1
+        fi
+    fi
+    output_on
+fi
+
+for services in /container/base/run/available/*/ /container/run/available/*/ ; do
+    service=${services%*/}
+    if [ -f "/container/state/init/${service##*/}" ]; then
+        if grep -q "DONOTSTART" "/container/state/init/${service##*/}"; then
+            print_debug "Skipping '${service##*/}' service for startup routines"
+        else
+            print_debug "Getting ready to start '${service##*/}' service"
+            ln -sf "${service}" /etc/services.d
+        fi
+    else
+        print_debug "No Initialization Script Found - Getting ready to start '${service##*/}' service"
+        ln -sf "${service}" /etc/services.d
+    fi
+done
+
+if [ -n "${CONTAINER_POST_INIT_SCRIPT}" ] ; then
+    print_debug "Found Post Init Scripts"
+    post_scripts=$(echo "${CONTAINER_POST_INIT_SCRIPT}" | tr "," "\n")
+    for post_script in $post_scripts; do
+        if [ -f "${post_script}" ] ; then
+            print_debug "Executing post init script '${post_script}'"
+            chmod +x "${post_script}"
+            "${post_script}"
+        else
+            print_error "Tried to run post script '${post_script}' but it does not exist!"
+        fi
+    done
+fi
+
+if [ -n "${CONTAINER_POST_INIT_COMMAND}" ] ; then
+    print_debug "Found Post Init Command"
+    post_commands=$(echo "${CONTAINER_POST_INIT_COMMAND}" | tr "," "\n")
+    for post_command in "${post_commands}"; do
+        print_debug "Executing post init command '${post_command}'"
+        eval "${post_command}"
+    done
+fi
+
+liftoff

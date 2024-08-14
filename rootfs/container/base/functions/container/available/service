@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+service_start() {
+    if [ -d /container/base/run/"${1}" ] ; then
+        ln -sf /container/run/"${1}" /etc/services.d/
+    elif [ -d /container/run/"${1}" ] ; then
+        ln -sf /container/run/"${1}" /etc/services.d/
+    fi
+}
+
+service_stop() {
+    mkdir -p /container/state/init/
+    echo "DONOTSTART added by $(basename "$0")" >> /container/state/init/"${1}"
+    #if [ "${1}" != "$(basename "$0")" ] ; then
+    #    echo "DONOTSTART added by $(basename \""$0"\")" >> /tmp/.container/"${1}"-init
+    #fi
+    #DONOTSTART=TRUE
+}

@@ -1,0 +1,26 @@
+#!/command/with-contenv bash
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+case "${DEBUG_MODE,,}" in
+    "true" | "yes" | "on" )
+        CONTAINER_LOG_LEVEL="DEBUG"
+        set -x
+    ;;
+    "false" | "no" | "off" )
+        :
+    ;;
+    * )
+        if [ "$(dirname "$0")" = "/var/run/s6/etc/cont-init.d" ] || [ "$(dirname "$0")" = "/etc/cont-init.d" ] || [[ "$(dirname "$0")" =~ ^\/container\/init\/init ]] ; then
+            if [ "${DEBUG_MODE}" = "$(basename \""$0"\")" ] ; then
+                print_notice "Enabling Debug mode for $(basename \""$0"\") scripts"
+                set -x
+            fi
+        fi
+        if [ "${DEBUG_MODE}" = "$(basename "$PWD")" ] ; then
+            print_notice "Enabling Debug mode for $(basename "$PWD") scripts"
+            set -x
+        fi
+    ;;
+esac

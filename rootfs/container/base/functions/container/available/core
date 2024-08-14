@@ -1,0 +1,455 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+source /container/base/defaults/container
+
+call() {
+    _funcname="${1}"
+    shift 1
+    _funcarg="${@}"
+    case $(type -t "${_funcname}") in
+        function)
+            ${_funcname} ${_funcarg}
+            case $(type -t "${_funcname}"_advanced) in
+                function )
+                    "${_funcname}"_advanced ${_funcarg}
+                ;;
+            esac
+        ;;
+    esac
+}
+
+dir_empty() {
+    [ ! -n "$(ls -A "$1" 2>/dev/null)" ]
+}
+
+dir_notempty() {
+    [ -n "$(ls -A "$1" 2>/dev/null)" ]
+}
+
+get_image_version() {
+    output_off
+    if [ -n "${IMAGE_NAME}" ] ; then
+        if [ -f "/container/build/${IMAGE_NAME/\//_}/CHANGELOG.md" ] ; then
+            image_version=$(head -n1 /container/build/${IMAGE_NAME/\//_}/CHANGELOG.md | awk '{print $2}')
+            elif [ -f /container/build/docker-${IMAGE_NAME/\//_}/CHANGELOG.md ] ; then
+            image_version=$(head -n1 /container/build/docker-${IMAGE_NAME/\//_}/CHANGELOG.md | awk '{print $2}')
+        else
+            if [ -f /container/build/tiredofit_docker-${IMAGE_NAME/\//_}/CHANGELOG.md ] ; then
+                image_version=$(head -n1 /container/build/docker-${IMAGE_NAME/\//_}/CHANGELOG.md | awk '{print $2}')
+            else
+                strip_image_repo_url=$(echo ${IMAGE_REPO_URL%/} | sed "s#https://github.com/##g")
+                if [ -f /container/build/${strip_image_repo_url/\//_}/CHANGELOG.md ] ; then
+                    image_version=$(head -n1 /container/build/${strip_image_repo_url/\//_}/CHANGELOG.md | awk '{print $2}')
+                fi
+            fi
+
+            if [ -f /container/build/tiredofit_docker-${IMAGE_NAME/\//_}/CHANGELOG.md ] ; then
+                image_version=$(head -n1 /container/build/tiredofit_docker-${IMAGE_NAME/\//_}/CHANGELOG.md | awk '{print $2}')
+            fi
+        fi
+
+        if [ -n "${image_version}" ] ; then
+            echo "${image_version}"
+        fi
+    fi
+    output_on
+}
+
+grant_sudo() {
+    ## Grant sudo priveleges to a user
+    ## grant_sudo (username) (command) | If no command set will be ALL
+    output_off
+    if [ -n "$1" ] ; then
+        if [ -n "$2" ] ; then
+            sudo_command="$2"
+        else
+            sudo_command="ALL"
+        fi
+        print_debug "Adding Sudo privileges to '$1' for '${sudo_command}' command"
+        echo "%$1 ALL=(ALL) NOPASSWD:${sudo_command}" >> /etc/sudoers
+    fi
+    output_on
+}
+
+host_override() {
+    ## Adds entry to /etc/hosts file
+    ## Usage CONTAINER_HOST_OVERRIDE01=destination_ip domain1 domain2 domain3
+    ## If you use a host name instead of destination_ip it will attempt to resolve it
+    _hostnum=$(printenv | sort | grep -cE '^CONTAINER_HOST_OVERRIDE_([0-9].)')
+    for (( _host = 01; _host <= _hostnum; _host++ )) ; do
+        _host=$(printf "%02d" $_host)
+        host_line=CONTAINER_HOST_OVERRIDE_${_host}
+        host_ip=$(echo ${!host_line} | awk '{print $1}')
+
+        if [[ ! "${host_ip}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            host_ip="$(getent ahostsv4 "${host_ip}" | grep -m 1 STREAM  | awk '{print $1}')"
+        fi
+
+        echo "# Added automatically by CONTAINER_HOST_OVERRIDE_${_host}" >> /etc/hosts
+        echo "${host_ip} $(echo ${!host_line} | cut -d' ' -f2-)" >> /etc/hosts
+    done
+}
+
+output_off() {
+    if [ "${DEBUG_MODE,,}" = "true" ] ; then
+        set +x
+    fi
+}
+
+output_on() {
+    if [ "${DEBUG_MODE,,}" = "true" ] ; then
+        case "$(basename "$0")" in
+            0*-* | 99-* )
+                :
+            ;;
+            run )
+                case "$PWD" in
+                    */0*-* | 99-* )
+                        :
+                    ;;
+                    * )
+                        set -x
+                    ;;
+                esac
+            ;;
+            * )
+                set -x
+            ;;
+        esac
+    fi
+}
+
+sanity_var() {
+    ## Check is Variable is Defined
+    ## Usage: sanity_var varname "Description"
+    output_off
+    print_debug "Looking for existence of $1 environment variable"
+    if [ ! -v "$1" ]; then
+        print_error "No '$2' Entered! - Set '\$$1'"
+        exit 1
+    fi
+    output_on
+}
+
+set_timezone() {
+    ## Timezone Setup
+    if [ -f /usr/share/zoneinfo/"${TIMEZONE}" ]; then
+        if [ "${TIMEZONE}" != "$(cat /etc/timezone)" ] ; then
+            print_notice "Timezone: Setting to '${TIMEZONE}' from '$(cat /etc/timezone)'"
+            cp -R /usr/share/zoneinfo/"${1}" /etc/localtime
+            echo "${1}" > /etc/timezone
+        fi
+    else
+        print_warn "Timezone: ${TIMEZONE} does not exist - Using '$(cat /etc/timezone)'"
+    fi
+}
+
+showoff() {
+    output_off
+    if [ -n "${IMAGE_NAME}" ] ; then
+        iv=$(get_image_version)
+        is="$(echo 'H4sIAAAAAAAAA/PMTUxPtVLgAgDj9n4BCAAAAA==' | base64 -d | gunzip) ${IMAGE_NAME}"
+        if [ ! -z "${iv// }" ] ; then
+            is="${is}$(echo 'H4sIAAAAAAAAA1OoUQhLLSrOzM9TUOACAAiVoSgNAAAA' | base64 -d | gunzip)${iv}$(echo 'H4sIAAAAAAAAA1MIqSxIVVDPzE1MT41PzkjMS0/NyU9XV0jLL1JISS1JzMwp5gIAZRrZYCQAAAA=' | base64 -d | gunzip)"
+        fi
+        is="${is}"
+        if [ -n "${IMAGE_REPO_URL}" ] ; then
+            ir="$(echo 'H4sIAAAAAAAAAwtKLcgvzizJL6rUd8lPLs1NzStJLMnMz7PiAgAxTVbtGgAAAA==' | base64 -d | gunzip) ${IMAGE_REPO_URL}"
+        fi
+    fi
+    echo "H4sIAAAAAAAAA61RQRLEIAi78wpvXAq971t68CE8vgni2s7urWUGEyRBHVt7JTYzc+Ga4WD+T+Q/pm9jmQNbIZpNN9OOpGSqnA6I4jJlp1RZZ2OZUbrK3B9nxWw5VB9NiOFNCt5ta8s0kSD3suiBxOQDRh0WxSWQcbuYj9Mp4KuksKAoOVm3qlvRfq1Vl4Nj5fkvZnCsnEeFItgXAgAA" | base64 -d | gunzip
+    echo "${is}"
+    echo "${ir}"
+    echo "H4sIAAAAAAAAA/PJTE7NK061UvD1DFHQVTAyMDJROLRSwSWxLFXBOT+vKL9SoUbBN78oVSEzLy3fSiGjpKSg2Epfv7y8XK8ksyg1JT8ts0QvOZELABYwPstJAAAA" | base64 -d | gunzip
+    echo ""
+    echo "H4sIAAAAAAAAAxXLyQ2AMAwEwD9VuICIMugjwhsUAXbwAaJ7xPxnUaNVJbokmBg3Dh0nJArl4BrwQg010kCGK+Hhf/DOMGop3GWj86VHbZ+nD7TmoKpPAAAA" | base64 -d | gunzip
+    echo ""
+    output_on
+}
+
+truefalse_yesno() {
+    ## Convert TRUE or FALSE statements to either yes or no
+    ## Usage: 'truefalse_yesno varname'
+    ## Don't prefix it with a $
+    ## Optionally add "uppercase" / "lowercase" as second value on how you wish it to be replaced
+    value=$(set | grep "${1}"= | cut -d '=' -f2)
+    var=$(set | grep "${1}"= | sed "s/=.*//g")
+
+    if [ "${value,,}" = "true" ] || [ "${value,,}" = "yes" ] ; then
+        print_debug "Converting Variable Name ${var} value to 'yes'"
+        unset "$1"
+        if [ -n "$2" ] ; then
+            case "${2,,}" in
+                "uppercase" | "upper" | "uc" )
+                    export "$1=YES"
+                ;;
+                "lowercase" | "lower" | "lc" )
+                    export "$1=yes"
+                ;;
+            esac
+        else
+            export "$1=yes"
+        fi
+        elif [ "${value,,}" = "false" ] || [ "${value,,}" = "no" ] ; then
+        print_debug "Converting Variable Name ${var} value to 'no'"
+        unset "$1"
+        if [ -n "$2" ] ; then
+            case "${2,,}" in
+                "uppercase" | "upper" | "uc" )
+                    export "$1=NO"
+                ;;
+                "lowercase" | "lower" | "lc" )
+                    export "$1=no"
+                ;;
+            esac
+        else
+            export "$1=no"
+        fi
+    fi
+}
+
+
+transform_var() {
+    case "${1,,}" in
+        "file" )
+            ## Docker Secrets Support
+            ## usage: transform_var file VAR
+            ##    ie: transform_var file 'XYZ_DB_PASSWORD'
+            ##        (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
+            local variables
+            variables=$(echo "$@" | tr " " "\n")
+            for variable in $variables; do
+                if [ -v "${variable}"_FILE ] ; then
+                    file_variable=${variable}_FILE
+                    if [ ! -f "${!file_variable}" ] ; then
+                        print_error "[transform_var (file)] ${variable}_FILE set as environment variable, however file doesn't exist"
+                        return 1
+                    fi
+                    export "${variable}"="$(cat "${!file_variable}")"
+                fi
+            done
+            unset file_variable
+            unset variables
+        ;;
+        "populate" )
+            ### Populate variable with default or otherwise
+            ### Usage transform_var populate VAR1 VAR2 <mandatory>
+            ### Look to see if VAR1 has a value of unset, if true then skip actions
+            ### Look to see if there is a DEFAULT_VAR2 value. If so, make value of VAR2 DEFAULT_VAR2
+            ### If 'mandatory' is placed as an option, if the VAR2 or DEFAULT_VAR2 doesn't exist, fail spectacularly
+            local defvariable
+            local defvalue
+            local variable
+            local value
+            if set -o posix ; set | grep -q "^DEFAULT_${3}" ; then
+                defvariable=$(set -o posix ; set | grep -q "^DEFAULT_${3}")
+                defvalue=$(echo "${defvariable}}" | cut -d= -f2)
+                defvariable=$(echo "${defvariable}" | cut -d= -f1)
+            fi
+
+            if set -o posix ; set | grep -q "^${2}" ; then
+                variable=$(set -o posix ; set | grep -q "^${2}")
+                value=$(echo "${variable}" | cut -d= -f2)
+                variable=$(echo "${variable}" | cut -d= -f1)
+
+                if [ "${value}" = "unset" ] ; then
+                    unset "${3}"
+                fi
+            elif [ -n "${defvalue}" ]; then
+                export "${3}"="${defvalue}"
+            else
+                if [ "${4}" = "mandatory" ]; then
+                    print_error "[transform_var (populate)] Need existence of var '${2}' and no DEFAULT_ exists"
+                    exit 1
+                fi
+            fi
+        ;;
+        tonum_* )
+            ## Convert variables to a numbered variable
+            ## usage: transform_var tonum_01 VAR
+            ##    ie: transform_var tonum 01 'XYZ_DB_PASSWORD'
+            ##        (will output $XYZ01_DB_PASSWORD)
+
+            local variables
+            variables=$(echo "$@" | tr " " "\n")
+            for variable in $variables; do
+                if [ -v "${variable}" ] ; then
+                    export "$(echo $(echo "${variable}" | cut -d _ -f 1)${1/tonum_/}_$(echo "${variable}" | cut -d_ -f 2-))=${!variable}"
+                    unset "${variable}"
+                fi
+            done
+            unset variables
+        ;;
+    esac
+}
+
+truefalse_onoff() {
+    ## Convert TRUE or FALSE statements to either yes or no
+    ## Usage: 'truefalse_yesno varname'
+    ## Don't prefix it with a $
+    ## Optionally add "uppercase" / "lowercase" as second value on how you wish it to be replaced
+    value=$(set | grep "${1}"= | cut -d '=' -f2)
+    var=$(set | grep "${1}"= | sed "s/=.*//g")
+
+    if [ "${value,,}" = "true" ] || [ "${value,,}" = "yes" ] ; then
+        print_debug "Converting Variable Name ${var} value to 'On'"
+        unset "$1"
+        if [ -n "$2" ] ; then
+            case "${2,,}" in
+                "uppercase" | "upper" | "uc" )
+                    export "$1=ON"
+                ;;
+                "lowercase" | "lower" | "lc" )
+                    export "$1=on"
+                ;;
+            esac
+        else
+            export "$1=ON"
+        fi
+        elif [ "${value,,}" = "false" ] || [ "${value,,}" = "no" ] ; then
+        print_debug "Converting Variable Name ${var} value to 'Off'"
+        unset "$1"
+        if [ -n "$2" ] ; then
+            case "${2,,}" in
+                "uppercase" | "upper" | "uc" )
+                    export "$1=OFF"
+                ;;
+                "lowercase" | "lower" | "lc" )
+                    export "$1=off"
+                ;;
+            esac
+        else
+            export "$1=off"
+        fi
+    fi
+}
+
+truefalse_onezero() {
+    ## Convert TRUE or FALSE statements to either 1 or 0
+    ## Usage: 'truefalse_onezero varname'
+    ## Don't prefix it with a $
+    value=$(set | grep "${1}"= | cut -d '=' -f2)
+    var=$(set | grep "${1}"= | sed "s/=.*//g")
+
+    if [ "${value,,}" = "true" ] || [ "${value,,}" = "yes" ] ; then
+        print_debug "Converting Variable Name ${var} value to '1'"
+        unset "$1"
+        export "$1=1"
+        elif [ "${value,,}" = "false" ] || [ "${value,,}" = "no" ] ; then
+        print_debug "Converting Variable Name ${var} value to '0'"
+        unset "$1"
+        export "$1=0"
+    fi
+}
+
+var_false() {
+    ## Timesaver for if statements
+    ## Usage: if var_false $VARNAME ; then ... fi
+    [ "${1,,}" = "false" ] || [ "${1,,}" = "no" ]
+}
+
+var_notfalse() {
+    [ "${1,,}" != "false" ]
+}
+
+var_nottrue() {
+    [ "${1,,}" != "true" ]
+}
+
+var_true() {
+    [ "${1,,}" = "true" ] || [ "${1,,}" = "yes" ]
+}
+
+wait_for_directory() {
+    ## Wait for Directory to exist
+    ## Usage: wait_for_directory socketname
+    print_debug "Looking for existence of directory: $1"
+    while [ ! -d "${1}" ] ; do
+        sleep 1
+    done
+}
+
+wait_for_file() {
+    ## Wait for File to exist
+    ## Usage: wait_for_file filename
+    print_debug "Looking for existence of file: $1"
+    while [ ! -f "${1}" ] ; do
+        sleep 1
+    done
+}
+
+wait_for_process() {
+    ## Wait for Process to start
+    ## Usage: wait_for_process hostname port
+    print_debug "Looking for existence of process: $1"
+    counter=0
+    while ! pgrep "${1}" > /dev/null ; do
+        sleep 5
+        (( counter+=5 ))
+        print_warn "Waiting for '${1}' to start, retrying.. ($counter seconds so far)"
+    done
+}
+
+wait_for_port() {
+    ## Wait for Port to exist
+    ## Usage: wait_for_port hostname port
+    print_debug "Looking for existence of listening port on $1:$2"
+    counter=0
+    while ! (nc -z "${1}" "${2}") ; do
+        sleep 5
+        (( counter+=5 ))
+        print_warn "Host '${1}' is not listening on port '${2}', retrying.. ($counter seconds so far)"
+    done
+}
+
+wait_for_socket() {
+    ## Wait for Socket to exist
+    ## Usage: wait_for_socket socketname
+    print_debug "Looking for existence of socket: $1"
+    while [ ! -S "${1}" ] ; do
+        sleep 1
+    done
+}
+
+yesno_truefalse() {
+    ## Convert YES or NO statements to either TRUE or FALSE
+    ## Usage: 'yesno_truefalse varname'
+    ## Don't prefix it with a $
+    ## Optionally add "uppercase" / "lowercase" as second value on how you wish it to be replaced
+    value=$(set | grep "${1}"= | cut -d '=' -f2)
+    var=$(set | grep "${1}"= | sed "s/=.*//g")
+
+    if [ "${value,,}" = "true" ] || [ "${value,,}" = "yes" ] ; then
+        print_debug "Converting Variable Name ${var} value to 'yes'"
+        unset "$1"
+        if [ -n "$2" ] ; then
+            case "${2,,}" in
+                "uppercase" | "upper" | "uc" )
+                    export "$1=TRUE"
+                ;;
+                "lowercase" | "lower" | "lc" )
+                    export "$1=true"
+                ;;
+            esac
+        else
+            export "$1=TRUE"
+        fi
+        elif [ "${value,,}" = "false" ] || [ "${value,,}" = "no" ] ; then
+        print_debug "Converting Variable Name ${var} value to 'no'"
+        unset "$1"
+        if [ -n "$2" ] ; then
+            case "$2" in
+                "uppercase" | "upper" | "uc" )
+                    export "$1=FALSE"
+                ;;
+                "lowercase" | "lower" | "lc" )
+                    export "$1=false"
+                ;;
+            esac
+        else
+            export "$1=FALSE"
+        fi
+    fi
+}

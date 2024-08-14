@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+for run_function in /container/base/functions/container/run.d/* ; do
+    if [ ! -d "${run_function}" ] ; then
+        #echo "Sourcing ${run_function}"
+        source "${run_function}"
+    fi
+done

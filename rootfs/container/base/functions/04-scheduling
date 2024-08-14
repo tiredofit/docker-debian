@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+if [ "${CONTAINER_ENABLE_LOGROTATE,,}" = "true" ]; then
+    if [ -f "/container/base/functions/logging/logrotate" ]; then
+        source /container/base/functions/logging/logrotate
+    fi
+fi
+
+if [ "${CONTAINER_ENABLE_SCHEDULING,,}" = "true" ]; then
+    if [ -f "/container/base/functions/scheduling/${CONTAINER_SCHEDULING_BACKEND,,}" ]; then
+        source /container/base/functions/scheduling/"${CONTAINER_SCHEDULING_BACKEND,,}"
+    fi
+fi

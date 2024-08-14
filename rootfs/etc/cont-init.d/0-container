@@ -1,0 +1,60 @@
+#!/command/with-contenv bash
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+chmod -f -R 0755 \
+                    /{container,override}/{available,init.d,finish}/{available,post,pre} \
+                > /dev/null 2>&1
+
+source /container/base/functions/container/init
+
+for fullpath_baseinit in /container/base/init/init.d/* ; do
+    if [ -x "${fullpath_baseinit}" ] && [ ! -d "${fullpath_baseinit}" ] ; then
+        baseinit=$(basename $fullpath_baseinit)
+        if [ "${baseinit}" != "zzz-container" ] ; then
+            if [ -f /override/base/init/pre/"${baseinit}" ] && [ -x /override/base/init/pre/"${baseinit}" ] ; then
+                /override/base/init/pre/"${baseinit}"
+            elif [ -f /container/base/init/pre/"${baseinit}" ] && [ -x /container/base/init/pre/"${baseinit}" ] ; then
+                /container/base/init/pre/"${baseinit}"
+            fi
+            if [ -f /override/base/init/init.d/"${baseinit}" ] && [ -x /override/base/init/init.d/"${baseinit}" ] ; then
+                /override/base/init/init.d/"${baseinit}"
+            else
+                "${fullpath_baseinit}"
+            fi
+            if [ -f /override/base/init/post/"${baseinit}" ] && [ -x /override/base/init/post/"${baseinit}" ] ; then
+                /override/base/init/post/"${baseinit}"
+            elif [ -f /container/base/init/post/"${baseinit}" ] && [ -x /container/base/init/post/"${baseinit}" ] ; then
+                /container/base/init/post/"${baseinit}"
+            fi
+        fi
+    fi
+done
+
+for fullpath_continit in /container/init/init.d/* ; do
+    if [ -x "${fullpath_continit}" ] && [ ! -d "${fullpath_continit}" ] ; then
+        continit=$(basename $fullpath_continit)
+        if [ -f /override/init/pre/"${continit}" ] && [ -x /override/init/pre/"${continit}" ] ; then
+            /override/init/pre/"${continit}"
+        elif [ -f /container/init/pre/"${continit}" ] && [ -x /container/init/pre/"${continit}" ] ; then
+            /container/init/pre/"${continit}"
+        fi
+        if [ -f /override/init/init.d/"${continit}" ] && [ -x /override/init/init.d/"${continit}" ] ; then
+            /override/init/init.d/"${continit}"
+        else
+            "${fullpath_continit}"
+        fi
+        if [ -f /override/init/post/"${continit}" ] && [ -x /override/init/post/"${continit}" ] ; then
+            /override/init/post/"${continit}"
+        elif [ -f /container/init/post/"${continit}" ] && [ -x /container/init/post/"${continit}" ] ; then
+            /container/init/post/"${continit}"
+        fi
+    fi
+done
+
+if [ -f "/override/base/init/init.d/zzz-container" ] ; then
+    /override/base/init/init.d/zzz-container
+elif [ -f "/container/base/init/init.d/zzz-container" ] ; then
+    /container/base/init/init.d/zzz-container
+fi

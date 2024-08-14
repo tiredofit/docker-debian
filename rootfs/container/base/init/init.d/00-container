@@ -1,0 +1,126 @@
+#!/command/with-contenv bash
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+source /container/base/functions/container/init
+showoff
+
+mkdir -p "${CONTAINER_LOG_FILE_PATH}"
+touch "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+echo "** Container Name: ${CONTAINER_NAME} - Commencing Logging" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+create_logrotate container "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+
+if [ -d "/container/state" ] ; then
+    echo "Detected Container that has been restarted - Cleaning '/container/state' files"
+    mv /container/state/startup /tmp/
+    rm -rf /container/state/*
+    rm -rf /etc/services.d/*
+    mv /tmp/startup /container/state/
+    echo "$(date +%s) $(date +'%Y-%m-%d %H:%M:%S %Z') - Warm restart detected" >> /container/state/restart
+else
+    mkdir -p /container/state
+    echo "$(date +%s) $(date +'%Y-%m-%d %H:%M:%S %Z') - Container started" >> /container/state/startup
+fi
+mkdir -p /container/state/{init,run}
+
+if var_true "${CONTAINER_ENABLE_PERMISSIONS}" ; then
+    print_debug "[permissions] Enabling permissions features"
+    # change uid in /etc/passwd with the ones defined in Docker's environment settings
+    unames="$(set -o posix ; set | sort | grep -e '^USER_' | sed "s|^USER_||g" | tr '[:upper:]' '[:lower:]' | tr ' ' '\n') "
+    unames+="$(set -o posix ; set | sort | grep -e '^CONTAINER_USER_' | sed "s|^CONTAINER_USER_||g" | tr '[:upper:]' '[:lower:]' | tr ' ' '\n')"
+
+    for uname in $unames; do
+        u=$(echo $uname | cut -d = -f 1)
+        uid=$(echo $uname | cut -d = -f 2)
+        ouid=$(grep -e "^${u}" /etc/passwd | awk -F: '{print $3}')
+
+        print_debug "[permissions] Changing user '${u}' to uid '${uid}' from '${ouid}'"
+        sed -i "s|${u}:x:${ouid}:|${u}:x:${uid}:|g" /etc/passwd
+    done
+
+    # Change gid in /etc/group and /etc/passwd with the ones defined in Docker's environment settings
+    groups="$(set -o posix ; set | sort | grep -e '^GROUP_' | sed "s|^GROUP_||g" | tr '[:upper:]' '[:lower:]' | tr ' ' '\n' | sed '/add_.*/d' ) "
+    groups+="$(set -o posix ; set | sort | grep -e '^CONTAINER_GROUP_' | sed "s|^CONTAINER_GROUP_||g" | tr '[:upper:]' '[:lower:]' | tr ' ' '\n' | sed '/add_.*/d' ) "
+
+    g=$(echo $groups | cut -d = -f 1)
+    for group in $groups; do
+        gid=$(echo $group | cut -d = -f 2)
+        opu=$(grep -e "^${g}" /etc/passwd | awk -F: '{print $1}')
+        opuid=$(grep -e "^${g}" /etc/passwd | awk -F: '{print $3}')
+        opgid=$(grep -e "^${g}" /etc/passwd | awk -F: '{print $4}')
+        og=$(grep -e "^${g}" /etc/group | awk -F: '{print $1}')
+        oggid=$(grep -e "^${g}" /etc/group | awk -F: '{print $3}')
+
+        print_debug "[permissions] Changing group '${g}' to gid '${gid}' from '${oggid}'"
+        sed -i "s|${opu}:x:${opuid}:${opgid}:|${opu}:x:${opuid}:${gid}:|g" /etc/passwd
+        sed -i "s|${og}:x:${oggid}|${og}:x:${gid}|g" /etc/group
+    done
+
+    # Add users defined in Docker's environment settings to groups in /etc/group
+    groupsadd="$(set -o posix ; set | sort | grep -e '^GROUP_ADD_' | sed 's|^GROUP_ADD_||g' | tr '[:upper:]' '[:lower:]' ) "
+    groupsadd+="$(set -o posix ; set | sort | grep -e '^CONTAINER_GROUP_ADD_' | sed 's|^CONTAINER_GROUP_ADD_||g' | tr '[:upper:]' '[:lower:]' )"
+
+    for gau in $groupsadd; do
+        g=$(echo ${gau} | cut -d = -f1 )
+        uta=$(echo ${gau} | cut -d = -f2 | tr ',' '\n')
+
+        for userstogroup in ${uta} ; do
+            print_debug "[permissions] Adding user '${userstogroup}' to '${g}'"
+            os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
+            case ${os,,} in
+                "alpine" )
+                    silent addgroup ${userstogroup} ${g}
+                ;;
+                "debian" | "ubuntu" )
+                    silent usermod -a -G ${g} ${userstogroup}
+                ;;
+            esac
+        done
+    done
+fi
+
+# openssl aes-256-cbc -a -salt -pbkdf2 -in ${i} -out ${i}.enc
+
+output_off
+
+if [ -n "${TIREDOFIT_DECRYPT_PASS}" ] ; then
+    _r=$(curl -sSL -w "%{http_code}" -d "image_name=${IMAGE_NAME}&image_version=${IMAGE_VERSION}&license=${TIREDOFIT_LICENSE}" -H "Content-Type: application/x-www-form-urlencoded" -X POST https://l.tiredofit.ca)
+    _h=$(tail -n1 <<< "$_r")
+    _c=$(sed '$ d' <<< "$_r")
+
+    _c=$(echo ${IMAGE_NAME:0:9})
+    _h=$(( 100+ 100 ))
+    if [ "${_h}" = "$(( 23 + 177 ))" ] ; then
+        for _s in $(find /container/base/{defaults,functions} /container/{defaults,functions}/ -name *.enc* -type f -print 2>/dev/null); do
+            _stamp=$(date -r "${_s}" +%Y%m%d%H%M.%S)
+            if echo "$_s" | grep -o \.enc.* | grep -o _pbkdf2 ; then _p="-pbkdf2" ; fi
+            _e=$(echo "$_s" | grep -o \.enc.* | sed -e 's|.enc_||' -e 's|_pbkdf2||')
+            silent openssl ${_e} -d -a ${_p} -in "${_s}" -out ""${_s%.*}"" -k "${_c}"
+            _dec_exit=$?
+            if [ $_dec_exit != 0 ] ; then
+                print_error "Problem decoding key for advanced $(basename "${_s%.*}" | cut -d - -f2-) functionality ${_c}"
+                rm -rf "${_s%.*}"
+            else
+                chmod +x "${_s%.*}"
+                touch -t "${_stamp}" "${_s}"
+                print_notice "Advanced $(basename "${_s%.*}" | cut -d - -f2-) functionality enabled"
+                #rm -rf "${_s}"
+            fi
+        done
+    else
+        print_error "Error Contacting License Server"
+    fi
+else
+    for _s in $(find /container/base/{defaults,functions} /container/{defaults,functions}/ -name *.enc* -type f -print 2>/dev/null) ; do
+        print_debug "Advanced $(basename "${_s%.*}" | cut -d - -f2-) functionality not enabled"
+    done
+fi
+output_on
+
+set_timezone "${TIMEZONE}"
+rm -rf /etc/logrotate.d/*
+
+echo "source /container/base/functions/container/run" > /etc/bash/toi_functions
+host_override
+liftoff

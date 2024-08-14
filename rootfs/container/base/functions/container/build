@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: ©2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+for build_function in /container/base/functions/container/build.d/* ; do
+    if [ ! -d "${build_function}" ] ; then
+        echo "Build Sourcing ${build_function}"
+        source "${build_function}"
+    fi
+done
+
+set -x

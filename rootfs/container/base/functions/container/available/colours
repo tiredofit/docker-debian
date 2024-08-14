@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+bdg="\e[42m"       # Background Color Dark Green
+bdb="\e[44m"       # Background Color Dark Blue
+bdm="\e[45m"       # Background Color Dark Magenta
+bdgy="\e[100m"     # Background Color Dark Gray
+blr="\e[101m"      # Background Color Light Red
+boff="\e[49m"      # Background Color Off

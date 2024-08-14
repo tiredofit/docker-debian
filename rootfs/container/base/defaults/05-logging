@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+if [ "${CONTAINER_ENABLE_LOGROTATE,,}" = "true" ]; then
+    if [ -f "/container/base/defaults/logging/logrotate" ]; then
+        source /container/base/defaults/logging/logrotate
+    fi
+fi
+
+if [ "${CONTAINER_ENABLE_LOGSHIPPING,,}" = "true" ]; then
+    if [ -f "/container/base/defaults/logging/${CONTAINER_LOGSHIPPING_BACKEND/-/}" ]; then
+        source /container/defaults/logging/"${CONTAINER_LOGSHIPPING_BACKEND/-/}"
+    fi
+fi

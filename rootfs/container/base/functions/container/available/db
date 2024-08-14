@@ -1,0 +1,380 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+db_ready() {
+    ## Usage db_ready <dbtype>
+    output_off
+    print_debug "Checking to see if Database Type $1 is ready"
+    case "$1" in
+        "couch" | "couchdb" )
+            transform_var file DB_PORT
+            if [ -n "${DB_PORT}" ] ; then couch_port=${DB_PORT} ; fi ;
+            transform_var file COUCHDB_PORT
+            if [ -n "${COUCHDB_PORT}" ] ; then couch_port=${COUCHDB_PORT} ; fi ;
+            couch_port=${couch_port:-5984}
+            transform_var file DB_HOST
+            if [ -n "${DB_HOST}" ] ; then couch_host=${DB_HOST} ; fi ;
+            transform_var file COUCHDB_HOST
+            if [ -n "${COUCHDB_HOST}" ] ; then couch_host=${COUCHDB_HOST} ; fi ;
+            counter=0
+            # shellcheck disable=SC2086
+            while ! (nc -z "${couch_host}" ${couch_port}) ; do
+                sleep 5
+                (( counter+=5 ))
+                print_warn "CouchDB Host '${couch_host}' is not accessible, retrying.. ($counter seconds so far)"
+            done
+        ;;
+        "influx" | "influxdb" )
+            transform_var file DB_PORT
+            if [ -n "${DB_PORT}" ] ; then influx_port=${DB_PORT} ; fi ;
+            transform_var file INFLUXDB_PORT
+            if [ -n "${INFLUXDB_PORT}" ] ; then influx_port=${INFLUXDB_PORT} ; fi ;
+            influx_port=${influx_port:-8088}
+            transform_var file DB_HOST
+            if [ -n "${DB_HOST}" ] ; then influx_host=${DB_HOST} ; fi ;
+            transform_var file INFLUXDB_HOST
+            if [ -n "${INFLUXDB_HOST}" ] ; then influx_host=${INFLUXDB_HOST} ; fi ;
+            counter=0
+            while ! (nc -z "${influx_host}" "${influx_port}") ; do
+                sleep 5
+                (( counter+=5 ))
+                print_warn "InfluxDB Host '${influx_host}' is not accessible, retrying.. ($counter seconds so far)"
+            done
+        ;;
+        "mongo" | "mongodb" )
+            transform_var file DB_PORT
+            if [ -n "${DB_PORT}" ] ; then mongo_port=${DB_PORT} ; fi ;
+            transform_var file MONGO_PORT
+            if [ -n "${MONGO_PORT}" ] ; then mongo_port=${MONGO_PORT} ; fi ;
+            mongo_port=${mongo_port:-27017}
+            transform_var file DB_HOST
+            if [ -n "${DB_HOST}" ] ; then mongo_host=${DB_HOST} ; fi ;
+            transform_var file MONGO_HOST
+            if [ -n "${MONGO_HOST}" ] ; then mongo_host=${MONGO_HOST} ; fi ;
+            counter=0
+            while ! (nc -z "${mongo_host}" "${mongo_port}") ; do
+                sleep 5
+                (( counter+=5 ))
+                print_warn "Mongo Host '${mongo_host}' is not accessible, retrying.. ($counter seconds so far)"
+            done
+        ;;
+        "mysql" | "mariadb" | "MARIADB" | "MYSQL" )
+            if command -v "mysqladmin" &> /dev/null ; then
+                mysqladmin_bin="$(which mysqladmin)"
+            elif command -v "mariadb-admin" &> /dev/null ; then
+                mysqladmin_bin="$(which mariadb-admin)"
+            else
+                print_error "No MySQL or MariaDB client detected - Cannot check for Database"
+                exit 1
+            fi
+            transform_var file DB_PORT
+            if [ -n "${DB_PORT}" ] ; then maria_port=${DB_PORT} ; fi ;
+            transform_var file MYSQL_PORT
+            if [ -n "${MYSQL_PORT}" ] ; then maria_port=${MYSQL_PORT} ; fi ;
+            transform_var file MARIA_PORT
+            if [ -n "${MARIA_PORT}" ] ; then maria_port=${MARIA_PORT} ; fi ;
+            maria_port=${maria_port:-3306}
+            transform_var file DB_HOST
+            if [ -n "${DB_HOST}" ] ; then maria_host=${DB_HOST} ; fi ;
+            transform_var file MYSQL_PORT
+            if [ -n "${MYSQL_HOST}" ] ; then maria_host=${MYSQL_HOST} ; fi ;
+            transform_var file MARIA_PORT
+            if [ -n "${MARIA_HOST}" ] ; then maria_host=${MARIA_HOST} ; fi ;
+            transform_var file DB_USER
+            if [ -n "${DB_USER}" ] ; then maria_user=${DB_USER} ; fi ;
+            transform_var file MYSQL_USER
+            if [ -n "${MYSQL_USER}" ] ; then maria_user=${MYSQL_USER} ; fi ;
+            transform_var file MARIA_USER
+            if [ -n "${MARIA_USER}" ] ; then maria_user=${MARIA_USER} ; fi ;
+            transform_var file DB_PASS
+            if [ -n "${DB_PASS}" ] ; then maria_pass=${DB_PASS} ; fi ;
+            transform_var file MYSQL_PASS
+            if [ -n "${MYSQL_PASS}" ] ; then maria_pass=${MYSQL_PASS} ; fi ;
+            transform_var file MARIA_PASS
+            if [ -n "${MARIA_PASS}" ] ; then maria_pass=${MARIA_PASS} ; fi ;
+            transform_var file DB_NAME
+            if [ -n "${DB_NAME}" ] ; then maria_name=${DB_NAME} ; fi ;
+            transform_var file MYSQL_NAME
+            if [ -n "${MYSQL_NAME}" ] ; then maria_name=${MYSQL_NAME} ; fi ;
+            transform_var file MARIA_NAME
+            if [ -n "${MARIA_NAME}" ] ; then maria_name=${MARIA_NAME} ; fi ;
+            counter=0
+            while ! ("${mysqladmin_bin}" -u"${maria_user}" -P"${maria_port}" -h"${maria_host}" -p"${maria_pass}" status > /dev/null 2>&1) ; do
+                sleep 5
+                (( counter+=5 ))
+                print_warn "MySQL/MariaDB Server '${maria_host}' is not accessible, retrying.. (${counter} seconds so far)"
+            done
+        ;;
+        "pgsql" | "psql" | "postgres" | "postgresql" )
+            if command -v "pg_isready" &> /dev/null ; then
+                pg_isready_bin="$(which pg_isready)"
+            else
+                print_error "No Postgresql client installation installation detected - Cannot check for Database"
+                exit 1
+            fi
+            transform_var file DB_PORT
+            if [ -n "${DB_PORT}" ] ; then postgres_port=${DB_PORT} ; fi ;
+            transform_var file POSTGRES_HOST
+            if [ -n "${POSTGRES_PORT}" ] ; then postgres_port=${POSTGRES_PORT} ; fi ;
+            postgres_port=${postgres_port:-5432}
+            transform_var file DB_HOST
+            if [ -n "${DB_HOST}" ] ; then postgres_host=${DB_HOST} ; fi ;
+            transform_var file POSTGRES_HOST
+            if [ -n "${POSTGRES_HOST}" ] ; then postgres_host=${POSTGRES_HOST} ; fi ;
+            transform_var file DB_USER
+            if [ -n "${DB_USER}" ] ; then postgres_user=${DB_USER} ; fi ;
+            transform_var file POSTGRES_USER
+            if [ -n "${POSTGRES_USER}" ] ; then postgres_user=${POSTGRES_USER} ; fi ;
+            transform_var file DB_PASS
+            if [ -n "${DB_PASS}" ] ; then postgres_pass=${DB_PASS} ; fi ;
+            transform_var file PGPASSWORD
+            if [ -n "${PGPASSWORD}" ] ; then postgres_pass=${PGPASSWORD} ; fi ;
+            transform_var file DB_NAME
+            if [ -n "${DB_NAME}" ] ; then postgres_name=${DB_NAME} ; fi ;
+            transform_var file POSTGRES_NAME
+            if [ -n "${POSTGRES_NAME}" ] ; then postgres_name=${POSTGRES_NAME} ; fi ;
+            counter=0
+            export PGPASSWORD=${postgres_pass}
+            until "${pg_isready_bin}" --dbname="${postgres_name}" --host="${postgres_host}" --port="${postgres_port}" --username="${postgres_user}" -q
+            do
+                sleep 5
+                (( counter+=5 ))
+                print_warn "Postgres Host '${postgres_host}' is not accessible, retrying.. ($counter seconds so far)"
+            done
+        ;;
+        "rabbit" | "rabbitmq" )
+            transform_var file DB_PORT
+            if [ -n "${DB_PORT}" ] ; then rabbit_port=${DB_PORT} ; fi ;
+            transform_var file RABBIT_PORT
+            if [ -n "${RABBIT_PORT}" ] ; then rabbit_port=${RABBIT_PORT} ; fi ;
+            rabbit_port=${rabbit_port:-5672}
+            transform_var file DB_HOST
+            if [ -n "${DB_HOST}" ] ; then rabbit_host=${DB_HOST} ; fi ;
+            transform_var file RABBIT_HOST
+            if [ -n "${RABBIT_HOST}" ] ; then rabbit_host=${RABBIT_HOST} ; fi ;
+            counter=0
+            while ! (nc -z "${rabbit_host}" "${rabbit_port}") ; do
+                sleep 5
+                (( counter+=5 ))
+                print_warn "RabbitMQ Host '${rabbit_host}' is not accessible, retrying.. ($counter seconds so far)"
+            done
+        ;;
+        "redis" )
+            transform_var file DB_PORT
+            if [ -n "${DB_PORT}" ] ; then redis_port=${DB_PORT} ; fi ;
+            if [ -n "${DB_PORT_FILE}" ] ; then couch_port="$(cat "${DB_PORT_FILE}")" ; fi ;
+            if [ -n "${REDIS_PORT}" ] ; then redis_port=${REDIS_PORT} ; fi ;
+            redis_port=${redis_port:-6379}
+            if [ -n "${DB_HOST}" ] ; then redis_host=${DB_HOST} ; fi ;
+            if [ -n "${REDIS_HOST}" ] ; then redis_host=${REDIS_HOST} ; fi ;
+            counter=0
+            while ! (nc -z "${redis_host}" "${redis_port}") ; do
+                sleep 5
+                (( counter+=5 ))
+                print_warn "Redis Host '${redis_host}' is not accessible, retrying.. ($counter seconds so far)"
+            done
+        ;;
+        "rethink" )
+            transform_var file DB_PORT
+            if [ -n "${DB_PORT}" ] ; then rethink_port=${DB_PORT} ; fi ;
+            if [ -n "${DB_PORT_FILE}" ] ; then couch_port="$(cat "${DB_PORT_FILE}")" ; fi ;
+            if [ -n "${RETHINK_PORT}" ] ; then rethink_port=${RETHINK_PORT} ; fi ;
+            rethink_port=${rethink_port:-28015}
+            if [ -n "${DB_HOST}" ] ; then rethink_host=${DB_HOST} ; fi ;
+            if [ -n "${RETHINK_HOST}" ] ; then rethink_host=${RETHINK_HOST} ; fi ;
+            counter=0
+            while ! (nc -z "${rethink_host}" "${rethink_port}") ; do
+                sleep 5
+                (( counter+=5 ))
+                print_warn "RethinkDB Host '${DB_HOST}' is not accessible, retrying.. ($counter seconds so far)"
+            done
+        ;;
+    esac
+    output_on
+}
+
+## Make sure DB is defined
+## Old: sanity_db to check DB_USER, DB_PASS, DB_NAME, DB_HOST
+## New: sanity_db (dbtype) which will test above or their own unique prefixes to be used with images that have multiuple DB connections
+sanity_db() {
+    output_off
+    if [ -n "$1" ] ; then
+        case "${1,,}" in
+            "couch" | "couchdb" )
+                print_debug "Checking Couch DB Parameters"
+                transform_var file DB_HOST
+                if [ -n "${DB_HOST}" ] ; then couch_host=${DB_HOST} ; fi ;
+                transform_var file COUCH_HOST
+                if [ -n "${COUCH_HOST}" ] ; then couch_host=${COUCH_HOST} ; fi ;
+                if [ -z "${couch_host}" ] ; then
+                    print_error "No Couch Database Host Entered! - Set '\$DB_HOST' or '\$COUCH_HOST'"
+                    exit 1
+                fi
+            ;;
+            "influx" | "influxdb")
+                print_debug "Checking Influx DB Parameters"
+                if [ -n "${DB_HOST}" ] ; then influx_host=${DB_HOST} ; fi ;
+                transform_var file DB_HOST
+                if [ -n "${INFLUX_HOST}" ] ; then influx_host=${INFLUX_HOST} ; fi ;
+                transform_var file INFLUX_HOST
+                if [ -z "${influx_host}" ] ; then
+                    print_error "No Influx Database Host Entered! - Set '\$DB_HOST' or '\$INFLUX_HOST'"
+                    exit 1
+                fi
+            ;;
+            "mongo" | "mongodb" )
+                print_debug "Checking Mongo DB Parameters"
+                if [ -n "${DB_HOST}" ] ; then mongo_host=${DB_HOST} ; fi ;
+                transform_var file DB_HOST
+                if [ -n "${MONGO_HOST}" ] ; then mongo_host=${MONGO_HOST} ; fi ;
+                transform_var file MONGO_HOST
+                if [ -z "${mongo_host}" ] ; then
+                    print_error "No Mongo Database Host Entered! - Set '\$DB_HOST' or '\$MONGO_HOST'"
+                    exit 1
+                fi
+            ;;
+            "mysql" | "mariadb" )
+                print_debug "Checking MariaDB DB Parameters"
+                transform_var file DB_HOST
+                if [ -n "${DB_HOST}" ] ; then maria_host=${DB_HOST} ; fi ;
+                transform_var file MYSQL_HOST
+                if [ -n "${MYSQL_HOST}" ] ; then maria_host=${MYSQL_HOST} ; fi ;
+                transform_var file MARIA_HOST
+                if [ -n "${MARIA_HOST}" ] ; then maria_host=${MARIA_HOST} ; fi ;
+                transform_var file DB_USER
+                if [ -n "${DB_USER}" ] ; then maria_user=${DB_USER} ; fi ;
+                transform_var file MYSQL_USER
+                if [ -n "${MYSQL_USER}" ] ; then maria_user=${MYSQL_USER} ; fi ;
+                transform_var file MARIA_USER
+                if [ -n "${MARIA_USER}" ] ; then maria_user=${MARIA_USER} ; fi ;
+                transform_var file DB_PASS
+                if [ -n "${DB_PASS}" ] ; then maria_pass=${DB_PASS} ; fi ;
+                transform_var file MYSQL_PASS
+                if [ -n "${MYSQL_PASS}" ] ; then maria_pass=${MYSQL_PASS} ; fi ;
+                transform_var file MARIA_PASS
+                if [ -n "${MARIA_PASS}" ] ; then maria_pass=${MARIA_PASS} ; fi ;
+                transform_var file DB_NAME
+                if [ -n "${DB_NAME}" ] ; then maria_name=${DB_NAME} ; fi ;
+                transform_var file MYSQL_NAME
+                if [ -n "${MYSQL_NAME}" ] ; then maria_name=${MYSQL_NAME} ; fi ;
+                transform_var file MARIA_NAME
+                if [ -n "${MARIA_NAME}" ] ; then maria_name=${MARIA_NAME} ; fi ;
+                if [ -z "${maria_host}" ] ; then
+                    print_error "No MariaDB Database Host Entered! - Set '\$DB_HOST' or '\$MARIA_HOST'"
+                    exit 1
+                fi
+                if [ -z "${maria_name}" ] ; then
+                    print_error "No MariaDB Database Name Entered! - Set '\$DB_NAME' or '\$MARIA_NAME'"
+                    exit 1
+                fi
+                if [ -z "${maria_user}" ] ; then
+                    print_error "No MariaDB Database USER Entered! - Set '\$DB_USER' or '\$MARIA_USER'"
+                    exit 1
+                fi
+                if [ -z "${maria_pass}" ] ; then
+                    print_error "No MariaDB Database Pass Entered! - Set '\$DB_PASS' or '\$MARIA_PASS'"
+                    exit 1
+                fi
+            ;;
+            "pgsql" | "psql" | "postgres" | "postgresql" )
+                print_debug "Checking Postgres DB Parameters"
+                transform_var file DB_HOST
+                if [ -n "${DB_HOST}" ] ; then postgres_host=${DB_HOST} ; fi ;
+                transform_var file POSTGRES_HOST
+                if [ -n "${POSTGRES_HOST}" ] ; then postgres_host=${POSTGRES_HOST} ; fi ;
+                transform_var file DB_USER
+                if [ -n "${DB_USER}" ] ; then postgres_user=${DB_USER} ; fi ;
+                transform_var file POSTGRES_USER
+                if [ -n "${POSTGRES_USER}" ] ; then postgres_user=${POSTGRES_USER} ; fi ;
+                transform_var file DB_PASS
+                if [ -n "${DB_PASS}" ] ; then postgres_pass=${DB_PASS} ; fi ;
+                transform_var file PGPASSWORD
+                if [ -n "${PGPASSWORD}" ] ; then postgres_pass=${PGPASSWORD} ; fi ;
+                transform_var file DB_NAME
+                if [ -n "${DB_NAME}" ] ; then postgres_name=${DB_NAME} ; fi ;
+                transform_var file POSTGRES_NAME
+                if [ -n "${POSTGRES_NAME}" ] ; then postgres_name=${POSTGRES_NAME} ; fi ;
+                if [ -z "${postgres_host}" ] ; then
+                    print_error "No PostgreSQL Database Host Entered! - Set '\$DB_HOST' or '\$POSTGRES_HOST'"
+                    exit 1
+                fi
+                if [ -z "${postgres_name}" ] ; then
+                    print_error "No PostgreSQL Database Name Entered! - Set '\$DB_NAME' or '\$POSTGRES_NAME'"
+                    exit 1
+                fi
+                if [ -z "${postgres_user}" ] ; then
+                    print_error "No PostgreSQL Database USER Entered! - Set '\$DB_USER' or '\$POSTGRES_USER'"
+                    exit 1
+                fi
+                if [ -z "${postgres_pass}" ] ; then
+                    print_error "No PostgreSQL Database Pass Entered! - Set '\$DB_PASS' or '\$POSTGRES_PASS'"
+                    exit 1
+                fi
+            ;;
+            "rabbit" | "rabbitmq" )
+                transform_var file DB_HOST
+                if [ -n "${DB_HOST}" ] ; then rabbit_host=${DB_HOST} ; fi ;
+                transform_var file RABBIT_HOST
+                if [ -n "${RABBIT_HOST}" ] ; then rabbit_host=${RABBIT_HOST} ; fi ;
+                transform_var file RABBITMQ_HOST
+                if [ -n "${RABBITMQ_HOST}" ] ; then rabbit_host=${RABBITMQ_HOST} ; fi ;
+                if [ -z "${rabbit_host}" ] ; then
+                    print_error "No RabbitMQ Database Host Entered! - Set '\$DB_HOST' or '\$RABBIT_HOST'"
+                    exit 1
+                fi
+            ;;
+            "redis" )
+                print_debug "Checking Redis DB Parameters"
+                transform_var file DB_HOST
+                if [ -n "${DB_HOST}" ] ; then redis_host=${DB_HOST} ; fi ;
+                transform_var file REDIS_HOST
+                if [ -n "${REDIS_HOST}" ] ; then redis_host=${REDIS_HOST} ; fi ;
+                if [ -z "${redis_host}" ] ; then
+                    print_error "No Redis Database Host Entered! - Set '\$DB_HOST' or '\$REDIS_HOST'"
+                    exit 1
+                fi
+            ;;
+            "rethink" )
+                print_debug "Checking RethinkDB DB Parameters"
+                transform_var file DB_HOST
+                if [ -n "${DB_HOST}" ] ; then rethink_host=${DB_HOST} ; fi ;
+                transform_var file RETHINK_HOST
+                if [ -n "${RETHINK_HOST}" ] ; then rethink_host=${RETHINK_HOST} ; fi ;
+                if [ -z "${rethink_host}" ] ; then
+                    print_error "No Rethink Database Host Entered! - Set '\$DB_HOST' or '\$RETHINK_HOST'"
+                    exit 1
+                fi
+            ;;
+        esac
+        output_on
+    else
+        ## Legacy This will eventually be removed and replaced with this warning
+        #print_debug "Skipping DB Checking because it is missing DB_TYPE argument"
+        print_debug "Using Legacy db_ready command - please upgrade"
+        transform_var file DB_HOST
+        if [ -z "${DB_HOST}" ]; then
+            print_error "No Database Host Entered! - Set '\$DB_HOST'"
+            exit 1
+        fi
+
+        transform_var file DB_NAME
+        if [ -z "${DB_NAME}" ]; then
+            print_error "No Database Name Entered! - Set '\$DB_NAME'"
+            exit 1
+        fi
+
+        transform_var file DB_USER
+        if [ -z "${DB_USER}" ]; then
+            print_error "No Database User Entered! - Set '\$DB_USER'"
+            exit 1
+        fi
+
+        transform_var file DB_PASS
+        if [ -z "${DB_PASS}" ]; then
+            print_error "No Database Password Entered! - Set '\$DB_PASS'"
+            exit 1
+        fi
+        output_on
+    fi
+}

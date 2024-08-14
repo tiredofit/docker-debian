@@ -1,0 +1,154 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+toi_configure_vpn_zerotier_init() {
+    zerotier_bootstrap_filesystem() {
+        if [ ! -d "${ZEROTIER_DATA_PATH}" ]; then
+            mkdir -p "${ZEROTIER_DATA_PATH}"
+        fi
+        if [ "$(stat -c %U "${ZEROTIER_DATA_PATH}")" != "zerotier" ] ; then chown "${ZEROTIER_USER}":"${ZEROTIER_GROUP}" "${ZEROTIER_DATA_PATH}" ; fi
+        if [ "${ZEROTIER_DATA_PATH}" != "/var/lib/zerotier-one" ]; then
+            rm -rf /var/lib/zerotier-one
+            ln -sf "${ZEROTIER_DATA_PATH}" /var/lib/zerotier-one
+        fi
+        chmod 700 /var/lib/zerotier-one
+        if [ ! -d "${ZEROTIER_LOG_PATH}" ]; then
+            mkdir -p "${ZEROTIER_LOG_PATH}"
+        fi
+        if [ "$(stat -c %U "${ZEROTIER_LOG_PATH}")" != "zerotier" ] ; then chown -R "${ZEROTIER_USER}":"${ZEROTIER_GROUP}" "${ZEROTIER_LOG_PATH}" ; fi
+    }
+
+    zerotier_configure_bash_completion() {
+        cat <<EOF > /etc/bash/zerotier
+## Zerotier Bash Completions
+_zerotier_get_network_ids () {
+        COMPREPLY=(\$(compgen -W "\$(ls -1 /var/lib/zerotier-one/networks.d | cut -c 1-16)" -- \${cur}))
+}
+
+_zerotier_get_network_ids_from_history () {
+    COMPREPLY=(\$(compgen -W "\$(fc -l -1000 -1 | sed -n 's/.*\([[:xdigit:]]\{16\}\).*/\1/p')" -- \${cur}))
+}
+
+_zerotier_zerotier-cli_completions() {
+    local cur prev
+
+    cur=\${COMP_WORDS[COMP_CWORD]}
+    prev=\${COMP_WORDS[COMP_CWORD-1]}
+
+    case \${COMP_CWORD} in
+        1)
+            COMPREPLY=(\$(compgen -W "info listpeers peers listnetworks join leave set get listmoons orbit deorbit" -- \${cur}))
+            ;;
+        2)
+            case \${prev} in
+                leave)
+                    _zerotier_get_network_ids
+                ;;
+                join)
+                    _zerotier_get_network_ids_from_history
+                ;;
+                set)
+                    _zerotier_get_network_ids
+                ;;
+                get)
+                    _zerotier_get_network_ids
+                ;;
+                *)
+                    COMPREPLY=()
+                ;;
+            esac
+            ;;
+        *)
+            COMPREPLY=()
+            ;;
+    esac
+}
+
+complete -F _zerotier_zerotier-cli_completions zerotier-cli
+##
+EOF
+    }
+
+    zerotier_configure_controller() {
+        if var_false "${ZEROTIER_ENABLE_METRICS}" ; then ln -sf /dev/null /var/lib/zerotier-one/metrics.prom ; fi
+
+        transform_var file \
+                            ZEROTIER_IDENTITY_PUBLIC \
+                            ZEROTIER_IDENTITY_PRIVATE \
+                            ZEROTIER_NETWORK
+
+        if [ -n "${ZEROTIER_NETWORK}" ] ; then
+            mkdir -p /var/lib/zerotier-one/networks.d
+            _zt_network_list=$(echo "${ZEROTIER_NETWORK}" | tr ' ' '\n')
+
+            _zt_join_network() {
+              echo "Joining $1"
+              touch /var/lib/zerotier-one/networks.d/"$1".conf
+            }
+
+            for ztnetwork in $network_list ; do
+                [[ "${ztnetwork}" =~ ^[[:space:]]*# ]] && continue
+                  if [ -f ${ztnetwork} ] ; then
+                  print_debug "[zerotier] [network] Reading networks from file"
+                  while read ztline; do
+                    [[ "${ztline}" =~ ^[[:space:]]*# ]] && continue
+                      _zt_join_network $(echo ${ztline} | awk '{print $1}')
+                  done < "$ztnetwork"
+                else
+                    _zt_join_network $ztnetwork
+                fi
+            done
+        fi
+
+        if [ -n "${ZEROTIER_IDENTITY_PUBLIC}" ] ; then
+            echo "${ZEROTIER_IDENTITY_PUBLIC}" > /var/lib/zerotier-one/identity.public
+        fi
+
+        if [ -n "${ZEROTIER_IDENTITY_PRIVATE}" ] ; then
+            echo "${ZEROTIER_IDENTITY_PRIVATE}" > /var/lib/zerotier-one/identity.secret
+        fi
+
+        cat <<EOF > /var/lib/zerotier-one/local.conf
+  {
+    "settings": {
+        "primaryPort": ${ZT_PRIMARY_PORT:-${ZEROTIER_LISTEN_PORT}},
+        "portMappingEnabled": ${ZT_PORT_MAPPING_ENABLED:-${ZEROTIER_ENABLE_PORT_MAPPING,,}},
+        "softwareUpdate": "disable",
+        "allowTcpFallbackRelay": ${ZT_ALLOW_TCP_FALLBACK_RELAY:-${ZEROTIER_ALLOW_TCP_FALLBACK_RELAY,,}}
+    }
+  }
+EOF
+
+        mkdir -p /container/run/available/08-vpn-zerotier
+        cat <<EOF > /container/run/available/08-vpn-zerotier/run
+#!/command/with-contenv bash
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+source /container/base/functions/container/init
+PROCESS_NAME="vpn-zerotier"
+source /container/defaults/08-vpn
+source /container/functions/08-vpn
+
+check_container_initialized
+
+call toi_configure_vpn_zerotier_run
+
+EOF
+        chmod +x /container/run/available/08-vpn-zerotier/run
+
+        print_info "Configuring Zerotier VPN"
+        zerotier_bootstrap_filesystem
+        zerotier_configure_bash_completion
+        zerotier_configure_controller
+    }
+}
+
+toi_configure_vpn_zerotier_run() {
+        liftoff
+        print_start "Starting Zerotier One ${ZEROTIER_VERSION}"
+        silent exec s6-setuidgid "${ZEROTIER_USER}" \
+                                                    zerotier-one ${ZEROTIER_ARGS}
+}

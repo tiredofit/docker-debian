@@ -1,0 +1,18 @@
+#!/command/with-contenv bash
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+source /container/base/functions/container/init
+output_off
+prepare_service single
+PROCESS_NAME="vpn"
+
+if var_true "${CONTAINER_ENABLE_VPN}" ; then
+    call toi_configure_vpn_${CONTAINER_VPN_BACKEND,,}_init
+else
+    service_stop "$(basename "$0")"
+fi
+
+liftoff
+output_on

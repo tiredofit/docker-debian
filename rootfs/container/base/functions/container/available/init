@@ -1,0 +1,531 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+check_container_restarted() {
+    [ ! -f "/container/state/restart" ]
+}
+
+check_container_initialized() {
+    ### Check to see Initialization Script ran
+    print_debug "Checking to see if container initialization scripts have completed"
+    output_off
+    while [ ! -f /container/state/init/zzz-container ]; do
+        print_debug "Checking to see if container initialization scripts have completed"
+        sleep 1
+    done
+    output_on
+}
+
+check_service_initialized() {
+    ## Usage:
+    ## check_service_initialized init: Look for the matching filename of /container/run/available/<folder-name> in /container/state/init/<script-name>
+    ## ## check_service_initialized <service folder> Look for the matching filename of /container/run/vailable/<folder-name> in /container/state/run/<folder-name>
+    ## Related to liftoff function, which writes /container/state/<init|run>/<scriptname|foldername>
+    ## Scripts that run in /container/init/init.d get written to /container/state/init/<scriptname>
+    ## Scripts that run from /container/run/available get written to /container/state/run/<foldername>
+    print_debug "Checking to see if service has initialized"
+    output_off
+    if [ "$1" = "init" ]; then
+        service_type=init
+        csi_bypass=FALSE
+    else
+        service_type=run
+        service="$1"
+        csi_bypass=TRUE
+    fi
+
+    if [ "$csi_bypass" = "FALSE" ] ; then
+        if [ -z "$2" ]; then
+            case "$(dirname "$0")" in
+                "/var/run/s6/etc/cont-init.d" | "/etc/cont-init.d" | /container/base/init/init* | /container/init/init* )
+                    service=$(basename "$0")
+                ;;
+                *)
+                    service=$(basename "$PWD")
+                ;;
+            esac
+        else
+            service=$2
+        fi
+    fi
+
+    while [ ! -f /container/state/${service_type}/"${service}" ] ; do
+        sleep 1
+        print_debug "Looking for existence of /container/state/${service_type}/${service}"
+    done
+    unset csi_bypass
+    output_on
+}
+
+get_defaults() {
+    ## Get Defaults
+    ## Usage: get_defaults <option>
+    ##      Option: all - Load all default files from /container/{base}defaults folder
+    ##      Option: app | single - Load existing scripts defaults from /container/{base}defaults (e.g. If cont-init.d/10-app is running load 10-app from defaults)
+    ##      Option: 10-app,11-app,12-app - Load in Sequence all of these Default Files from /container/defaults/
+    ##         Leaving option blank will load all files from the /container/{base}defaults folder
+    if [ -n "$1" ] ; then
+        case "${1,,}" in
+            "all" )
+                for default in $(find /container/base/defaults/* /container/defaults/* -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                    print_debug "Container: Getting defaults for '${default}' (all)"
+                    # shellcheck source=/container/defaults/
+                    case "$(basename "${default}")" in
+                        0*-* | 99-* | zzz-* )
+                            output_off
+                            source "${default}"
+                            output_on
+                        ;;
+                        * )
+                            source "${default}"
+                        ;;
+                    esac
+                done
+                for default in $(find /override/base/defaults/* /override/defaults/* -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                    print_debug "Container Override: Getting defaults for '${default}' (all)"
+                    # shellcheck source=/override/defaults/
+                    source "${default}"
+                done
+                if [ -f "${INFISICAL_SECRETS_PATH}"/"${INFISICAL_SECRETS_FILE}" ] ; then ### TODO - Load Secrets
+                    output_off
+                    source "${INFISICAL_SECRETS_PATH}"/"${INFISICAL_SECRETS_FILE}"
+                    output_on
+                fi
+            ;;
+            "app" | "single" )
+                case "$(dirname "$0")" in
+                    "/var/run/s6/etc/cont-init.d" | "/etc/cont-init.d" | /container/base/init/init* | /container/init/init* )
+                        case "$(basename "$0")" in
+                            0*-* | 99-* | zzz-* )
+                                output_off
+                            ;;
+                        esac
+
+                        for default in $(find /container/base/defaults/$(basename "$0") /container/defaults/$(basename "$0") -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                            print_debug "Container: Getting defaults for '${default}' (single usual)"
+                            # shellcheck source=/override/defaults/
+                            source "${default}"
+                        done
+
+                        for default in $(find /override/base/defaults/$(basename "$0") /override/defaults/$(basename "$0") -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                            print_debug "Container Override: Getting defaults for '${default}' (single usual)"
+                            # shellcheck source=/override/defaults/
+                            source "${default}"
+                        done
+
+                        case "$(basename "$0")" in
+                            0*-* | 99-* | zzz-* )
+                                output_on
+                            ;;
+                        esac
+
+                        if [ "${INFISICAL_SECRETS_FILE}" = "$(basename "$0")" ]; then ## TODO SECRETS
+                            if [ -f "${INFISICAL_SECRETS_PATH}"/"${INFISICAL_SECRETS_FILE}" ] ; then
+                                output_off
+                                source "${INFISICAL_SECRETS_PATH}"/"${INFISICAL_SECRETS_FILE}"
+                                output_on
+                            fi
+                        fi
+                    ;;
+                    *)
+                        case "$(basename "$PWD")" in
+                            0*-* | 99-* | zzz-* )
+                                output_off
+                            ;;
+                        esac
+                        for default in $(find /container/base/defaults/$(basename "$PWD") /container/defaults/$(basename "$PWD") -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                            print_debug "Container: Getting defaults for '${default}' (single wildcard)"
+                            source "${default}"
+                        done
+                        for default in $(find /override/base/defaults/$(basename "$PWD") /override/defaults/$(basename "$PWD") -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                            print_debug "Container Override: Getting defaults for '${default}' (single wildcard)"
+                            source "${default}"
+                        done
+
+                        case "$(basename "$PWD")" in
+                            0*-* | 99-* | zzz-* )
+                                output_on
+                            ;;
+                        esac
+                        #if [ -f "/container/defaults/$(basename "$PWD")" ] ; then
+                        #    print_debug "Container: Getting defaults for '$(basename "$PWD")' (single wildcard)"
+                        #    # shellcheck source=/container/defaults/
+                        #    case "$(basename "$PWD")" in
+                        #        0*-* | 99-* )
+                        #            output_off
+                        #            source /container/defaults/"$(basename "$PWD")"
+                        #            output_on
+                        #        ;;
+                        #        * )
+                        #            source /container/defaults/"$(basename "$PWD")"
+                        #        ;;
+                        #    esac
+                        #elif [ -f "/override/defaults/$(basename "$PWD")" ] ; then
+                        #    print_info "Container Override: Getting defaults for '$(basename "$PWD")' (single wildcard)"
+                        #    # shellcheck source=/override/defaults/
+                        #    case "$(basename "$PWD")" in
+                        #        0*-* | 99-* )
+                        #            output_off
+                        #            source /override/defaults/"$(basename "$PWD")"
+                        #            output_on
+                        #        ;;
+                        #        * )
+                        #            source /override/defaults/"$(basename "$PWD")"
+                        #        ;;
+                        #    esac
+                        #else
+                        #    print_debug "Container: No defaults available for $(basename "$PWD") (single wildcard)"
+                        #fi
+
+                        if [ "${INFISICAL_SECRETS_FILE}" = "$(basename "$PWD")" ]; then ## TODO SECRETS MANAGEMENT
+                            if [ -f "${INFISICAL_SECRETS_PATH}"/"${INFISICAL_SECRETS_FILE}" ] ; then
+                                output_off
+                                source "${INFISICAL_SECRETS_PATH}"/"${INFISICAL_SECRETS_FILE}"
+                                output_on
+                            fi
+                        fi
+                    ;;
+                esac
+            ;;
+            * )
+                defaults=$(echo "$1" | tr "," "\n")
+                for default in $defaults; do
+                    for default_script in $(find /container/base/defaults/${default} /container/defaults/${default} -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                            print_debug "Container: Getting defaults for '${default_script}' (wildcard)"
+                            # shellcheck source=/container/defaults/
+                            case "$(basename "${default_script}")" in
+                                0*-* | 99-* | zzz-* )
+                                    output_off
+                                    source "${default_script}"
+                                    output_on
+                                ;;
+                                * )
+                                    source "${default_script}"
+                                ;;
+                            esac
+                    done
+                    for default_script in $(find /override/base/defaults/${default} /override/defaults/${default} -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                        print_debug "Container Override: Getting defaults for '${default_script}' (wildcard)"
+                        # shellcheck source=/override/defaults/
+                        source "${default_script}"
+                    done
+
+                    #if [ -f "/container/defaults/${default}" ] ; then
+                    #    print_debug "Container: Getting defaults for '${default}' (wildcard)"
+                    #    # shellcheck source=/container/defaults/
+                    #    case "${default}" in
+                    #        0*-* | 99-* )
+                    #            output_off
+                    #            source /container/defaults/"${default}"
+                    #            output_on
+                    #        ;;
+                    #        * )
+                    #            source /container/defaults/"${default}"
+                    #        ;;
+                    #    esac
+                    #elif [ -f "/override/defaults/${default}" ] ; then
+                    #    print_info "Container Override: Getting defaults for '${default}' (wildcard)"
+                    #    # shellcheck source=/override/defaults/
+                    #    case "${default}" in
+                    #        0*-* | 99-* )
+                    #            output_off
+                    #            source /override/defaults/"${default}"
+                    #            output_on
+                    #        ;;
+                    #        * )
+                    #            source /override/defaults/"${default}"
+                    #        ;;
+                    #    esac
+                    #else
+                    #    print_debug "Container: No defaults available for '${default}' (wildcard)"
+                    #fi
+
+                    if [ "${INFISICAL_SECRETS_FILE}" = "${default}" ]; then ## TODO SCRIPTS
+                        if [ -f "${INFISICAL_SECRETS_PATH}"/"${INFISICAL_SECRETS_FILE}" ] ; then
+                            output_off
+                            source "${INFISICAL_SECRETS_PATH}"/"${INFISICAL_SECRETS_FILE}"
+                            output_on
+                        fi
+                    fi
+                done
+            ;;
+        esac
+    else
+        for default in $(find /container/base/defaults/* /container/defaults/* -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+            print_debug "Container: Getting defaults for '${default}' (last resort)"
+            # shellcheck source=/container/defaults/
+            case "$(basename "${default}")" in
+                0*-* | 99-* | zzz-* )
+                    output_off
+                    source "${default}"
+                    output_on
+                ;;
+                * )
+                    source "${default}"
+                ;;
+            esac
+        done
+        for default in $(find /override/base/defaults/* /override/defaults/* -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+            print_debug "Container Override: Getting defaults for '${default}' (last resort)"
+            # shellcheck source=/override/defaults/
+            source "${default}"
+        done
+        if [ -f "${INFISICAL_SECRETS_PATH}"/"${INFISICAL_SECRETS_FILE}" ] ; then ### TODO - Load Secrets
+            output_off
+            source "${INFISICAL_SECRETS_PATH}"/"${INFISICAL_SECRETS_FILE}"
+            output_on
+        fi
+        #for default in $(find /container/defaults/* -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+        #    # shellcheck source=/container/defaults/
+        #    case "$(basename "${default}")" in
+        #        0*-* | 99-* )
+        #            output_off
+        #            source /container/base/defaults/container
+        #            if [ -f "${default}" ] ; then
+        #                print_debug "Container: Getting defaults for '${default}' (last resort)"
+        #                source "${default}"
+        #            fi
+        #            output_on
+        #        ;;
+        #        * )
+        #            source /container/base/defaults/container
+        #            if [ -f "${default}" ] ; then
+        #                print_debug "Container: Getting defaults for '${default}' (last resort)"
+        #                source "${default}"
+        #            fi
+        #        ;;
+        #    esac
+        #done
+        #for default in /override/defaults/* ; do
+        #    # shellcheck source=/override/defaults/
+        #    case "$(basename "${default}")" in
+        #        0*-* | 99-* )
+        #            output_off
+        #            if [ -f "${default}" ] ; then
+        #                print_info "Container Override: Getting defaults for '${default}' (last resort)"
+        #                source "${default}"
+        #            fi
+        #            output_on
+        #        ;;
+        #        * )
+        #            if [ -f "${default}" ] ; then
+        #                print_info "Container Override: Getting defaults for '${default}' (last resort)"
+        #                source "${default}"
+        #            fi
+        #        ;;
+        #    esac
+        #done
+        #if [ -f "${INFISICAL_SECRETS_PATH}"/"${INFISICAL_SECRETS_FILE}" ] ; then
+        #    output_off
+        #    source "${INFISICAL_SECRETS_PATH}"/"${INFISICAL_SECRETS_FILE}"
+        #    output_on
+        #fi
+    fi
+}
+
+get_functions() {
+    ## Usage: get_functions <option>
+    ## Option: all - Load all default files from /container/functions folder
+    ## Option: app | single - Load existing scripts defaults from /container/functions (e.g. If init.d/10-app is running load 10-app from functions)
+    ## Option: 10-app,11-app,12-app - Load in Sequence all of these Default Files from /container/functions/
+    ## Leaving option blank will load all files from the /container/functions folder
+    if [ -n "$1" ] ; then
+        case "${1,,}" in
+            "all" )
+                for function in $(find /container/base/functions/* /container/functions/* -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                    print_debug "Container: Getting functions for '${function}' (all)"
+                    # shellcheck source=/container/functions/
+                    source "${function}"
+                done
+
+                for function in $(find /override/base/functions/* /override/functions/* -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                    print_info "Container Override: Getting functions for '${function}' (all)"
+                    # shellcheck source=/override/functions/
+                    if [ -f "${function}" ] ; then source "${function}"; fi
+                done
+            ;;
+            "app" | "single" )
+                case "$(dirname "$0")" in
+                    "/var/run/s6/etc/cont-init.d" | "/etc/cont-init.d" | /container/base/init/init* | /container/init/init* )
+                        for function in $(find /container/base/functions/$(basename $0) /container/functions/$(basename $0) -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                            print_debug "Container: Getting functions for '${function}' (single)"
+                            source "${function}"
+                        done
+
+                        for function in $(find /container/base/functions/$(basename $0).advanced /container/functions/$(basename $0).advanced -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                            print_debug "Container: Getting advanced functions for '${function}' (single)"
+                            source "${function}"
+                        done
+
+                        for function in $(find /override/base/functions/$(basename $0) /override/functions/$(basename $0) -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                            print_debug "Container Override: Getting functions for '${function}' (single)"
+                            source "${function}"
+                        done
+
+                        for function in $(find /override/base/functions/$(basename $0).advanced /override/functions/$(basename $0).advanced -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                            print_debug "Container Override: Getting advanced functions for '${function}' (single)"
+                            source "${function}"
+                        done
+                    ;;
+                    *)
+                        for function in $(find /container/base/functions/$(basename "$PWD") /container/functions/$(basename "$PWD") -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                            print_debug "Container: Getting functions for '${function}' (single wildcard)"
+                            source "${function}"
+                        done
+
+                        for function in $(find /container/base/functions/$(basename "$PWD").advanced /container/functions/$(basename "$PWD").advanced -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                            print_debug "Container: Getting advanced functions for '${function}' (single wildcard)"
+                            source "${function}"
+                        done
+
+                        for function in $(find /override/base/functions/$(basename "$PWD") /override/functions/$(basename "$PWD") -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                            print_debug "Container Override: Getting functions for '${function}' (single wildcard)"
+                            source "${function}"
+                        done
+
+                        for function in $(find /override/base/functions/$(basename "$PWD").advanced /override/functions/$(basename "$PWD").advanced -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                            print_debug "Container Override: Getting advanced functions for '${function}' (single wildcard)"
+                            source "${function}"
+                        done
+                    ;;
+                esac
+            ;;
+            * )
+                functions=$(echo "$1" | tr "," "\n")
+                for function in ${functions}; do
+                    for function_script in $(find /container/base/functions/${function} /container/functions/${function} -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                        print_debug "Container: Getting functions for '${function_script}' (wildcard)"
+                        # shellcheck source=/override/functions/
+                        source "${function_script}"
+                    done
+                    for function_script in $(find /container/base/functions/${function}.advanced /container/functions/${function}.advanced -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                        print_debug "Container: Getting advanced functions for '${function_script}' (wildcard)"
+                        # shellcheck source=/override/functions/
+                        source "${function_script}"
+                    done
+                    for function_script in $(find /override/base/functions/${function} /override/functions/${function} -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                        print_debug "Container Override: Getting functions for '${function_script}' (wildcard)"
+                        # shellcheck source=/override/functions/
+                        source "${function_script}"
+                    done
+                    for function_script in $(find /override/base/functions/${function}.advanced /override/functions/${function}.advanced -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+                        print_debug "Container Override: Getting advanced functions for '${function_script}' (wildcard)"
+                        # shellcheck source=/override/functions/
+                        source "${function_script}"
+                    done
+                done
+            ;;
+        esac
+    else
+        for function in $(find /container/base/functions/* /container/functions/* -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+            print_debug "Container: Getting functions for '${function}' (last resort)"
+            source "${function}"
+        done
+        for function in $(find /override/base/functions/* /override/functions/* -type f ! -name *.enc* -print -maxdepth 1 2>/dev/null); do
+            # shellcheck source=/override/functions/
+            source "${function}"
+            print_info "Container Override: Getting functions for '${function}' (last resort)"
+        done
+    fi
+}
+
+prepare_service() {
+    ## Prepare Service by loading defaults and functions
+    ## Relies on get_defaults and get_functions above in script
+    ## Usage: prepare_service <options>
+    ## By default if script is running before container has initialized then both defaults and functions are loaded
+    ## If running outside of /etc/cont-init.d pass 'defaults' or 'functions' to only load specific types (Useful when not wanting to load the entire function file in /etc/services.d)
+    if [ -n "$1" ] ; then
+        case "$(dirname "$0")" in
+            "/var/run/s6/etc/cont-init.d" | "/etc/cont-init.d" | /container/base/init/init* | /container/init/init* | . )
+                set -a
+                get_defaults "$1"
+                get_functions "$1"
+                set +a
+            ;;
+            *)
+                case "${1,,{}" in
+                    "both" | "all" )
+                        get_defaults "$2"
+                        get_functions "$2"
+                    ;;
+                    "defaults" )
+                        get_defaults "$2"
+                    ;;
+                    "functions" )
+                        get_functions "$2"
+                    ;;
+                esac
+            ;;
+        esac
+    else
+        case "$(dirname "$0")" in
+            "/var/run/s6/etc/cont-init.d" | "/etc/cont-init.d" | /container/base/init/init* | /container/init/init* | . )
+                set -a
+                get_defaults
+                get_functions
+                set +a
+            ;;
+            *)
+                set -a
+                get_defaults
+                get_functions
+                set +a
+            ;;
+        esac
+    fi
+}
+
+
+liftoff() {
+    ## For writing script initalization state to ensure proper application execution
+    output_off
+    mkdir -p /container/state/{init,run}
+    if [ "$DONOTSTART" = "TRUE" ]; then
+        liftoff_prefix="DONOTSTART "
+    fi
+    case "$(dirname "$0")" in
+        "/var/run/s6/etc/cont-init.d" | "/etc/cont-init.d" | /container/base/init/init* | /container/init/init* )
+            echo "${liftoff_prefix} $(log_prefix) $(basename "$0") initialized" >> /container/state/init/"$(basename "$0")"
+
+            if [ -n "${CONTAINER_REMOVE_INIT_EXCLUDE}" ]; then
+                for init_allow in "$(echo "${CONTAINER_REMOVE_INIT_EXCLUDE}" | tr ',' '\n')"; do
+                    if [ "${init_allow}" = "$(basename "$0")" ]; then remove_init_excluded=true ; fi
+                    if [ "${init_allow}" = "$(echo $(basename "$0" | cut -d- -f2-))" ]; then remove_init_excluded=true ; fi
+                done
+            fi
+
+            if [ "${remove_init_excluded}" != "true" ] ; then
+                for option in "$(echo "${CONTAINER_REMOVE_INIT,,}" | tr ',' '\n')"; do
+                    case "${option}" in
+                        advanced )
+                            rm -rf /container/functions/"$(basename "$0")".advanced
+                        ;;
+                        all )
+                            rm -rf "$(dirname "$0")"/"$(basename "$0")"
+                            rm -rf /container/functions/"$(basename "$0")"
+                            rm -rf /container/functions/"$(basename "$0")".advanced
+                        ;;
+                        basic )
+                            rm -rf "$(dirname "$0")"/"$(basename "$0")"
+                            rm -rf /container/functions/"$(basename "$0")"
+                        ;;
+                        none )
+                            :
+                        ;;
+                    esac
+                done
+            fi
+            set +x
+        ;;
+        *)
+            if [ ! -f /container/state/run/"$(basename "$PWD")" ]; then
+                echo "$(log_prefix) $(basename "$PWD") initialized" >> /container/state/run/"$(basename "$PWD")"
+            else
+                echo "$(log_prefix) $(basename "$PWD") reinitialized" >> /container/state/run/"$(basename "$PWD")"
+            fi
+        ;;
+    esac
+    #output_on
+}

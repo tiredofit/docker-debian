@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+if [ "${CONTAINER_ENABLE_FIREWALL,,}" = "true" ]; then
+    if [ -f "/container/base/defaults/firewall/${CONTAINER_FIREWALL_BACKEND,,}" ]; then
+        source /container/defaults/firewall/"${CONTAINER_FIREWALL_BACKEND,,}"
+    fi
+    if [ "${CONTAINER_ENABLE_FAIL2BAN,,}" = "true" ]; then
+        if [ -f "/container/base/defaults/firewall/fail2ban" ]; then
+            source /container/defaults/firewall/fail2ban
+        fi
+    fi
+fi

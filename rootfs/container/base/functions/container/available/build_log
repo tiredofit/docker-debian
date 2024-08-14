@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+container_build_log() {
+    mkdir -p /container/build/"${IMAGE_NAME/\//_}"
+    echo "$(TZ=$TIMEZONE date +'%Y-%m-%d %H:%M:%S %Z') | ${IMAGE_NAME} | ${IMAGE_REPO_URL}" >> /container/build/"${IMAGE_NAME/\//_}"/build.log
+    echo "$(TZ=$TIMEZONE date +'%Y-%m-%d %H:%M:%S %Z') | ${IMAGE_NAME} | ${IMAGE_REPO_URL}" >> /container/build/build.log
+    for build_files in /usr/src/container/* ; do mv ${build_files} /container/build/"${IMAGE_NAME/\//_}"/ ; done
+}
+
+container_replace_base() {
+    if [ "$1" ]; then
+        echo "Replacing Base Scripts and Runtime"
+        git clone ${BASE_REPO_URL} /usr/src/docker-base
+        cd /usr/src/docker-base
+        git checkout "${1}"
+        rm -rf /container/base/*
+        rm -rf /container/etc/cont-{finish,init}.d/0-container
+        cp -A /usr/src/docker-base/rootfs/* /
+        if [ "${1}" = "main" ]; then BASE_VERSION=$(git log -1 --pretty="format:%H" -- /usr/src/docker-base) ; fi
+        echo "$(TZ=$TIMEZONE date +'%Y-%m-%d %H:%M:%S %Z') | ${BASE_VERSION} | ${BASE_REPO_URL} | Replaced " >> /container/build/tiredofit_base/fetch.log
+        echo "$(TZ=$TIMEZONE date +'%Y-%m-%d %H:%M:%S %Z') | ${BASE_VERSION} | ${BASE_REPO_URL} | Replaced " >> /container/build/build.log
+    fi
+}

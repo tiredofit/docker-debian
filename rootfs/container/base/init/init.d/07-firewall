@@ -1,0 +1,27 @@
+#!/command/with-contenv bash
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+source /container/base/functions/container/init
+output_off
+prepare_service single
+PROCESS_NAME="firewall"
+
+firewall_command=$(which "${CONTAINER_FIREWALL_BACKEND,,}")
+
+if var_true "${CONTAINER_ENABLE_FIREWALL}" ; then
+    call toi_configure_firewall_${CONTAINER_FIREWALL_BACKEND,,}_init
+    call toi_configure_firewall_parserules_init
+    if var_true "${CONTAINER_ENABLE_FAIL2BAN}" ; then
+        call toi_configure_firewall_fail2ban_init
+    else
+        service_stop "$(basename "$0")"
+    fi
+    print_notice "Container configured for firewall with '${CONTAINER_FIREWALL_BACKEND}'"
+else
+    service_stop "$(basename "$0")"
+fi
+
+liftoff
+output_on

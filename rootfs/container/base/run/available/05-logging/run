@@ -1,0 +1,17 @@
+#!/command/with-contenv bash
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+source /container/base/functions/container/init
+output_off
+PROCESS_NAME="logging"
+prepare_service single
+check_container_initialized
+check_service_initialized init
+
+if var_true "${CONTAINER_ENABLE_SCHEDULING}" ; then
+    wait_for_process ${CONTAINER_SCHEDULING_BACKEND,,}*
+fi
+
+call toi_configure_logging_${CONTAINER_LOGSHIPPING_BACKEND/-/}_run

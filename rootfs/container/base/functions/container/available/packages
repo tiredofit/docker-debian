@@ -1,0 +1,194 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+package() {
+    cleanup() {
+        case "${distro}" in
+            "alpine" )
+                rm -rf /var/cache/apk/*
+            ;;
+            "debian" | "ubuntu" )
+                apt-get clean -y
+                rm -rf /var/lib/apt/lists/*
+            ;;
+        esac
+
+        rm -rf \
+                /etc/logrotate.d/* \
+                /root/.cache \
+                /root/.cargo \
+                /root/.composer \
+                /root/.gitconfig \
+                /root/.npm \
+                /root/go \
+                /tmp/* \
+                /usr/src/* \
+                /var/log/* \
+                /var/tmp/*
+    }
+
+    ## Looks for environment variable suffixed with _OS and then either explodes the list or creates the package list depending on OS. If there is no match, then wait until the end of the loop and install packages.
+    ## Usage: package install BUILD_DEPS packagename packagename
+    install() {
+        local _packages_to_install
+        case "${distro}" in
+            "alpine" )
+                _package_install_list="$@"
+                if [[ "${1}" =~ ^\..* ]] ; then
+                    local dependencies="-t "
+                    apk add -t $@
+                else
+                    for _package in $_package_install_list ; do
+                        if [ -v "${_package^^}"_ALPINE ] ; then
+                           local _packages
+                           _packages=$(set -o posix; set | grep -E "^${_package^^}_ALPINE" | cut -d = -f 2 | xargs)
+                           apk add -t ."${_package,,}" ${_packages}
+                        else
+                           _packages_to_install+=" ${_package} "
+                        fi
+                    done
+                    if [ -n "${_packages_to_install}" ] ; then
+                        apk add ${_packages_to_install}
+                    fi
+                fi
+            ;;
+            "debian" | "ubuntu" )
+                _package_install_list="$@"
+                if [[ "${1}" =~ ^\..* ]] ; then
+                    shift
+                    apt-get install -y --no-install-recommends $@
+                else
+                    for _package in $_package_install_list ; do
+                        if [ -v "${_package^^}"_DEBIAN ] ; then
+                            local _packages
+                            _packages=$(set -o posix; set | grep -E "^${_package^^}_DEBIAN" | cut -d = -f 2 | xargs)
+                            apt-get install -y --no-install-recommends ${_packages}
+                         else
+                             _packages_to_install+=" ${_package} "
+                         fi
+                     done
+                         if [ -n "${_packages_to_install}" ] ; then
+                             apt-get install -y --no-install-recommends ${_packages_to_install}
+                         fi
+                 fi
+            ;;
+        esac
+    }
+
+    ## Looks for environment variable suffixed with _OS and then either explodes the list or references the package list depending on OS. If there is no match, then wait until the end of the loop and uninstall
+    ## Usage: package remove BUILD_DEPS packagename packagename
+    remove() {
+        case "${distro}" in
+            "alpine" )
+                _package_removal_list="$@"
+                for _package in $_package_removal_list ; do
+                    if [ -v "${_package^^}"_ALPINE ] ; then
+                        _package_removal_list=$(echo "$_package_removal_list" | sed -e "s|${_package^^}_ALPINE||g" -e "s|${_package^^}||g")
+                        _package_removal_list+=" .${_package,,} "
+                   else
+                        _package_removal_list+=" ${_package} "
+                    fi
+                done
+
+                apk del $_package_removal_list
+            ;;
+            "debian" | "ubuntu" )
+                _package_removal_list="$@"
+                for _package in $_package_removal_list ; do
+                    if [ -v "${_package^^}"_DEBIAN ] ; then
+                        _package_removal_list+=$(set -o posix; set | grep -E "^${_package^^}_DEBIAN" | cut -d = -f 2 | xargs)
+                        _package_removal_list=$(echo "$_package_removal_list" | sed -e "s|${_package^^}_DEBIAN||g" -e "s|${_package^^}||g")
+                    else
+                        _package_removal_list+=" ${_package} "
+                    fi
+                done
+
+                if [[ "${_packages_removal_list}" =~ \..* ]] ; then
+                    _package_removal_list=$(echo "${_package_removal_list}" | sed "s|\..* ||g")
+                fi
+
+                apt-get purge -y ${_package_removal_list}
+                apt-get autoremove -y
+            ;;
+        esac
+    }
+
+    repo () {
+        case "${1}" in
+            add )
+                case "${distro}" in
+                "alpine" )
+                    if [ -n "${3}" ] ; then
+                        _package_repo_name="${2}"
+                        shift 2
+                        echo "$@" > /etc/apk/repositories/"${_package_repo_name}"
+                    fi
+                ;;
+                "debian" | "ubuntu" )
+                    if [ -n "${3}" ] ; then
+                        _package_repo_name="${2}"
+                        shift 2
+                        echo "$@" > /etc/apt/sources.list.d/"${_package_repo_name}".list
+                    fi
+                ;;
+                esac
+            ;;
+            key )
+                case "${distro}" in
+                    "debian" | "ubuntu" )
+                        curl -sSLk "${2}" | apt-key add -
+                    ;;
+                esac
+            ;;
+        esac
+    }
+
+    update() {
+        case "${distro}" in
+            "alpine" )
+                apk update
+            ;;
+            "debian" | "ubuntu" )
+                apt-get update
+            ;;
+        esac
+    }
+
+    upgrade() {
+        case "${distro}" in
+            "alpine" )
+                apk upgrade
+            ;;
+            "debian" | "ubuntu" )
+                apt-get upgrade -y
+            ;;
+        esac
+    }
+
+    output_off
+    local distro
+    distro=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
+    local action="${1}"
+    shift
+    local arguments=$@
+
+    case "${action}" in
+        add | install )
+            action=install
+            "${action}" "${arguments}"
+        ;;
+        delete | remove | uninstall )
+            action=remove
+            "${action}" "${arguments}"
+        ;;
+        repo )
+            action=repo
+            "${action}" ${arguments}
+        ;;
+        * )
+            "${action}" ${arguments}
+        ;;
+    esac
+    output_on
+}

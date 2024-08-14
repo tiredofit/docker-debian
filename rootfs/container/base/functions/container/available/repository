@@ -1,0 +1,57 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+clone_git_repo() {
+    ## Cut down on the space and size required to clone a repository if you are pulling a specific tag or branch
+    ## Usage: clone_git_repo https://github.com/maintainer/repo <branch/tag/commit> <custom_dest>
+    ## It will automatically create a folder in /usr/src/<repo name> eg repo and also expose a variable called GIT_REPO_SRC and GIT_REPO_SRC_<REPONAME> in caps
+    ## Any special characters get removed other than numbers and letters
+    set +x
+    if [ ${DEBUG_MODE,,} = "true" ] ; then set -x ; fi
+    if ! [ -x "$(command -v git)" ]; then
+        echo '[clone_git_repo] Git is not installed'
+        exit 1
+    else
+        git config --global init.defaultBranch main
+    fi
+
+    if [ -n "$1" ] ; then
+        if [ -n "${3}" ] ; then
+            repo="${3}/"
+            repo_text="to '${3}'"
+            repo_name="$(echo ${1,,} | sed -e "s|-|_|g" -e "s|\.git||g" | awk -F/ '{print $NF}' | sed 's/[^a-zA-Z0-9_]//g')"
+        else
+            repo="/usr/src/$(echo ${1,,} | sed -e "s|-|_|g" -e "s|\.git||g" | awk -F/ '{print $NF}' | sed 's/[^a-zA-Z0-9_]//g')"
+            repo_name="$(echo ${1,,} | sed -e "s|-|_|g" -e "s|\.git||g" | awk -F/ '{print $NF}' | sed 's/[^a-zA-Z0-9_]//g')"
+        fi
+
+        export GIT_REPO_SRC=${GIT_REPO_SRC:-"${repo}"}
+        export GIT_REPO_SRC_${repo_name^^}="${repo}"
+        if [ -d "${repo}" ] ; then
+            echo "[clone_git_repo] Directory ${repo_path}${repo} already exists. Cannot clone"
+            exit 1
+        else
+            if [[ $1 == *".git" ]] ; then
+                :
+            else
+                append_git_prefix=".git"
+            fi
+
+            mkdir -p "${repo}"
+            cd "${repo}"
+            git init .
+            git remote add origin "${1}"${append_git_prefix}
+            if [ -n "${2}" ] ; then repo_commit="${2}" ; fi
+            echo "[clone_git_repo] Cloning Git Repo '${1}' '${2}' ${repo_text}"
+            git fetch --depth=1 origin ${2} +refs/tags/*:refs/tags/*
+            git fetch --depth 1 origin ${2}
+            git -c advice.detachedHead=false checkout FETCH_HEAD
+            git submodule update --init
+        fi
+    else
+        echo "[clone_git_repo] You tried to call the function but there's no arguments"
+        exit 1
+    fi
+    set -x
+}

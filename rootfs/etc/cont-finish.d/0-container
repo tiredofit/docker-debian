@@ -1,0 +1,74 @@
+#!/command/with-contenv bash
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+source /container/base/functions/container/init
+
+print_debug "Commencing container shutdown sequence"
+for fullpath_basefinish in /container/base/finish/finish.d/* ; do
+    if [ -x "${fullpath_basefinish}" ] && [ ! -d "${fullpath_basefinish}" ] ; then
+        basefinish=$(basename $fullpath_basefinish)
+        if [ "${baseinint}" != "zzz-container" ] ; then
+            if [ -f /override/base/finish/pre/${basefinish} ] && [ -x /override/base/finish/pre/${basefinish} ] ; then
+                /override/base/finish/pre/${basefinish}
+            elif [ -f /container/base/finish/pre/${basefinish} ] && [ -x /container/base/finish/pre/${basefinish} ] ; then
+                /container/base/finish/pre/${basefinish}
+            fi
+            if [ -f /override/base/finish/init.d/${basefinish} ] && [ -x /override/base/finish/init.d/${basefinish} ] ; then
+                /override/base/finish/init.d/"${basefinish}"
+            else
+                "${fullpath_basefinish}"
+            fi
+            if [ -f /override/base/inint/post/${basefinish} ] && [ -x /override/base/finish/post/${basefinish} ] ; then
+                /override/base/finish/post/${basefinish}
+            elif [ -f /container/base/finish/post/${basefinish} ] && [ -x /container/base/finish/post/${basefinish} ] ; then
+                /container/base/finish/post/${basefinish}
+            fi
+        fi
+    fi
+done
+
+for fullpath_contfinish in /container/finish/finish.d/* ; do
+    if [ -x "${fullpath_contfinish}" ] && [ ! -d "${fullpath_contfinish}" ] ; then
+        contfinish=$(basename $fullpath_contfinish)
+        if [ -f /override/finish/pre/${contfinish} ] && [ -x /override/finish/pre/${contfinish} ] ; then
+            /override/finish/pre/${contfinish}
+        elif [ -f /container/finish/pre/${contfinish} ] && [ -x /container/finish/pre/${contfinish} ] ; then
+            /container/finish/pre/${contfinish}
+        fi
+        if [ -f /override/finish/init.d/${contfinish} ] && [ -x /override/finish/init.d/${contfinish} ] ; then
+            /override/finish/init.d/"${contfinish}"
+        else
+            "${fullpath_contfinish}"
+        fi
+        if [ -f /override/inint/post/${contfinish} ] && [ -x /override/finish/post/${contfinish} ] ; then
+            /override/finish/post/${contfinish}
+        elif [ -f /container/finish/post/${contfinish} ] && [ -x /container/finish/post/${contfinish} ] ; then
+            /container/finish/post/${contfinish}
+        fi
+    fi
+done
+
+if [ -n "${CONTAINER_PRE_FINISH_SCRIPT}" ] ; then
+    print_debug "Found Pre Finish Scripts"
+    finish_scripts=$(echo "${CONTAINER_PRE_FINISH_SCRIPT}" | tr "," "\n")
+    for finish_script in $finish_scripts; do
+        if [ -f "${finish_script}" ] ; then
+            print_debug "Executing pre finish script '${finish_script}'"
+            chmod +x "${finish_script}"
+            "${finish_script}"
+        else
+            print_error "Tried to run pre finish script '${finish_script}' but it does not exist!"
+        fi
+    done
+fi
+
+if [ -n "${CONTAINER_PRE_FINISH_COMMAND}" ] ; then
+    print_debug "Found Pre Finish Command"
+    finish_commands=$(echo "${CONTAINER_PRE_FINISH_COMMAND}" | tr "," "\n")
+    for finish_command in "${finish_commands}"; do
+        print_debug "Executing pre finish command '${finish_command}'"
+        eval "${finish_command}"
+    done
+fi

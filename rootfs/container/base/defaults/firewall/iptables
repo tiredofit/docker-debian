@@ -1,0 +1,6 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+IPTABLES_RULES_PATH=${IPTABLES_RULES_PATH:-"/override/iptables/"}
+IPTABLES_RULES_FILE=${IPTABLES_RULES_FILE:-"iptables.rules"}

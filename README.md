@@ -1,4 +1,4 @@
-# github.com/tiredofit/docker-
+# github.com/tiredofit/docker-debian
 
 [![GitHub release](https://img.shields.io/github/v/tag/tiredofit/docker-debian?style=flat-square)](https://github.com/tiredofit/docker-debian/releases/latest)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/tiredofit/docker-debian/main.yml?branch=main&style=flat-square)](https://github.com/tiredofit/docker-debian/actions)

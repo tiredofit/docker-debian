@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+if [ "${CONTAINER_ENABLE_SCHEDULING,,}" = "true" ]; then
+    if [ -f "/container/base/defaults/scheduling/${CONTAINER_SCHEDULING_BACKEND,,}" ]; then
+        source /container/base/defaults/scheduling/${CONTAINER_SCHEDULING_BACKEND,,}
+    fi
+fi

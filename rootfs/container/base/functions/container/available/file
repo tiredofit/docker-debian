@@ -1,0 +1,103 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+install_template() {
+    ## Copies configuration template to the destination as the specified USER
+    ## Usage install_template <copy-as-user> <source_file> <desintation_location+file> <optional chmod mode>
+
+    if [ -z "$1" ] || [ -z $2 ] || [ -z $3 ] ; then
+        print_error "[install_tempalte] No arguments passed"
+        exit 1
+    fi
+
+    local template_mode=${4:-"0644"}
+    if [ ! -f "$2" ]; then
+        print_error "[install_template] Can't find ${2}"
+        exit 1
+    fi
+
+    if [ ! -d "$(dirname $3)" ] ; then
+        mkdir -p "$(dirname $3)"
+    fi
+
+    chmod "${template_mode}" "${3}"
+    chown "${1}" "${DEST}"
+}
+
+update_template() {
+    ## Replace placeholders with values
+    ## Usage: 'update_template <filename> <varname>
+    ## Can have multiple varnames - Don't prefix the varname with $
+    ## You can use wildcards if you Quote the first argument eg "*.template"
+    template_files=${1}
+    templates=$(echo "${template_files}" | tr " " "\n")
+    shift
+    for template_file in $templates; do
+
+        [[ ! -f "${template_file}" ]] && return 1
+
+        template_variables=($@)
+        template_user=$(stat -c %U "${template_file}")
+        template_tmp_file=$(mktemp)
+        cp -a "${template_file}" "${template_tmp_file}"
+
+        for template_variable in ${template_variables[@]}; do
+        # Keep the compatibilty: {{VAR}} => ${VAR}
+            sed -ri "s/[{]{2}$template_variable[}]{2}/\${$template_variable}/g" "${template_tmp_file}"
+            print_debug "[update_template] Template: '${template_file}' updating field '${template_variable}'"
+        done
+
+        # Replace placeholders
+        (
+            export ${template_variables[@]}
+            local IFS=":"; sudo -HEu ${template_user} envsubst "${template_variables[*]/#/$}" < "${template_tmp_file}" > "${template_file}"
+        )
+
+        rm -f "${template_tmp_file}"
+    done
+}
+
+custom_files() {
+    ## Copy files from one lcoation to somewhere else on the file system
+    ## eg. Copy all files in /override/custom (Default ENV CONTAINER_CUSTOM_PATH) to /www/html  'custom_files /www/html'
+    ## Add another parameter if you want to move any source folder to a destination ie `custom_files /override/customfolder2/ /destination`
+    ## The third and fourth parameters if exist will change ownership to the user:group
+    if [ -n "${2}" ] ; then
+        ccustom_files_source="${1}"
+        ccustom_files_destination="${2}"
+    else
+        ccustom_files_source="${CONTAINER_CUSTOM_PATH}"
+        ccustom_files_destination="${1}"
+    fi
+
+    if [ -d "${ccustom_files_source}" ] && dir_notempty "${ccustom_files_source}" ; then
+        print_debug "Custom Files: Copying files from '${ccustom_files_source}' to '${ccustom_files_destination}'"
+        if [ -d "${ccustom_files-destination}" ] ; then
+            mkdir -p "${ccustom_files-destination}"
+        fi
+        cp -aR "${ccustom_files_source}"/* "${ccustom_files_destination}"/
+    fi
+
+    if [ -n "${3}" ] ; then permbuilder="${3}" ; fi
+    if [ -n "${4}" ] ; then permbuilder="${3}:${4}" ; fi
+    if [ -n "${permbuilder}" ] ; then chown -R "${permbuilder}" "${2}" ; fi
+}
+
+custom_scripts() {
+    ## Execute Custom scripts out of this directory
+    if [ -n "${1}" ] ; then
+        ccustom_scripts_source="${1}"
+    else
+        ccustom_scripts_source="${CONTAINER_CUSTOM_SCRIPTS_PATH}"
+    fi
+
+    if [ -d "${ccustom_scripts_source}" ] && dir_notempty "${ccustom_scripts_source}" ; then
+        for ccustom_script in "${ccustom_scripts_source}"/*.sh ; do
+            if [ -x "$ccustom_script" ] && [ ! -d "$ccustom_script" ] ; then
+                print_debug "Custom Script executing: '${ccustom_script}'"
+                ${ccustom_script}
+            fi
+        done
+    fi
+}

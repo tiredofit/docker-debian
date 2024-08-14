@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+if [ "${CONTAINER_ENABLE_MESSAGING,,}" = "true" ]; then
+    if [ -f "/container/base/defaults/messaging/${CONTAINER_MESSAGING_BACKEND,,}" ]; then
+        source /container/base/defaults/messaging/"${CONTAINER_MESSAGING_BACKEND,,}"
+    fi
+fi

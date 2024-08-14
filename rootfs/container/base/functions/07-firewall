@@ -1,0 +1,36 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+if [ "${CONTAINER_ENABLE_FIREWALL,,}" = "true" ]; then
+    if [ -f "/container/base/functions/firewall/${CONTAINER_FIREWALL_BACKEND,,}" ]; then
+        source /container/functions/firewall/"${CONTAINER_FIREWALL_BACKEND,,}"
+    fi
+
+    if [ "${CONTAINER_ENABLE_FAIL2BAN,,}" = "true" ] ; then
+        if [ -f "/container/base/functions/firewall/fail2ban" ]; then
+            source /container/base/functions/firewall/fail2ban
+        fi
+    fi
+
+    configure_firewall_parserules() {
+        set -o posix
+        set -f
+        if printenv | grep -q "^FIREWALL_RULE" ; then
+            print_debug "Found existence of FIREWALL_RULE environment variables"
+            firewallenv=$(mktemp)
+            printenv | sort | grep '^FIREWALL_RULE_[0-9][0-9]*' | sed "s|FIREWALL_RULE_||g" > ${firewallenv}
+            cat ${firewallenv}
+            while IFS= read -r firewall_entry; do
+                rule_number="$(echo ${firewall_entry} | cut -d = -f1 )"
+                rule_value="$(echo ${firewall_entry} | cut -d = -f2 )"
+                print_debug "Adding Rule Number: ${rule_number} with to be parsed by ${CONTAINER_FIREWALL_BACKEND}"
+                silent "${firewall_command}" ${rule_value}
+            done < "${firewallenv}"
+            rm -rf "${firewallenv}"
+            set +f
+            unset rule_number rule_value
+            unset "${!FIREWALL_RULE_RULE_@}"
+        fi
+    }
+fi

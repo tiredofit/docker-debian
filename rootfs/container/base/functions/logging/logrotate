@@ -1,0 +1,76 @@
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+toi_configure_scheduling_logrotate_init() {
+    print_debug "Enabling log rotation"
+    case "${LOGROTATE_COMPRESSION_TYPE,,}" in
+        bz* )
+            logrotate_compression=$(cat<<EOF
+compress
+compresscmd $(which bzip2)
+compressext .bz2
+compressoptions -${LOGROTATE_COMPRESSION_VALUE} ${LOGROTATE_COMPRESSION_EXTRA_PARAMETERS}
+EOF
+                                )
+        ;;
+        gz* )
+            logrotate_compression=$(cat<<EOF
+compress
+compresscmd $(which gzip)
+compressext .gz
+compressoptions -${LOGROTATE_COMPRESSION_VALUE} ${LOGROTATE_COMPRESSION_EXTRA_PARAMETERS}
+EOF
+                                )
+        ;;
+        none )
+            logrotate_compression=""
+        ;;
+        zs* )
+            logrotate_compression=$(cat<<EOF
+compress
+compresscmd $(which zstd)
+compressext .zst
+compressoptions -${LOGROTATE_COMPRESSION_VALUE} ${LOGROTATE_COMPRESSION_EXTRA_PARAMETERS}
+EOF
+                                )
+        ;;
+    esac
+
+    cat <<EOF > /etc/logrotate.conf
+daily
+rotate ${LOGROTATE_RETAIN_DAYS}
+copytruncate
+dateext
+nomail
+notifempty
+${logrotate_compression}
+include /etc/logrotate.d
+EOF
+
+    chmod 0744 /etc/logrotate.conf
+    mkdir -p "${CONTAINER_SCHEDULING_LOCATION}"
+    cat <<EOF > "${CONTAINER_SCHEDULING_LOCATION}"/logrotate
+# Hardcoded in image in /etc/cont-init.d/$(basename "$0")
+# Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
+
+59 23 * * * logrotate -f /etc/logrotate.conf >/dev/null 2>&1
+EOF
+}
+
+toi_configure_scheduling_logrotate_run() {
+    print_debug "[logrotate] Setting Logrotate retention days after all services have finished initializing"
+    mkdir -p /etc/logrotate.d
+    print_debug "[logrotate] Moving files from /container/logrotate to /etc/logrotate.d"
+    if dir_notempty /container/logrotate/ ; then
+        cp -R /container/logrotate/* /etc/logrotate.d
+    fi
+
+    if dir_notempty /etc/logrotate.d ; then
+        sed -i "s|rotate .*|rotate ${LOGROTATE_RETAIN_DAYS}|g" /etc/logrotate.d/*
+        sed -i "s|//|/|g" /etc/logrotate.d/*
+    fi
+
+    chown -R root:root /etc/logrotate.d
+    chmod -R 0644 /etc/logrotate.d
+}

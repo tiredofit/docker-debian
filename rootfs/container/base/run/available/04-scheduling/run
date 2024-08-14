@@ -1,0 +1,17 @@
+#!/command/with-contenv bash
+# SPDX-FileCopyrightText: © 2024 Dave Conroy <dave@tiredofit.ca>
+#
+# SPDX-License-Identifier: MIT
+
+source /container/base/functions/container/init
+PROCESS_NAME="scheduling"
+output_off
+prepare_service single
+check_container_initialized
+check_service_initialized init
+
+if var_true "${CONTAINER_ENABLE_LOGROTATE}" ; then
+    call toi_configure_scheduling_logrotate_run
+fi
+
+call toi_configure_scheduling_${CONTAINER_SCHEDULING_BACKEND,,}_run
