@@ -1,3 +1,9 @@
+## 7.10.9 2024-08-15 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-bit 3.1.6
+
+
 ## 7.10.8 2024-08-11 <dave at tiredofit dot ca>
 
    ### Added
