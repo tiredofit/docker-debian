@@ -1,3 +1,9 @@
+## 7.10.19 2024-11-11 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-Bit 3.2.0
+
+
 ## 7.10.18 2024-11-04 <dave at tiredofit dot ca>
 
    ### Added
