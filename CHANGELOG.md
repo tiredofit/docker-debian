@@ -1,3 +1,9 @@
+## 7.10.22 2024-12-05 <dave at tiredofit dot ca>
+
+   ### Added
+      - Rollback to Zabbix Agent 7.0.5
+
+
 ## 7.10.21 2024-11-20 <dave at tiredofit dot ca>
 
    ### Added
