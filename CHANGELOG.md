@@ -1,3 +1,9 @@
+## 7.10.23 2024-12-05 <dave at tiredofit dot ca>
+
+   ### Added
+      - Downgrade to Fluent-bit 3.1.10
+
+
 ## 7.10.22 2024-12-05 <dave at tiredofit dot ca>
 
    ### Added
