@@ -224,7 +224,7 @@ db_ready() {
     ## Usage db_ready <dbtype>
     output_off
     print_debug "Checking to see if Database Type $1 is ready"
-    case "$1" in
+    case "${1,,}" in
         "couch" | "couchdb" )
             transform_file_var DB_PORT
             if [ -n "${DB_PORT}" ] ; then couch_port=${DB_PORT} ; fi ;
@@ -277,14 +277,20 @@ db_ready() {
                 print_warn "Mongo Host '${mongo_host}' is not accessible, retrying.. ($counter seconds so far)"
             done
         ;;
-        "mysql" | "mariadb" | "MARIADB" | "MYSQL" )
-            if command -v "mysqladmin" &> /dev/null ; then
-                mysqladmin_bin="$(which mysqladmin)"
-            elif command -v "mariadb-admin" &> /dev/null ; then
+        "mysql" | "mariadb" )
+            if command -v "mariadb-admin" &> /dev/null ; then
                 mysqladmin_bin="$(which mariadb-admin)"
+            elif command -v "mysqladmin" &> /dev/null ; then
+                mysqladmin_bin="$(which mysqladmin)"
             else
                 print_error "No MySQL or MariaDB client detected - Cannot check for Database"
                 exit 1
+            fi
+            if [ ! -f /etc/my.cnf.d/disable-ssl.cnf ] ; then
+                cat <<EOF > /etc/my.cnf.d/disable-ssl.cnf
+[client]
+ssl=FALSE
+EOF
             fi
             transform_file_var DB_PORT
             if [ -n "${DB_PORT}" ] ; then maria_port=${DB_PORT} ; fi ;

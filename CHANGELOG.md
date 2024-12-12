@@ -1,3 +1,9 @@
+## 7.10.27 2024-12-11 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Set db_ready function to use disable ssl for mysql checks by default
+
+
 ## 7.10.23 2024-12-05 <dave at tiredofit dot ca>
 
    ### Added
