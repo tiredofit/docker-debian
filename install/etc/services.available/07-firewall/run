@@ -2,7 +2,7 @@
 
 source /assets/functions/00-container
 output_off
-PROCESS_NAME="firewall"
+SERVICE_NAME="firewall"
 prepare_service defaults single
 check_container_initialized
 check_service_initialized init

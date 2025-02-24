@@ -1,7 +1,7 @@
 #!/command/with-contenv bash
 
 source /assets/functions/00-container
-PROCESS_NAME="scheduling"
+SERVICE_NAME="scheduling"
 output_off
 prepare_service
 check_container_initialized

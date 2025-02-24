@@ -3,7 +3,7 @@
 source /assets/functions/00-container
 output_off
 prepare_service single
-PROCESS_NAME="monitoring"
+SERVICE_NAME="monitoring"
 
 ## Legacy
 if var_false "${ENABLE_ZABBIX}"; then CONTAINER_ENABLE_MONITORING=FALSE ; fi

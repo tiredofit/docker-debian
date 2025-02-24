@@ -1,7 +1,7 @@
 #!/command/with-contenv bash
 
 source /assets/functions/00-container
-PROCESS_NAME="monitoring"
+SERVICE_NAME="monitoring"
 output_off
 prepare_service defaults single
 check_container_initialized

@@ -13,7 +13,7 @@ ARG ZABBIX_VERSION
 ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"3.1.10"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.2.0.2"} \
     YQ_VERSION=${YQ_VERSION:-"v4.44.1"} \
-    ZABBIX_VERSION=${ZABBIX_VERSION:-"7.0.5"} \
+    ZABBIX_VERSION=${ZABBIX_VERSION:-"7.0.7"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
@@ -79,7 +79,6 @@ RUN debArch=$(dpkg --print-architecture) && \
                     procps \
                     sudo \
                     tzdata \
-                    vim-tiny \
                     zstd \
                     ${ZABBIX_BUILD_DEPS} ${FLUENTBIT_BUILD_DEPS} \
                     && \

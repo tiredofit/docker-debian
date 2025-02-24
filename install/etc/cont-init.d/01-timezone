@@ -2,7 +2,7 @@
 
 source /assets/functions/00-container
 output_off
-PROCESS_NAME="timezone"
+SERVICE_NAME="timezone"
 
 ### Timezone setup
 if [ -n "${TIMEZONE}" ]; then

@@ -936,15 +936,15 @@ print_debug() {
         "debug" )
             if [ "${DEBUG_MODE,,}" = "true" ] ; then
                 if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-                    echo -e "$(log_prefix)[DEBUG] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                    echo -e "$(log_prefix)[DEBUG] $SCRIPTPATH/$(basename "$0") ** [${SERVICE_NAME}] $1"
                 else
-                    echo -e "$(log_prefix)${bdm}[DEBUG]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                    echo -e "$(log_prefix)${bdm}[DEBUG]${boff} $SCRIPTPATH/$(basename "$0") ** [${SERVICE_NAME}] $1"
                 fi
             else
                 if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-                    echo -e "$(log_prefix)[DEBUG] ** [${PROCESS_NAME}] $1"
+                    echo -e "$(log_prefix)[DEBUG] ** [${SERVICE_NAME}] $1"
                 else
-                    echo -e "$(log_prefix)${bdm}[DEBUG]${boff} ** [${PROCESS_NAME}] $1"
+                    echo -e "$(log_prefix)${bdm}[DEBUG]${boff} ** [${SERVICE_NAME}] $1"
                 fi
             fi
         ;;
@@ -952,7 +952,7 @@ print_debug() {
 
     case "${CONTAINER_LOG_FILE_LEVEL,,}" in
         "debug" )
-            echo -e "$(log_prefix)[DEBUG] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+            echo -e "$(log_prefix)[DEBUG] $SCRIPTPATH/$(basename "$0") ** [${SERVICE_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
         ;;
     esac
     output_on
@@ -964,15 +964,15 @@ print_error() {
         "debug" | "notice" | "warn" | "error")
             if [ "${DEBUG_MODE,,}" = "true" ] ; then
                 if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-                    echo -e "$(log_prefix)[ERROR] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                    echo -e "$(log_prefix)[ERROR] $SCRIPTPATH/$(basename "$0") ** [${SERVICE_NAME}] $1"
                 else
-                    echo -e "$(log_prefix)${blr}[ERROR]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                    echo -e "$(log_prefix)${blr}[ERROR]${boff} $SCRIPTPATH/$(basename "$0") ** [${SERVICE_NAME}] $1"
                 fi
             else
                 if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-                    echo -e "$(log_prefix)[ERROR] ** [${PROCESS_NAME}] $1"
+                    echo -e "$(log_prefix)[ERROR] ** [${SERVICE_NAME}] $1"
                 else
-                    echo -e "$(log_prefix)${blr}[ERROR]${boff} ** [${PROCESS_NAME}] $1"
+                    echo -e "$(log_prefix)${blr}[ERROR]${boff} ** [${SERVICE_NAME}] $1"
                 fi
             fi
         ;;
@@ -980,7 +980,7 @@ print_error() {
 
     case "${CONTAINER_LOG_FILE_LEVEL,,}" in
         "debug" | "notice" | "warn" | "error")
-            echo -e "$(log_prefix)[ERROR] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+            echo -e "$(log_prefix)[ERROR] $SCRIPTPATH/$(basename "$0") ** [${SERVICE_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
         ;;
     esac
     output_on
@@ -990,19 +990,19 @@ print_info() {
     output_off
     if [ "${DEBUG_MODE,,}" = "true" ] ; then
         if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-            echo -e "$(log_prefix)[INFO] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+            echo -e "$(log_prefix)[INFO] $SCRIPTPATH/$(basename "$0") ** [${SERVICE_NAME}] $1"
         else
-            echo -e "$(log_prefix)${bdg}[INFO]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+            echo -e "$(log_prefix)${bdg}[INFO]${boff} $SCRIPTPATH/$(basename "$0") ** [${SERVICE_NAME}] $1"
         fi
     else
         if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-            echo -e "$(log_prefix)[INFO] ** [${PROCESS_NAME}] $1"
+            echo -e "$(log_prefix)[INFO] ** [${SERVICE_NAME}] $1"
         else
-            echo -e "$(log_prefix)${bdg}[INFO]${boff} ** [${PROCESS_NAME}] $1"
+            echo -e "$(log_prefix)${bdg}[INFO]${boff} ** [${SERVICE_NAME}] $1"
         fi
     fi
 
-    echo -e "$(log_prefix)[INFO] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+    echo -e "$(log_prefix)[INFO] $SCRIPTPATH/$(basename "$0") ** [${SERVICE_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
     output_on
 }
 
@@ -1012,15 +1012,15 @@ print_notice() {
         "debug" | "notice" )
             if [ "${DEBUG_MODE,,}" = "true" ] ; then
                 if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-                    echo -e "$(log_prefix)[NOTICE] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                    echo -e "$(log_prefix)[NOTICE] $SCRIPTPATH/$(basename "$0") ** [${SERVICE_NAME}] $1"
                 else
-                    echo -e "$(log_prefix)${bdgy}[NOTICE]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                    echo -e "$(log_prefix)${bdgy}[NOTICE]${boff} $SCRIPTPATH/$(basename "$0") ** [${SERVICE_NAME}] $1"
                 fi
             else
                 if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-                    echo -e "$(log_prefix)[NOTICE] ** [${PROCESS_NAME}] $1"
+                    echo -e "$(log_prefix)[NOTICE] ** [${SERVICE_NAME}] $1"
                 else
-                    echo -e "$(log_prefix)${bdgy}[NOTICE]${boff} ** [${PROCESS_NAME}] $1"
+                    echo -e "$(log_prefix)${bdgy}[NOTICE]${boff} ** [${SERVICE_NAME}] $1"
                 fi
             fi
         ;;
@@ -1028,7 +1028,7 @@ print_notice() {
 
     case "${CONTAINER_LOG_FILE_LEVEL,,}" in
         "debug" | "notice" )
-            echo -e "$(log_prefix)[NOTICE] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+            echo -e "$(log_prefix)[NOTICE] $SCRIPTPATH/$(basename "$0") ** [${SERVICE_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
         ;;
     esac
     output_on
@@ -1070,19 +1070,19 @@ print_start() {
 
     if [ "${DEBUG_MODE,,}" = "true" ] ; then
         if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-            echo -e "$(log_prefix)[STARTING] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
+            echo -e "$(log_prefix)[STARTING] $SCRIPTPATH/$(basename "$0") ** [${SERVICE_NAME}] ${proc_start_wrapper}$1"
 
         else
-            echo -e "$(log_prefix)${bdg}[STARTING]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
+            echo -e "$(log_prefix)${bdg}[STARTING]${boff} $SCRIPTPATH/$(basename "$0") ** [${SERVICE_NAME}] ${proc_start_wrapper}$1"
         fi
-        echo -e "$(log_prefix)[STARTING] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] ${proc_start_wrapper}$1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+        echo -e "$(log_prefix)[STARTING] $SCRIPTPATH/$(basename "$0") ** [${SERVICE_NAME}] ${proc_start_wrapper}$1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
     else
         if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-            echo -e "$(log_prefix)[STARTING] ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
+            echo -e "$(log_prefix)[STARTING] ** [${SERVICE_NAME}] ${proc_start_wrapper}$1"
         else
-            echo -e "$(log_prefix)${bdg}[STARTING]${boff} ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
+            echo -e "$(log_prefix)${bdg}[STARTING]${boff} ** [${SERVICE_NAME}] ${proc_start_wrapper}$1"
         fi
-        echo -e "$(log_prefix)[STARTING] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] ${proc_start_wrapper}$1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+        echo -e "$(log_prefix)[STARTING] $SCRIPTPATH/$(basename "$0") ** [${SERVICE_NAME}] ${proc_start_wrapper}$1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
     fi
     output_on
 }
@@ -1093,22 +1093,22 @@ print_warn() {
         "debug" | "notice" | "warn" )
             if [ "${DEBUG_MODE,,}" = "true" ] ; then
                 if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-                    echo -e "$(log_prefix)[WARN] ** [${PROCESS_NAME}] $1"
+                    echo -e "$(log_prefix)[WARN] ** [${SERVICE_NAME}] $1"
                 else
-                    echo -e "$(log_prefix)${bdb}[WARN]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                    echo -e "$(log_prefix)${bdb}[WARN]${boff} $SCRIPTPATH/$(basename "$0") ** [${SERVICE_NAME}] $1"
                 fi
             else
                 if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-                    echo -e "$(log_prefix)[WARN] ** [${PROCESS_NAME}] $1"
+                    echo -e "$(log_prefix)[WARN] ** [${SERVICE_NAME}] $1"
                 else
-                    echo -e "$(log_prefix)${bdb}[WARN]${boff} ** [${PROCESS_NAME}] $1"
+                    echo -e "$(log_prefix)${bdb}[WARN]${boff} ** [${SERVICE_NAME}] $1"
                 fi
             fi
     esac
 
     case "${CONTAINER_LOG_FILE_LEVEL,,}" in
         "debug" | "notice" | "warn" )
-            echo -e "$(log_prefix)[WARN] ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+            echo -e "$(log_prefix)[WARN] ** [${SERVICE_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
     esac
 
     output_on
