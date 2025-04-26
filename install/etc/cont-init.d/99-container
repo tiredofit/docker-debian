@@ -3,7 +3,7 @@
 source /assets/defaults/00-container
 source /assets/functions/00-container
 output_off
-SERVICE_NAME="container"
+PROCESS_NAME="container"
 
 if var_false "${CONTAINER_SKIP_SANITY_CHECK}" ; then
 

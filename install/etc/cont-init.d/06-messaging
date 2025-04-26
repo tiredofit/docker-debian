@@ -4,7 +4,7 @@ source /assets/functions/00-container
 output_off
 prepare_service single
 # shellcheck disable=SC2034
-SERVICE_NAME="messaging"
+PROCESS_NAME="messaging"
 
 output_off
 

@@ -3,7 +3,7 @@
 source /assets/functions/00-container
 output_off
 prepare_service single
-SERVICE_NAME="scheduling"
+PROCESS_NAME="scheduling"
 
 
 

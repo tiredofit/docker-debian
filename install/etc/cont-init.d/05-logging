@@ -3,7 +3,7 @@
 source /assets/functions/00-container
 output_off
 prepare_service
-SERVICE_NAME="logging"
+PROCESS_NAME="logging"
 
 
 if var_true "${CONTAINER_ENABLE_LOGROTATE}" ; then

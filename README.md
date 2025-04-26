@@ -482,7 +482,7 @@ See `/assets/functions/00-container` for more detailed documentation for the var
 #!/command/with-contenv bash          # Pull in Container Environment Variables from Dockerfile/Docker Runtime
 source /assets/functions/00-container # Pull in all custom container functions from this image
 prepare_service single                # Read functions and defaults only from files matching this script filename - see detailed docs for more
-SERVICE_NAME="process"                # set the prefix for any logging
+PROCESS_NAME="process"                # set the prefix for any logging
 
 .. your scripting ..
 print_info "This an INFO log"
@@ -500,7 +500,7 @@ liftoff                               # this writes to the state files at /tmp/.
 #!/command/with-contenv bash          # Pull in Container Environment Variables from Dockerfile/Docker Runtime
 source /assets/functions/00-container # Pull in all custom container functions from this image
 prepare_service defaults single       # Read defaults only from files matching this script filename - see detailed docs for more
-SERVICE_NAME="process"                # set the prefix for any logging
+PROCESS_NAME="process"                # set the prefix for any logging
 
 check_container_initialized           # Check to make sure that the container properly initialized before proceeding
 check_service_initialized init        # Check to see if the cont-init.d/scriptname executed correctly, otherwise wait until it has done
@@ -514,7 +514,7 @@ fakeprocess (args)                    # whatever your process you want to start 
 | ----------------------------- | ------------------------------------------------------------------------------ | ----------- |
 | `CONTAINER_SKIP_SANITY_CHECK` | Skip the checking to see if all scripts in /etc/cont-init.d executed correctly | `FALSE`     |
 | `DEBUG_MODE`                  | Show all script output (set -x)                                                | `FALSE`     |
-| `SERVICE_NAME`                | Used for prefixing the script that is running                                  | `container` |
+| `PROCESS_NAME`                | Used for prefixing the script that is running                                  | `container` |
 
 ## Debug Mode
 

@@ -1,3 +1,9 @@
+## 7.10.30 2025-04-26 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix SERVICE_NAME insertion
+
+
 ## 7.10.29 2025-04-26 <dave at tiredofit dot ca>
 
    ### Added
